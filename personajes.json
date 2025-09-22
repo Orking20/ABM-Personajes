@@ -1,0 +1,743 @@
+[
+    {
+        "ID": 1,
+        "Jugador": "Orking",
+        "Nombre": "Eurelius",
+        "STEN": 1,
+        "Rango": 3,
+        "Fuerza": 3,
+        "Agilidad": 2,
+        "Resistencia": 3,
+        "Voluntad": 3,
+        "Inteligencia": 2,
+        "Liderazgo": 2,
+        "Potencia": 2,
+        "Defensa": 3,
+        "Extensi\u00f3n": 2,
+        "Cantidad Esferas": 2,
+        "Vida": 9,
+        "Vida actual": 9,
+        "Dano recibido": 0,
+        "Herida grave": false,
+        "Muerte": 18,
+        "Aguante": 15,
+        "Aguante actual": 15,
+        "Aguante gastado por turno": 0,
+        "Recuperaci\u00f3n": 3,
+        "Iniciativa": 4,
+        "Carga total": 15,
+        "Carga en manos": 3,
+        "Resistencia a la luz": 3,
+        "Resistencia a la oscuridad": 3,
+        "Resistencia elemental": 3,
+        "Escudo sobrenatural": 6,
+        "Concentraci\u00f3n": 0,
+        "Turnos aturdido": 0,
+        "Modificador vida": 0,
+        "Modificador aguante": 0,
+        "Modificador recuperaci\u00f3n": 0,
+        "Modificador iniciativa": 0,
+        "Modificador luz": 0,
+        "Modificador oscuridad": 0,
+        "Modificador elemental": 0,
+        "Modificador escudo sobrenatural": 0,
+        "Motivaci\u00f3n": 0,
+        "Energ\u00eda": 0,
+        "Habilidades": [
+            {
+                "Nombre": "Esfera (Orden)",
+                "Nivel": 0,
+                "Atributos relacionados": "P",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Sobrenaturales"
+            }
+        ],
+        "Armas": [
+            {
+                "ID": 1,
+                "Nombre": "Espada corta",
+                "Estructura": 4,
+                "Peso": 1.5,
+                "Impacto": 3,
+                "Dano": 4,
+                "Alcance": 1,
+                "Iniciativa": 5,
+                "Tipo de dano": "Cortante",
+                "Tipo de arma": "Espada",
+                "Calidad": 1
+            }
+        ],
+        "Armaduras": [
+            {
+                "ID": 1,
+                "Nombre": "Armadura de guerra eridia",
+                "Estructura": 10,
+                "Peso": 14,
+                "Contundente": 3,
+                "Cortante": 3,
+                "Perforante": 3,
+                "Cobertura": 5,
+                "Evasi\u00f3n": 3,
+                "Penalizador": 0,
+                "Calidad": 1
+            }
+        ],
+        "Escudos": [
+            {
+                "ID": 1,
+                "Nombre": "Escudo grande",
+                "Estructura": 3,
+                "Peso": 1.5,
+                "Contundente": 0,
+                "Cortante": 1,
+                "Perforante": 2,
+                "Cobertura": 1,
+                "Evasi\u00f3n": 0,
+                "Penalizador": 0,
+                "Calidad": 1
+            }
+        ],
+        "Esferas": [
+            {
+                "ID": 1,
+                "Nombre": "Orden",
+                "Nivel": 0,
+                "Poderes": [
+                    {
+                        "Nombre": "Castigo al caos",
+                        "Descripci\u00f3n": "Todas las mutaciones ca\u00f3ticas dejan de funcionar.",
+                        "Efecto": "Este autoritario poder recurre a la naturaleza del orden para estorbar a todas las criaturas corruptas por el caos en el interior del \u00e1rea. Su visi\u00f3n resulta admirable, pues descompone las mutaciones visibles del caos, que parecen esquivar el \u00e1rea en forma de l\u00edquido negruzco que se disipa, causando gran dolor a todos los afectados.\n\nLas mutaciones del caos pierden todos sus efectos beneficiosos y simplemente no funcionan.\n\nAdem\u00e1s, los personajes con mutaciones cuyo escudo sobrenatural sea inferior a la intensidad quedan aturdidos durante la duraci\u00f3n del poder.",
+                        "Efecto STEN2": "Este autoritario poder recurre a la naturaleza del orden para estorbar a todas las criaturas corruptas por el caos en el interior del \u00e1rea. Su visi\u00f3n resulta admirable, pues descompone las mutaciones visibles del caos, que parecen esquivar el \u00e1rea en forma de l\u00edquido negruzco que se disipa, causando gran dolor a todos los afectados.\n\nLas mutaciones del caos pierden todos sus efectos beneficiosos y simplemente no funcionan.\n\nAdem\u00e1s, los personajes con mutaciones cuyo escudo sobrenatural sea inferior a la intensidad quedan aturdidos durante la duraci\u00f3n del poder.",
+                        "Par\u00e1metros": {
+                            "Duraci\u00f3n": "Nivel + 2 (turnos)",
+                            "Intensidad": "Nivel + Potencia"
+                        },
+                        "Par\u00e1metros STEN2": {
+                            "Duraci\u00f3n": "Nivel (turnos)",
+                            "Intensidad": "Nivel + Potencia"
+                        }
+                    },
+                    {
+                        "Nombre": "Destierro al caos",
+                        "Descripci\u00f3n": "Causa da\u00f1o a corruptos por el caos.",
+                        "Efecto": "Mediante este resignado poder el lanzador causa da\u00f1o a todos los seres corruptos por el caos dentro de la zona.\n\nEstos sufren tanto da\u00f1o como la intensidad, de tipo luz. El lanzador sufre un punto de da\u00f1o inevitable.\n\nEl efecto de este poder suele resultar desagradable: las criaturas afectadas sufren un impacto invisible que se origina desde el lanzador, y aunque el poder en s\u00ed no se ve, causa grandes heridas simult\u00e1neas en las criaturas. Su sangre suele salpicar inmediatamente alej\u00e1ndose del lanzador, y es frecuente que las criaturas caigan tambi\u00e9n como golpeadas por un gran martillo.",
+                        "Efecto STEN2": "Mediante este resignado poder el lanzador causa da\u00f1o a todos los seres corruptos por el caos dentro de la zona.\n\nEstos sufren tanto da\u00f1o como la intensidad, de tipo luz. El lanzador sufre un punto de da\u00f1o inevitable.\n\nEl efecto de este poder suele resultar desagradable: las criaturas afectadas sufren un impacto invisible que se origina desde el lanzador, y aunque el poder en s\u00ed no se ve, causa grandes heridas simult\u00e1neas en las criaturas. Su sangre suele salpicar inmediatamente alej\u00e1ndose del lanzador, y es frecuente que las criaturas caigan tambi\u00e9n como golpeadas por un gran martillo.",
+                        "Par\u00e1metros": {
+                            "Intensidad": "Nivel + Potencia + 6"
+                        },
+                        "Par\u00e1metros STEN2": {
+                            "Intensidad": "Potencia * 4"
+                        }
+                    },
+                    {
+                        "Nombre": "Equilibrio perfecto",
+                        "Descripci\u00f3n": "Potencia a los objetivos con alta energ\u00eda.",
+                        "Efecto": "Este arm\u00f3nico poder beneficia a aquellos sujetos en los que el equilibrio es una fuerza clara.\n\nLos objetivos arrojar\u00e1n una runa adicional en todos sus chequeos contra oponentes que tengan inferior energ\u00eda. Adem\u00e1s arrojar\u00e1n otra runa adicional si la intensidad supera su defensa en tanto que se cumpla la primera condici\u00f3n.\n\nLos seres afectados positivamente por este poder irradian un extra\u00f1o humo de color blanco y olor neutro y nada invasivo. Este humo se disipa, no obstante, a menos de dos cent\u00edmetros de la piel.",
+                        "Efecto STEN2": "Este arm\u00f3nico poder beneficia a aquellos sujetos en los que el equilibrio es una fuerza clara.\n\nLos objetivos arrojar\u00e1n una runa adicional en todos sus chequeos contra oponentes que tengan inferior energ\u00eda. Adem\u00e1s arrojar\u00e1n otra runa adicional si la intensidad supera su defensa en tanto que se cumpla la primera condici\u00f3n.\n\nLos seres afectados positivamente por este poder irradian un extra\u00f1o humo de color blanco y olor neutro y nada invasivo. Este humo se disipa, no obstante, a menos de dos cent\u00edmetros de la piel.",
+                        "Par\u00e1metros": {
+                            "Duraci\u00f3n": "Nivel + 2 (turnos)",
+                            "Intensidad": "Potencia",
+                            "Objetivos": "Nivel"
+                        },
+                        "Par\u00e1metros STEN2": {
+                            "Duraci\u00f3n": "Nivel (turnos)",
+                            "Intensidad": "Potencia",
+                            "Objetivos": "Nivel"
+                        }
+                    },
+                    {
+                        "Nombre": "Fuerza del orden",
+                        "Descripci\u00f3n": "Los objetivos tienen ciertas caracter\u00edsticas aumentadas, pero anuncian su decisi\u00f3n de invertir aguante antes que sus oponentes y no pueden recibir o traspasar golpes de otros.",
+                        "Efecto": "Este potente poder recurre a la misma naturaleza del orden para convertir a sus afectados en verdaderas torres defensivas capaces de causar grandes da\u00f1os en tanto que no se desplacen de su lugar.\n\nDurante la duraci\u00f3n del poder, los objetivos pueden doblar el n\u00famero de runas adicionales que obtienen cuando invierten un punto de aguante en causar da\u00f1o o reducir da\u00f1o, pero siempre anuncian su intenci\u00f3n de invertir o no aguante antes que sus oponentes. Adicionalmente no podr\u00e1n recibir o traspasar golpes de otros.\n\nCualquier objetivo puede acabar con este esfuerzo simplemente realizando un simple acto voluntario.\n\nLos personajes afectados por este poder reciben una iluminaci\u00f3n levemente m\u00e1s fuerte que la que corresponde al ambiente en cuesti\u00f3n, pero incluso aunque esta no se vea es muy f\u00e1cil identificar a los afectados por que, pese a no desplazar sus pies, son aut\u00e9nticas fuerzas de batalla.",
+                        "Efecto STEN2": "Este potente poder recurre a la misma naturaleza del orden para convertir a sus afectados en verdaderas torres defensivas capaces de causar grandes da\u00f1os en tanto que no se desplacen de su lugar.\n\nDurante la duraci\u00f3n del poder, los objetivos pueden doblar el n\u00famero de runas adicionales que obtienen cuando invierten un punto de aguante en causar da\u00f1o o reducir da\u00f1o, pero siempre anuncian su intenci\u00f3n de invertir o no aguante antes que sus oponentes. Adicionalmente no podr\u00e1n recibir o traspasar golpes de otros.\n\nCualquier objetivo puede acabar con este esfuerzo simplemente realizando un simple acto voluntario.\n\nLos personajes afectados por este poder reciben una iluminaci\u00f3n levemente m\u00e1s fuerte que la que corresponde al ambiente en cuesti\u00f3n, pero incluso aunque esta no se vea es muy f\u00e1cil identificar a los afectados por que, pese a no desplazar sus pies, son aut\u00e9nticas fuerzas de batalla.",
+                        "Par\u00e1metros": {
+                            "Duraci\u00f3n": "Nivel + 2 (turnos)",
+                            "Objetivos": "Nivel"
+                        },
+                        "Par\u00e1metros STEN2": {
+                            "Duraci\u00f3n": "Nivel (turnos)",
+                            "Objetivos": "Nivel"
+                        }
+                    }
+                ],
+                "Pasiva": "La defensa del personaje se incrementa en la afinidad a efectos de determinar si recibe o no una mutaci\u00f3n del caos. A este efecto, la afinidad se debe reducir tanto como el nivel total de mutaciones del personaje (hasta un m\u00ednimo de 0). Esta cualidad no funciona cuando el personaje realiza un chequeo de corrupci\u00f3n del caos voluntariamente para obtener un beneficio.",
+                "Afinidad": 0
+            }
+        ]
+    },
+    {
+        "ID": 2,
+        "Jugador": "asd",
+        "Nombre": "asd",
+        "STEN": 1,
+        "Rango": 1,
+        "Fuerza": 2,
+        "Agilidad": 2,
+        "Resistencia": 2,
+        "Voluntad": 2,
+        "Inteligencia": 2,
+        "Liderazgo": 1,
+        "Potencia": 2,
+        "Defensa": 2,
+        "Extensi\u00f3n": 1,
+        "Cantidad Esferas": 1,
+        "Vida": 6,
+        "Vida actual": 6,
+        "Dano recibido": 0,
+        "Herida grave": false,
+        "Muerte": 12,
+        "Aguante": 10,
+        "Aguante actual": 10,
+        "Aguante gastado por turno": 0,
+        "Recuperaci\u00f3n": 2,
+        "Iniciativa": 4,
+        "Carga total": 10,
+        "Carga en manos": 2,
+        "Resistencia a la luz": 2,
+        "Resistencia a la oscuridad": 2,
+        "Resistencia elemental": 2,
+        "Escudo sobrenatural": 4,
+        "Concentraci\u00f3n": 0,
+        "Turnos aturdido": 0,
+        "Modificador vida": 0,
+        "Modificador aguante": 0,
+        "Modificador recuperaci\u00f3n": 0,
+        "Modificador iniciativa": 0,
+        "Modificador luz": 0,
+        "Modificador oscuridad": 0,
+        "Modificador elemental": 0,
+        "Modificador escudo sobrenatural": 0,
+        "Motivaci\u00f3n": 0,
+        "Energ\u00eda": 0,
+        "Habilidades": [
+            {
+                "Nombre": "Escalada",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "F",
+                    "A",
+                    "R"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Din\u00e1mica"
+            },
+            {
+                "Nombre": "Escapismo",
+                "Nivel": 0,
+                "Atributos relacionados": "A",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Din\u00e1mica"
+            },
+            {
+                "Nombre": "Nadar / Bucear",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "R"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Din\u00e1mica"
+            },
+            {
+                "Nombre": "Rastreo / Caza",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Din\u00e1mica"
+            },
+            {
+                "Nombre": "Robo",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Din\u00e1mica"
+            },
+            {
+                "Nombre": "Sigilo",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Din\u00e1mica"
+            },
+            {
+                "Nombre": "Abrir cerraduras",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Mec\u00e1nica"
+            },
+            {
+                "Nombre": "H\u00edpica",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "L"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Mec\u00e1nica"
+            },
+            {
+                "Nombre": "Medicina",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Mec\u00e1nica"
+            },
+            {
+                "Nombre": "Navegaci\u00f3n",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "I",
+                    "L"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Mec\u00e1nica"
+            },
+            {
+                "Nombre": "Orientaci\u00f3n",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Mec\u00e1nica"
+            },
+            {
+                "Nombre": "Pesca",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Mec\u00e1nica"
+            },
+            {
+                "Nombre": "Supervivencia",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Mec\u00e1nica"
+            },
+            {
+                "Nombre": "Agricultura",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "R",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Productivas"
+            },
+            {
+                "Nombre": "Ganader\u00eda",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "R",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Productivas"
+            },
+            {
+                "Nombre": "Herbolaria / Recolecci\u00f3n",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "R",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Productivas"
+            },
+            {
+                "Nombre": "Miner\u00eda",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "R",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Productivas"
+            },
+            {
+                "Nombre": "Disfraces",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "L"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Sociales"
+            },
+            {
+                "Nombre": "Docencia",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "L",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Sociales"
+            },
+            {
+                "Nombre": "Enga\u00f1ar",
+                "Nivel": 0,
+                "Atributos relacionados": "L",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Sociales"
+            },
+            {
+                "Nombre": "Interpretar",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "L"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Sociales"
+            },
+            {
+                "Nombre": "Seducir",
+                "Nivel": 0,
+                "Atributos relacionados": "L",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Sociales"
+            },
+            {
+                "Nombre": "Artes",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Creativas"
+            },
+            {
+                "Nombre": "Carpinter\u00eda",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Creativas"
+            },
+            {
+                "Nombre": "Cartograf\u00eda",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Creativas"
+            },
+            {
+                "Nombre": "Cocina",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Creativas"
+            },
+            {
+                "Nombre": "Entrenar animales",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "L",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Creativas"
+            },
+            {
+                "Nombre": "Falsificar",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Creativas"
+            },
+            {
+                "Nombre": "Forja",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "R",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Creativas"
+            },
+            {
+                "Nombre": "Peleter\u00eda",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Creativas"
+            },
+            {
+                "Nombre": "Qu\u00edmica",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Creativas"
+            },
+            {
+                "Nombre": "Sastrer\u00eda",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "I"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Creativas"
+            },
+            {
+                "Nombre": "Ciencias te\u00f3ricas",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Conocimientos"
+            },
+            {
+                "Nombre": "Criptograf\u00eda",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Conocimientos"
+            },
+            {
+                "Nombre": "Detecci\u00f3n",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Conocimientos"
+            },
+            {
+                "Nombre": "Finanzas",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Conocimientos"
+            },
+            {
+                "Nombre": "Historia",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Conocimientos"
+            },
+            {
+                "Nombre": "Ingenier\u00eda",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Conocimientos"
+            },
+            {
+                "Nombre": "Leyes",
+                "Nivel": 0,
+                "Atributos relacionados": "I",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Conocimientos"
+            },
+            {
+                "Nombre": "Concentraci\u00f3n",
+                "Nivel": 0,
+                "Atributos relacionados": "D",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Sobrenaturales"
+            },
+            {
+                "Nombre": "Ritos",
+                "Nivel": 0,
+                "Atributos relacionados": "E",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Sobrenaturales"
+            },
+            {
+                "Nombre": "Combate a dos manos",
+                "Nivel": 0,
+                "Atributos relacionados": "F",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "Combate con armas arrojadizas",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "F",
+                    "A"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "Combate con armas de proyectiles",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "F",
+                    "A"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "Combate con dos armas",
+                "Nivel": 0,
+                "Atributos relacionados": "A",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "Combate con escudo",
+                "Nivel": 0,
+                "Atributos relacionados": "R",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "Combate con un arma",
+                "Nivel": 0,
+                "Atributos relacionados": "A",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "Manejo de alabarda",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "A",
+                    "R"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "Manejo de espada",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "F",
+                    "A",
+                    "R"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "Manejo de hacha",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "F",
+                    "R"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "Manejo de lanza",
+                "Nivel": 0,
+                "Atributos relacionados": "A",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "Manejo de mangual",
+                "Nivel": 0,
+                "Atributos relacionados": "R",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "Manejo de maza",
+                "Nivel": 0,
+                "Atributos relacionados": "F",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "Manejo de pico",
+                "Nivel": 0,
+                "Atributos relacionados": [
+                    "F",
+                    "A"
+                ],
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            },
+            {
+                "Nombre": "T\u00e1ctica",
+                "Nivel": 0,
+                "Atributos relacionados": "L",
+                "XP": 0,
+                "XP requerida": 5,
+                "Tipo": "Combate"
+            }
+        ],
+        "Armas": [],
+        "Armaduras": [],
+        "Escudos": [],
+        "Esferas": []
+    }
+]
