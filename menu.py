@@ -1005,10 +1005,10 @@ class Menu:
             if opc_menu == 0:
                 break
             elif opc_menu == 1:
-                personaje.agregar_motivacion(personaje.id, motivacion)
+                personaje.agregar_motivacion(motivacion)
                 break
             elif opc_menu == 2:
-                personaje.quitar_motivacion(personaje.id, motivacion)
+                personaje.quitar_motivacion(motivacion)
                 break
 
     @staticmethod

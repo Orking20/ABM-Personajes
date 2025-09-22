@@ -446,16 +446,16 @@ class Personaje:
                 break
         print(f"No se encuentra una esfera con el nombre '{nombre}'")
 
-    def agregar_motivacion(self, id, motivacion):
+    def agregar_motivacion(self, motivacion):
         """Agrega la cantidad de motivación indicada al personaje."""
         self.motivacion += motivacion
-        self._actualizar_valor(id, "Motivación", self.motivacion)
+        self.update_personaje("motivacion", self.motivacion)
 
-    def quitar_motivacion(self, id, motivacion):
+    def quitar_motivacion(self, motivacion):
         """Sustrae la cantidad de motivación indicada al personaje."""
         if self.motivacion - motivacion >= 0:
             self.motivacion -= motivacion
-            self._actualizar_valor(id, "Motivación", self.motivacion)
+            self.update_personaje("motivacion", self.motivacion)
         else:
             print("No tienes tanta motivación para quitar.")
 
@@ -1305,6 +1305,38 @@ class Personaje:
         finally:
             conexion.close()
 
+    def update_personaje(self, clave, valor):
+        """Actualiza un campo del personaje según el valor pasado."""
+        columnas_validas = {"rango", "fuerza", "agilidad", "resistencia", "voluntad", "inteligencia",
+                            "liderazgo", "potencia", "defensa", "extension", "cantidad_esferas",
+                            "vida", "vida_actual", "dano_recibido", "herida_grave", "muerte",
+                            "aguante", "aguante_actual", "aguante_gastado_por_turno", "recuperacion",
+                            "iniciativa", "carga_total", "carga_en_manos", "resistencia_a_la_luz",
+                            "resistencia_a_la_oscuridad", "resistencia_elemental",
+                            "escudo_sobrenatural", "concentracion", "modificador_vida",
+                            "modificador_aguante", "modificador_recuperacion",
+                            "modificador_iniciativa", "modificador_luz", "modificador_oscuridad",
+                            "modificador_elemental", "modificador_escudo_sobrenatural",
+                            "motivacion", "energia"}
+
+        if clave not in columnas_validas:
+            print("Esa columna no se puede modificar.")
+            return
+
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            cursor = conexion.cursor()
+
+            cursor.execute(f"UPDATE personajes SET {clave} = ? WHERE id = ?", (valor, self.id))
+
+            conexion.commit()
+            conexion.close()
+        except sql.OperationalError as e:
+            print(f"La tabla 'personajes' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
     def insert_personaje_arma(self, id_arma, iniciativa, calidad):
         """Inserta un arma a un personaje en la tabla personaje_arma."""
         try:
@@ -1386,7 +1418,7 @@ class Personaje:
         finally:
             conexion.close()
 
-    def _actualizar_valor(self, id_pj, clave, valor):
+    def _actualizar_valor(self, id_pj, clave, valor): # Borrar JSON
         """Actualiza un solo atributo del JSON de personajes."""
         personajes = Personaje.leer_datos_personajes()
         for pj in personajes:
