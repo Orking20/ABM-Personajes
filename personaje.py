@@ -462,7 +462,7 @@ class Personaje:
     def agregar_energia(self, energia):
         """Agrega la cantidad de energía indicada al personaje."""
         self.energia += energia
-        self._actualizar_valor(self.id, "Energía", self.energia)
+        self.update_personaje("energia", self.energia)
         self.calcular_afinidad()
 
     def gastar_energia(self, energia=1):
@@ -473,7 +473,8 @@ class Personaje:
                 print(f"Se gasta {energia} punto de energía")
             else:
                 print(f"Se gasta {energia} puntos de energía")
-            self._actualizar_valor(self.id, "Energía", self.energia)
+            self.update_personaje("energia", self.energia)
+            self.calcular_afinidad()
         else:
             if energia == 1:
                 print("No tienes más energía para gastar.")
@@ -526,9 +527,10 @@ class Personaje:
 
     def calcular_afinidad(self):
         """Calcula y guarda la afinidad de cada esfera del personaje."""
-        for esfera in self.esferas:
-            afinidad = min(esfera.nivel, self.energia)
-            self._actualizar_esfera(esfera, "Afinidad", afinidad)
+        esferas = Personaje.select_personaje_esfera(self.id)
+        for fila in esferas:
+            afinidad = min(fila["nivel"], self.energia)
+            self.update_personaje_energia("afinidad", afinidad, fila["id_esfera"])
 
     def equipar_arma(self, arma):
         """Equipa el arma pasada por argumento al personaje."""
@@ -1333,6 +1335,29 @@ class Personaje:
             conexion.close()
         except sql.OperationalError as e:
             print(f"La tabla 'personajes' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    def update_personaje_energia(self, clave, valor, id_esfera):
+        """Actualiza un campo del la tabla personaje_esfera según el valor pasado."""
+        columnas_validas = ("nivel", "afinidad")
+
+        if clave not in columnas_validas:
+            print("Esa columna no se puede modificar.")
+            return
+
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            cursor = conexion.cursor()
+
+            cursor.execute(f"UPDATE personaje_esfera SET {clave} = ? WHERE id_personaje = ? AND id_esfera = ?",
+                           (valor, self.id, id_esfera))
+
+            conexion.commit()
+            conexion.close()
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.")
             print(f"Error detallado: {e}")
         finally:
             conexion.close()
