@@ -422,6 +422,9 @@ class Personaje:
                     self.motivacion += 1
                 else:
                     self.motivacion += habilidad.xp + 1
+                es_esfera = re.search(r"Esfera \((.*?)\)", habilidad.nombre)
+                if es_esfera:
+                    self.bajar_nivel_esfera(es_esfera.group(1))
                 self._actualizar_valor_habilidad(self.id, habilidad, "Nivel", habilidad.nivel)
                 self.calcular_xp_req_habilidades(self.id)
                 habilidad.xp = habilidad.xp_max_req - 1
@@ -438,13 +441,27 @@ class Personaje:
 
     def subir_nivel_esfera(self, nombre):
         """Sube el nivel de una esfera."""
-        for esfera in self.esferas:
-            if esfera.nombre == nombre:
-                esfera.nivel += 1
-                self._actualizar_esfera(esfera, "Nivel", esfera.nivel)
+        esferas = Personaje.select_personaje_esfera(self.id)
+        for fila in esferas:
+            if fila["nombre"] == nombre:
+                nuevo_nivel = fila["nivel"] + 1
+                self._update_personaje_energia("nivel", nuevo_nivel, fila["id_esfera"])
                 self.calcular_afinidad()
                 break
-        print(f"No se encuentra una esfera con el nombre '{nombre}'")
+        else: # El else en el for se ejecuta cuando termina el ciclio SOLO si no hubo un break
+            print(f"No se encuentra una esfera con el nombre '{nombre}'")
+
+    def bajar_nivel_esfera(self, nombre):
+        """Sube el nivel de una esfera."""
+        esferas = Personaje.select_personaje_esfera(self.id)
+        for fila in esferas:
+            if fila["nombre"] == nombre:
+                nuevo_nivel = fila["nivel"] - 1
+                self._update_personaje_energia("nivel", nuevo_nivel, fila["id_esfera"])
+                self.calcular_afinidad()
+                break
+        else: # El else en el for se ejecuta cuando termina el ciclio SOLO si no hubo un break
+            print(f"No se encuentra una esfera con el nombre '{nombre}'")
 
     def agregar_motivacion(self, motivacion):
         """Agrega la cantidad de motivación indicada al personaje."""
@@ -530,7 +547,7 @@ class Personaje:
         esferas = Personaje.select_personaje_esfera(self.id)
         for fila in esferas:
             afinidad = min(fila["nivel"], self.energia)
-            self.update_personaje_energia("afinidad", afinidad, fila["id_esfera"])
+            self._update_personaje_energia("afinidad", afinidad, fila["id_esfera"])
 
     def equipar_arma(self, arma):
         """Equipa el arma pasada por argumento al personaje."""
@@ -1339,7 +1356,7 @@ class Personaje:
         finally:
             conexion.close()
 
-    def update_personaje_energia(self, clave, valor, id_esfera):
+    def _update_personaje_energia(self, clave, valor, id_esfera):
         """Actualiza un campo del la tabla personaje_esfera según el valor pasado."""
         columnas_validas = ("nivel", "afinidad")
 
