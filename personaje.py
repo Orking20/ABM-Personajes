@@ -2,9 +2,11 @@ from pathlib import Path
 from habilidad import Habilidad
 from equipo import Arma, Armadura, Escudo
 from esfera import Esfera
+import base_datos
 from math import floor
 import re
 import json
+import sqlite3 as sql
 
 class Personaje:
     """Plantilla que representa cualquier personaje en Espada Negra."""
@@ -503,8 +505,9 @@ class Personaje:
                     #    esfera.poderes[i]["Efecto"] = poder[clave_efecto]
                     #    i += 1
                     self.esferas.append(esfera)
-                    self._guardar_esfera()
+                    self._guardar_esfera() # Borrar JSON
                     self._agregar_habilidad(esfera.nombre, "P", "Sobrenaturales", True)
+                    self.insert_personaje_esfera(esfera.id, esfera.nivel, 0)
                     return
             print("El ID de esfera pasado no existe.")
         else:
@@ -531,23 +534,26 @@ class Personaje:
         """Equipa el arma pasada por argumento al personaje."""
         self.armas.append(arma)
         arma.iniciativa = arma.alcance + self.agilidad + self.inteligencia
-        arma.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armas)
         arma.asignar_calidad(1)
-        self._guardar_equipamento("Armas", self.armas)
+        self.insert_personaje_arma(arma.id, arma.iniciativa, arma.calidad)
+        arma.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armas) # Borrar JSON
+        self._guardar_equipamento("Armas", self.armas) # Borrar JSON
 
     def equipar_armadura(self, armadura):
         """Equipa la armadura pasada por argumento al personaje."""
         self.armaduras.append(armadura)
-        armadura.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armaduras)
         armadura.asignar_calidad(1)
-        self._guardar_equipamento("Armaduras", self.armaduras)
+        self.insert_personaje_armadura(armadura.id, armadura.calidad)
+        armadura.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armaduras) # Borrar JSON
+        self._guardar_equipamento("Armaduras", self.armaduras) # Borrar JSON
 
     def equipar_escudo(self, escudo):
         """Equipa el escudo pasado por argumento al personaje."""
         self.escudos.append(escudo)
-        escudo.id = Personaje._get_ultimo_id_equipo_de_personaje(self.escudos)
         escudo.asignar_calidad(1)
-        self._guardar_equipamento("Escudos", self.escudos)
+        self.insert_personaje_escudo(escudo.id, escudo.calidad)
+        escudo.id = Personaje._get_ultimo_id_equipo_de_personaje(self.escudos) # Borrar JSON
+        self._guardar_equipamento("Escudos", self.escudos) # Borrar JSON
 
     def desequipar_arma(self, arma):
         """Desequipa el arma pasada por argumento al personaje."""
@@ -1076,6 +1082,160 @@ class Personaje:
             print(f"Error inesperado al leer el archivo: {e}")
             return []
 
+    @staticmethod
+    def select_personajes():
+        """Lee y devuelve los datos de los personajes guardados en la base de datos."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
+            cursor = conexion.cursor()
+
+            cursor.execute("SELECT * FROM personajes")
+            personajes = cursor.fetchall()
+            return personajes
+        except sql.OperationalError as e:
+            print(f"La tabla de personajes no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def select_personaje_habilidad(id_personaje):
+        """Lee y devuelve las habilidades de un personaje guardados en la base de datos."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
+            cursor = conexion.cursor()
+
+            #cursor.execute(f"SELECT * FROM personaje_habilidad WHERE id_personaje = {id_personaje}")
+            cursor.execute(f"""
+                            SELECT h.id, h.nombre, h.tipo, ph.nivel, ph.xp, ph.xp_requerida
+                            FROM personaje_habilidad ph
+                            JOIN habilidades h ON ph.id_habilidad = h.id
+                            WHERE ph.id_personaje = ?;
+                            """, (id_personaje,)) # El segundo parámetro tiene que ser una tupla
+            habilidades = cursor.fetchall()
+            return habilidades
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_habilidad' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def select_habilidad_atributo(id_habilidad):
+        """Lee y devuelve los atributos de habilidades guardados en la base de datos."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
+            cursor = conexion.cursor()
+
+            cursor.execute(f"SELECT * FROM habilidad_atributo WHERE id_habilidad = (?)", (id_habilidad,))
+            atributos = cursor.fetchall()
+            return atributos
+        except sql.OperationalError as e:
+            print(f"La tabla 'habilidad_atributo' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def select_personaje_arma(id_personaje):
+        """Lee y devuelve las armas de un personaje guardados en la base de datos."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
+            cursor = conexion.cursor()
+
+            cursor.execute(f"""
+                            SELECT a.id, a.nombre, a.estructura, a.peso, a.impacto, a.dano,
+                            a.alcance, a.tipo_de_dano, a.tipo_de_arma, a.version,
+                            pa.iniciativa, pa.calidad
+                            FROM personaje_arma pa
+                            JOIN armas a ON pa.id_arma = a.id
+                            WHERE pa.id_personaje = ?;
+                            """, (id_personaje,)) # El segundo parámetro tiene que ser una tupla
+            armas = cursor.fetchall()
+            return armas
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_arma' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def select_personaje_armadura(id_personaje):
+        """Lee y devuelve las armaduras de un personaje guardados en la base de datos."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
+            cursor = conexion.cursor()
+
+            cursor.execute(f"""
+                            SELECT a.id, a.nombre, a.estructura, a.peso, a.contundente, a.cortante,
+                            a.perforante, a.cobertura, a.evasion, a.penalizador, a.version, pa.calidad
+                            FROM personaje_armadura pa
+                            JOIN armaduras a ON pa.id_armadura = a.id
+                            WHERE pa.id_personaje = ?;
+                            """, (id_personaje,)) # El segundo parámetro tiene que ser una tupla
+            armaduras = cursor.fetchall()
+            return armaduras
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_armadura' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def select_personaje_escudo(id_personaje):
+        """Lee y devuelve los escudos de un personaje guardados en la base de datos."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
+            cursor = conexion.cursor()
+
+            cursor.execute(f"""
+                            SELECT e.id, e.nombre, e.estructura, e.peso, e.contundente, e.cortante,
+                            e.perforante, e.cobertura, e.evasion, e.penalizador, e.version, pe.calidad
+                            FROM personaje_escudo pe
+                            JOIN escudos e ON pe.id_escudo = e.id
+                            WHERE pe.id_personaje = ?;
+                            """, (id_personaje,)) # El segundo parámetro tiene que ser una tupla
+            escudos = cursor.fetchall()
+            return escudos
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_escudo' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def select_personaje_esfera(id_personaje):
+        """Lee y devuelve los esferas de un personaje guardados en la base de datos."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
+            cursor = conexion.cursor()
+
+            cursor.execute(f"""
+                            SELECT e.id, e.nombre AS nombre_e, e.pasiva_sten1, e.pasiva_sten2,
+                            pe.nivel, pe.afinidad,
+                            p.nombre AS nombre_p, p.descripcion, p.efecto_sten1, p.efecto_sten2,
+                            prm.version, prm.nombre AS nombre_prm, prm.valor
+                            FROM personaje_esfera pe
+                            JOIN esferas e ON pe.id_esfera = e.id
+                            JOIN poderes p ON e.id = p.id_esfera
+                            LEFT JOIN parametros prm ON p.id = prm.id_poder
+                            WHERE pe.id_personaje = ?
+                            """, (id_personaje,)) # El segundo parámetro tiene que ser una tupla
+            esferas = cursor.fetchall()
+            return esferas
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
     def guardar_personajes(self, personajes, pj_nuevo=True):
         """Guarda los personajes en un archivo JSON."""
         if pj_nuevo:
@@ -1109,6 +1269,122 @@ class Personaje:
             path.write_text(datos)
         except Exception as e:
             print(f"Error al guardar el archivo: {e}")
+
+    def insert_personaje(self):
+        """Inserta un personaje nuevo en la tabla."""
+        habilidades = base_datos.select_habilidades()
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            cursor = conexion.cursor()
+
+            cursor.execute(f"""
+                        INSERT INTO personajes
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                           ?, ?)""", (self.id, self.jugador, self.nombre, self.sten, self.rango,
+                        self.fuerza, self.agilidad, self.resistencia, self.voluntad,
+                        self.inteligencia, self.liderazgo, self.potencia, self.defensa,
+                        self.extension, self.cant_esferas, self.vida, self.vida_actual,
+                        self.dano_recibido, self.herida_grave, self.muerte, self.aguante,
+                        self.aguante_actual, self.aguante_gastado_por_turno, self.recuperacion,
+                        self.iniciativa, self.carga_total, self.carga_en_manos,
+                        self.resistencia_luz, self.resistencia_oscuridad,
+                        self.resistencia_elemental, self.escudo_sobrenatural, self.concentracion,
+                        self.turnos_aturdido, self.mod_vida, self.mod_aguante,
+                        self.mod_recuperacion, self.mod_iniciativa, self.mod_res_luz,
+                        self.mod_res_oscuridad, self.mod_res_elemental,
+                        self.mod_escudo_sobrenatural, self.motivacion, self.energia))
+
+            for hab in habilidades:
+                cursor.execute(f"""INSERT INTO personaje_habilidad VALUES (?, ?, ?, ?, ?)""", (self.id, hab [0], 0, 0, 5))
+
+            conexion.commit()
+        except sql.OperationalError as e:
+            print(f"La tabla 'personajes' o 'personaje_habilidad' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    def insert_personaje_arma(self, id_arma, iniciativa, calidad):
+        """Inserta un arma a un personaje en la tabla personaje_arma."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row
+            cursor = conexion.cursor()
+
+            cursor.execute(f"""SELECT * FROM armas WHERE id = (?)""", (id_arma,))
+            datos = cursor.fetchall()
+            arma = dict(datos[0])
+            cursor.execute(f"""INSERT INTO personaje_arma VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                           (self.id, id_arma, arma["estructura"], arma["impacto"], arma["dano"],
+                            iniciativa, calidad))
+
+            conexion.commit()
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_arma' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    def insert_personaje_armadura(self, id_armadura, calidad):
+        """Inserta un armadura a un personaje en la tabla personaje_armadura."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row
+            cursor = conexion.cursor()
+
+            cursor.execute(f"""SELECT * FROM armaduras WHERE id = (?)""", (id_armadura,))
+            datos = cursor.fetchall()
+            armadura = dict(datos[0])
+            cursor.execute(f"""INSERT INTO personaje_armadura VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                           (self.id, id_armadura, armadura["estructura"], armadura["peso"],
+                            armadura["contundente"], armadura["cortante"], armadura["perforante"],
+                            armadura["cobertura"], armadura["evasion"], calidad))
+
+            conexion.commit()
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_armadura' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    def insert_personaje_escudo(self, id_escudo, calidad):
+        """Inserta un escudo a un personaje en la tabla personaje_escudo."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row
+            cursor = conexion.cursor()
+
+            cursor.execute(f"""SELECT * FROM escudos WHERE id = (?)""", (id_escudo,))
+            datos = cursor.fetchall()
+            escudo = dict(datos[0])
+            cursor.execute(f"""INSERT INTO personaje_escudo VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                           (self.id, id_escudo, escudo["estructura"], escudo["contundente"],
+                            escudo["cortante"], escudo["perforante"], escudo["cobertura"],
+                            escudo["evasion"], calidad))
+
+            conexion.commit()
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_escudo' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    def insert_personaje_esfera(self, id_esfera, nivel, afinidad):
+        """Inserta un esfera a un personaje en la tabla personaje_esfera."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            cursor = conexion.cursor()
+
+            cursor.execute(f"""INSERT INTO personaje_esfera VALUES (?, ?, ?, ?)""",
+                           (self.id, id_esfera, nivel, afinidad))
+
+            conexion.commit()
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
 
     def _actualizar_valor(self, id_pj, clave, valor):
         """Actualiza un solo atributo del JSON de personajes."""
@@ -1265,11 +1541,39 @@ class Personaje:
 
         return personajes
 
+    @staticmethod
+    def db_a_personaje():
+        """Lee el JSON de personajes y devuelve una lista con esos personajes pasados a objetos Personaje."""
+        personajes_db = Personaje.select_personajes()
+        personajes = []
+
+        for pj_db in personajes_db:
+            personaje = Personaje()
+            personaje._set_atributos(pj_db["id"], pj_db["jugador"], pj_db["nombre"], pj_db["sten"]
+                                     , pj_db["rango"], pj_db["fuerza"], pj_db["agilidad"]
+                                     , pj_db["resistencia"], pj_db["voluntad"], pj_db["inteligencia"]
+                                     , pj_db["liderazgo"], pj_db["potencia"], pj_db["defensa"]
+                                     , pj_db["extension"], pj_db["cantidad_esferas"], pj_db["vida"]
+                                     , pj_db["vida_actual"], pj_db["dano_recibido"], pj_db["herida_grave"]
+                                     , pj_db["muerte"], pj_db["aguante"] , pj_db["aguante_actual"]
+                                     , pj_db["aguante_gastado_por_turno"], pj_db["recuperacion"]
+                                     , pj_db["iniciativa"], pj_db["carga_total"], pj_db["carga_en_manos"]
+                                     , pj_db["resistencia_a_la_luz"], pj_db["resistencia_a_la_oscuridad"]
+                                     , pj_db["resistencia_elemental"], pj_db["escudo_sobrenatural"]
+                                     , pj_db["concentracion"], pj_db["turnos_aturdido"]
+                                     , pj_db["modificador_vida"], pj_db["modificador_aguante"]
+                                     , pj_db["modificador_recuperacion"], pj_db["modificador_iniciativa"]
+                                     , pj_db["modificador_luz"], pj_db["modificador_oscuridad"]
+                                     , pj_db["modificador_elemental"], pj_db["modificador_escudo_sobrenatural"]
+                                     , pj_db["motivacion"], pj_db["energia"])
+            personajes.append(personaje)
+
+        return personajes
+
     def _set_atributos(self, id, jugador, nombre, sten, rango, f, a, r, v, i, l, p, d, e, esf, vida, vida_act, dano_recibido,
                        herida_grave, muerte, aguante, aguante_act, aguante_gas_por_tur, rec, ini, carga_total, carga_manos,
                        res_luz, res_osc, res_ele, esc_sob, concentracion, tur_atur, mod_vida, mod_agu, mod_rec, mod_ini, mod_luz,
-                       mod_osc, mod_ele, mod_esc_sob, habilidades_json, mot, ene, armas_json, armaduras_json, escudos_json,
-                       esferas_json):
+                       mod_osc, mod_ele, mod_esc_sob, mot, ene):
         """Asigna todos los valores pasados por argumentos al personaje."""
         self.id = id
         self.jugador = jugador
@@ -1312,39 +1616,39 @@ class Personaje:
         self.mod_res_oscuridad = mod_osc
         self.mod_res_elemental = mod_ele
         self.mod_escudo_sobrenatural = mod_esc_sob
-        for hab_json in habilidades_json:
-            habilidad = Habilidad(hab_json["Nombre"], hab_json["Atributos relacionados"], hab_json["Tipo"])
-            habilidad.set_atributos(hab_json["Nivel"], hab_json["XP"], hab_json["XP requerida"])
-            self.habilidades.append(habilidad)
+        #for hab_json in habilidades_json:
+        #    habilidad = Habilidad(hab_json["Nombre"], hab_json["Atributos relacionados"], hab_json["Tipo"])
+        #    habilidad.set_atributos(hab_json["Nivel"], hab_json["XP"], hab_json["XP requerida"])
+        #    self.habilidades.append(habilidad)
         self.motivacion = mot
         self.energia = ene
-        for arma_json in armas_json:
-            arma = Arma(arma_json["Nombre"], arma_json["Estructura"], arma_json["Peso"], arma_json["Impacto"], arma_json["Dano"],
-                        arma_json["Alcance"], arma_json["Tipo de dano"], arma_json["Tipo de arma"])
-            arma.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armas) + 1
-            arma.calidad = arma_json["Calidad"]
-            arma.iniciativa = arma.alcance + self.agilidad + self.inteligencia
-            self.armas.append(arma)
-        for armadura_json in armaduras_json:
-            armadura = Armadura(armadura_json["Nombre"], armadura_json["Estructura"], armadura_json["Peso"],
-                                armadura_json["Contundente"], armadura_json["Cortante"], armadura_json["Perforante"],
-                                armadura_json["Cobertura"], armadura_json["Evasión"], armadura_json["Penalizador"])
-            armadura.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armaduras) + 1
-            armadura.calidad = armadura_json["Calidad"]
-            self.armaduras.append(armadura)
-        for escudo_json in escudos_json:
-            escudo = Escudo(escudo_json["Nombre"], escudo_json["Estructura"], escudo_json["Peso"],
-                                escudo_json["Contundente"], escudo_json["Cortante"], escudo_json["Perforante"],
-                                escudo_json["Cobertura"], escudo_json["Evasión"], escudo_json["Penalizador"])
-            escudo.id = Personaje._get_ultimo_id_equipo_de_personaje(self.escudos) + 1
-            escudo.calidad = escudo_json["Calidad"]
-            self.escudos.append(escudo)
-        for esfera_json in esferas_json:
-            esfera = Esfera(esfera_json["Nombre"], esfera_json["Poderes"], esfera_json["Pasiva"])
-            esfera.id = Personaje._get_ultimo_id_esfera_de_personaje(self.esferas) + 1
-            esfera.nivel = esfera_json["Nivel"]
-            esfera.afinidad = min(esfera.nivel, self.energia)
-            self.esferas.append(esfera)
+        #for arma_json in armas_json:
+        #    arma = Arma(arma_json["Nombre"], arma_json["Estructura"], arma_json["Peso"], arma_json["Impacto"], arma_json["Dano"],
+        #                arma_json["Alcance"], arma_json["Tipo de dano"], arma_json["Tipo de arma"])
+        #    arma.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armas) + 1
+        #    arma.calidad = arma_json["Calidad"]
+        #    arma.iniciativa = arma.alcance + self.agilidad + self.inteligencia
+        #    self.armas.append(arma)
+        #for armadura_json in armaduras_json:
+        #    armadura = Armadura(armadura_json["Nombre"], armadura_json["Estructura"], armadura_json["Peso"],
+        #                        armadura_json["Contundente"], armadura_json["Cortante"], armadura_json["Perforante"],
+        #                        armadura_json["Cobertura"], armadura_json["Evasión"], armadura_json["Penalizador"])
+        #    armadura.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armaduras) + 1
+        #    armadura.calidad = armadura_json["Calidad"]
+        #    self.armaduras.append(armadura)
+        #for escudo_json in escudos_json:
+        #    escudo = Escudo(escudo_json["Nombre"], escudo_json["Estructura"], escudo_json["Peso"],
+        #                        escudo_json["Contundente"], escudo_json["Cortante"], escudo_json["Perforante"],
+        #                        escudo_json["Cobertura"], escudo_json["Evasión"], escudo_json["Penalizador"])
+        #    escudo.id = Personaje._get_ultimo_id_equipo_de_personaje(self.escudos) + 1
+        #    escudo.calidad = escudo_json["Calidad"]
+        #    self.escudos.append(escudo)
+        #for esfera_json in esferas_json:
+        #    esfera = Esfera(esfera_json["Nombre"], esfera_json["Poderes"], esfera_json["Pasiva"])
+        #    esfera.id = Personaje._get_ultimo_id_esfera_de_personaje(self.esferas) + 1
+        #    esfera.nivel = esfera_json["Nivel"]
+        #    esfera.afinidad = min(esfera.nivel, self.energia)
+        #    self.esferas.append(esfera)
 
     @staticmethod
     def _get_ultimo_id_equipo_de_personaje(lista_equipo):

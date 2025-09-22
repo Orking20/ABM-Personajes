@@ -1,8 +1,10 @@
 from personaje import Personaje
 from equipo import Equipo, Arma, Armadura, Escudo
 from esfera import Esfera
+import base_datos
 from rich.console import Console
 from rich.table import Table
+from collections import defaultdict
 
 class Menu:
     """Clase que sirve para que el usuario pueda controlar e interaccionar con sus personajes mediante un menú."""
@@ -41,8 +43,9 @@ class Menu:
         personaje.asignar_habilidades()
         personaje.calcular_xp_req_habilidades()
         personaje.actualizar_cualidades(personaje.sten)
-        personajes = Personaje.leer_datos_personajes()
-        personaje.guardar_personajes(personajes)
+        personajes = Personaje.leer_datos_personajes() # Borrar JSON
+        personaje.guardar_personajes(personajes) # Borrar JSON
+        personaje.insert_personaje()
 
     @staticmethod
     def _asignar_sten(personaje):
@@ -269,7 +272,9 @@ class Menu:
         """Muestra una lista de todos los personajes para que el usuario elija cual quiere ver."""
         while True:
             # Obtenemos los personajes como una lista de objetos Personaje
-            personajes = Personaje.json_a_personaje()
+            #personajes = Personaje.json_a_personaje() # Borrar JSON
+            #personajes = Personaje.select_personajes() # Obtenemos los personajes en un diccionario
+            personajes = Personaje.db_a_personaje() # Obtenemos los personajes como objetos
 
             print("\n-------------------------------- Personajes --------------------------------")
 
@@ -280,6 +285,7 @@ class Menu:
             if personajes:
                 for personaje in personajes:
                     i += 1
+                    #opciones_pjs += f"{i}. {personaje.nombre}\n" # Borrar JSON
                     opciones_pjs += f"{i}. {personaje.nombre}\n"
                     opciones_menu.append(i)
             else:
@@ -359,21 +365,21 @@ class Menu:
         tabla.add_row(f"[underline]Resistencia elemental                  {personaje.resistencia_elemental}[/]")
         tabla.add_row(f"[underline]Escudo sobrenatural                    {personaje.escudo_sobrenatural}[/]")
         if personaje.mod_vida != 0:
-            tabla.add_row(f"[underline]Modificador vida                       {personaje.mod_vida}[/]")
+            tabla.add_row(f"[underline]Modificador vida                   {personaje.mod_vida}[/]")
         if personaje.mod_aguante != 0:
-            tabla.add_row(f"[underline]Modificador aguante                    {personaje.mod_aguante}[/]")
+            tabla.add_row(f"[underline]Modificador aguante                {personaje.mod_aguante}[/]")
         if personaje.mod_recuperacion != 0:
-            tabla.add_row(f"[underline]Modificador recuperación               {personaje.mod_recuperacion}[/]")
+            tabla.add_row(f"[underline]Modificador recuperación           {personaje.mod_recuperacion}[/]")
         if personaje.mod_iniciativa != 0:
-            tabla.add_row(f"[underline]Modificador iniciativa                 {personaje.mod_iniciativa}[/]")
+            tabla.add_row(f"[underline]Modificador iniciativa             {personaje.mod_iniciativa}[/]")
         if personaje.mod_res_luz != 0:
-            tabla.add_row(f"[underline]Modificador resistencia luz            {personaje.mod_res_luz}[/]")
+            tabla.add_row(f"[underline]Modificador resistencia luz        {personaje.mod_res_luz}[/]")
         if personaje.mod_res_oscuridad != 0:
-            tabla.add_row(f"[underline]Modificador resistencia oscuridad      {personaje.mod_res_oscuridad}[/]")
+            tabla.add_row(f"[underline]Modificador resistencia oscuridad  {personaje.mod_res_oscuridad}[/]")
         if personaje.mod_res_elemental != 0:
-            tabla.add_row(f"[underline]Modificador resistencia elemental      {personaje.mod_res_elemental}[/]")
+            tabla.add_row(f"[underline]Modificador resistencia elemental  {personaje.mod_res_elemental}[/]")
         if personaje.mod_escudo_sobrenatural != 0:
-            tabla.add_row(f"[underline]Modificador escudo sobrenatural        {personaje.mod_escudo_sobrenatural}[/]")
+            tabla.add_row(f"[underline]Modificador escudo sobrenatural    {personaje.mod_escudo_sobrenatural}[/]")
         tabla.add_row(f"[underline]Motivación                             {personaje.motivacion}[/]")
         tabla.add_row(f"[underline]Energía                                {personaje.energia}[/]")
         consola.print(tabla)
@@ -384,27 +390,30 @@ class Menu:
         while True:
             print(f"\n-------------------------------- Habilidades de {personaje.nombre} --------------------------------")
             print("\nNombre | Nivel | Atributos | XP\n")
-            
+            pj_habilidades = Personaje.select_personaje_habilidad(personaje.id)
+
             i = 1
             opciones_menu = [0]
-            for habilidad in personaje.habilidades:
+            for pj_habilidad in pj_habilidades:
                 cant_espacios_nom = 0
                 espacios_nom = ""
                 cant_espacios_atr = 0
                 espacios_atr = ""
-                if len(habilidad.nombre) < 32:
-                    cant_espacios_nom += 32 - len(habilidad.nombre)
+                atributos_relacionados = Personaje.select_habilidad_atributo(pj_habilidad["id"])
+                if len(pj_habilidad["nombre"]) < 32:
+                    cant_espacios_nom += 32 - len(pj_habilidad["nombre"])
                     espacios_nom = " " * cant_espacios_nom
                     if i < 10:
                         espacios_nom += " "
-                if len(habilidad.atributos_relacionados) == 1:
-                    cant_espacios_atr += 14
+                if len(atributos_relacionados) == 1:
+                    cant_espacios_atr += 10
                     espacios_atr = " " * cant_espacios_atr
-                elif len(habilidad.atributos_relacionados) == 2:
+                elif len(atributos_relacionados) == 2:
                     cant_espacios_atr += 5
                     espacios_atr = " " * cant_espacios_atr
 
-                print(f"{i}. {habilidad.nombre}{espacios_nom} | {habilidad.nivel} | {habilidad.atributos_relacionados}{espacios_atr} | {habilidad.xp}/{habilidad.xp_max_req}")
+                atr_rel = [str(a["atributo"]) for a in atributos_relacionados]
+                print(f"{i}. {pj_habilidad["nombre"]}{espacios_nom} | {pj_habilidad["nivel"]} | {atr_rel}{espacios_atr} | {pj_habilidad["xp"]}/{pj_habilidad["xp_requerida"]}")
                 opciones_menu.append(i)
                 i += 1
 
@@ -416,9 +425,9 @@ class Menu:
                 break
 
             i = 1
-            for habilidad in personaje.habilidades:
+            for pj_habilidad in personaje.habilidades:
                 if num_hab == i:
-                    personaje.subir_nivel_habilidad(habilidad, xp)
+                    personaje.subir_nivel_habilidad(pj_habilidad, xp)
                     break
                 i += 1
 
@@ -480,7 +489,7 @@ class Menu:
     def _menu_equipar_armas(personaje):
         """Abre el menú de armas, donde el usuario puede agregar armas a su equipo."""
         while True:
-            armas = Arma.json_a_arma(personaje.sten)
+            armas = Arma.json_a_arma(personaje.sten) # Borrar JSON
             print("\nNombre | Impacto | Daño | Alcance | Tipo de daño | Tipo de arma | Estructura | Peso")
 
             opciones_menu = [0]
@@ -708,10 +717,13 @@ class Menu:
     def _mostrar_equipo(personaje):
         """Muestra el equipo del personaje."""
         equipo_max_len = Equipo._equipo_max_longitud(personaje.sten)
+        armas = Personaje.select_personaje_arma(personaje.id)
+        armaduras = Personaje.select_personaje_armadura(personaje.id)
+        escudos = Personaje.select_personaje_escudo(personaje.id)
 
-        if personaje.armas:
+        if armas:
             print("\nArmas:")
-            for arma in personaje.armas:
+            for arma in armas:
                 espacios_id = ""
                 espacios_nom = ""
                 espacios_dano = ""
@@ -719,57 +731,57 @@ class Menu:
                 espacios_ini = ""
                 espacios_peso = ""
                 espacios_tipo_arma = ""
-                if arma.id < 10:
+                if arma["id"] < 10:
                     espacios_id += " "
-                for i in range(Menu._num_dif_palabras(arma.nombre, equipo_max_len)):
+                for i in range(Menu._num_dif_palabras(arma["nombre"], equipo_max_len)):
                     espacios_nom += " "
-                for i in range(Menu._num_dif_palabras(arma.tipo_dano, "Contundente")):
+                for i in range(Menu._num_dif_palabras(arma["tipo_de_dano"], "Contundente")):
                     espacios_tipo_dano += " "
-                if arma.dano < 10:
+                if arma["dano"] < 10:
                     espacios_dano += " "
-                if arma.iniciativa < 10:
+                if arma["iniciativa"] < 10:
                     espacios_ini += " "
-                if len(str(arma.peso)) == 1:
+                if len(str(arma["peso"])) == 1:
                     espacios_peso += "   "
-                elif len(str(arma.peso)) == 3:
+                elif len(str(arma["peso"])) == 3:
                     espacios_peso += " "
-                for i in range(Menu._num_dif_palabras(arma.tipo_arma, "Proyectiles")):
+                for i in range(Menu._num_dif_palabras(arma["tipo_de_arma"], "Proyectiles")):
                     espacios_tipo_arma += " "
-                print(f"{arma.id}.{espacios_id} {arma.nombre} {espacios_nom}| Impacto {arma.impacto} | Daño {arma.dano}{espacios_dano} | {arma.tipo_dano}{espacios_tipo_dano} | Iniciativa {arma.iniciativa}{espacios_ini} | Estructura {arma.estructura} | Peso {arma.peso}{espacios_peso} | Alcance {arma.alcance} | Tipo arma '{arma.tipo_arma}'{espacios_tipo_arma} | Calidad {arma.calidad}")
+                print(f"{arma["id"]}.{espacios_id} {arma["nombre"]} {espacios_nom}| Impacto {arma["impacto"]} | Daño {arma["dano"]}{espacios_dano} | {arma["tipo_de_dano"]}{espacios_tipo_dano} | Iniciativa {arma["iniciativa"]}{espacios_ini} | Estructura {arma["estructura"]} | Peso {arma["peso"]}{espacios_peso} | Alcance {arma["alcance"]} | Tipo arma '{arma["tipo_de_arma"]}'{espacios_tipo_arma} | Calidad {arma["calidad"]}")
 
-        if personaje.armaduras:
+        if armaduras:
             print("\nArmaduras:")
-            for armadura in personaje.armaduras:
+            for armadura in armaduras:
                 espacios_id = ""
                 espacios_nom = ""
                 espacios_est = ""
                 espacios_peso = ""
                 espacios_pen = ""
-                if armadura.id < 10:
+                if armadura["id"] < 10:
                     espacios_id += " "
-                if armadura.estructura < 10:
+                if armadura["estructura"] < 10:
                     espacios_est += " "
-                if armadura.peso < 10:
+                if armadura["peso"] < 10:
                     espacios_peso += " "
-                if armadura.penalizador == 0:
+                if armadura["penalizador"] == 0:
                     espacios_pen += " "
-                for i in range(Menu._num_dif_palabras(armadura.nombre, equipo_max_len)):
+                for i in range(Menu._num_dif_palabras(armadura["nombre"], equipo_max_len)):
                     espacios_nom += " "
-                print(f"{armadura.id}.{espacios_id} {armadura.nombre} {espacios_nom}| Contundente {armadura.contundente} | Cortante {armadura.cortante} | Perforante {armadura.perforante} | Cobertura {armadura.cobertura} | Evasion {armadura.evasion} | Estructura {armadura.estructura}{espacios_est} | Peso {armadura.peso}{espacios_peso} | Penalizador {armadura.penalizador}{espacios_pen} | Calidad {armadura.calidad}")
+                print(f"{armadura["id"]}.{espacios_id} {armadura["nombre"]} {espacios_nom}| Contundente {armadura["contundente"]} | Cortante {armadura["cortante"]} | Perforante {armadura["perforante"]} | Cobertura {armadura["cobertura"]} | Evasion {armadura["evasion"]} | Estructura {armadura["estructura"]}{espacios_est} | Peso {armadura["peso"]}{espacios_peso} | Penalizador {armadura["penalizador"]}{espacios_pen} | Calidad {armadura["calidad"]}")
 
-        if personaje.escudos:
+        if escudos:
             print("\nEscudos:")
-            for escudo in personaje.escudos:
+            for escudo in escudos:
                 espacios_id = ""
                 espacios_nom = ""
                 espacios_peso = ""
-                for i in range(Menu._num_dif_palabras(escudo.nombre, equipo_max_len)):
+                for i in range(Menu._num_dif_palabras(escudo["nombre"], equipo_max_len)):
                     espacios_nom += " "
-                if escudo.id < 10:
+                if escudo["id"] < 10:
                     espacios_id += " "
-                if len(str(escudo.peso)) < 2:
+                if len(str(escudo["peso"])) < 2:
                     espacios_peso += "  "
-                print(f"{escudo.id}.{espacios_id} {escudo.nombre} {espacios_nom}| Contundente {escudo.contundente} | Cortante {escudo.cortante} | Perforante {escudo.perforante} | Cobertura {escudo.cobertura} | Evasion {escudo.evasion} | Estructura {escudo.estructura} | Peso {escudo.peso}{espacios_peso} | Penalizador {escudo.penalizador} | Calidad {escudo.calidad}")
+                print(f"{escudo["id"]}.{espacios_id} {escudo["nombre"]} {espacios_nom}| Contundente {escudo["contundente"]} | Cortante {escudo["cortante"]} | Perforante {escudo["perforante"]} | Cobertura {escudo["cobertura"]} | Evasion {escudo["evasion"]} | Estructura {escudo["estructura"]} | Peso {escudo["peso"]}{espacios_peso} | Penalizador {escudo["penalizador"]} | Calidad {escudo["calidad"]}")
 
     @staticmethod
     def _menu_combate(personaje):
@@ -873,27 +885,72 @@ class Menu:
     def _mostrar_esferas(personaje=None):
         """Si se pasa un personaje por parámetros, muestra todas sus esferas. Sino se muestra una lista de todas las esferas."""
         if personaje != None:
-            for esfera in personaje.esferas:
-                print(f"\n{esfera.id}. [{esfera.nombre}]")
-                for poder in esfera.poderes:
-                    print(f"\n•Poder: {poder["Nombre"]}")
-                    print(f"\n•Descripción: {poder["Descripción"]}")
-                    print("\n•Parámetros:")
-                    if personaje.sten == 1:
-                        for clave, valor in poder["Parámetros"].items():
-                            print(f"-{clave}: {valor}")
-                        print(f"\n•Efecto:\n{poder["Efecto"]}")
-                    elif personaje.sten == 2:
-                        for clave, valor in poder["Parámetros STEN2"].items():
-                            print(f"-{clave}: {valor}")
-                        print(f"\n•Efecto:\n{poder["Efecto STEN2"]}")
-                    print("------------------------------------------------------------------------------------------------")
-                print(f"\n•Pasiva: {esfera.pasiva}")
-                print(f"\n•Afinidad: {esfera.afinidad}")
-        else:
-            esferas = Esfera.leer_datos_esferas()
-            for esfera in esferas:
-                print(f"{esfera["ID"]}. {esfera["Nombre"]}")
+            esferas = Personaje.select_personaje_esfera(personaje.id)
+            esferas_dic = {}
+
+            if personaje.sten == 1:
+                version = "STEN1"
+            elif personaje.sten == 2:
+                version = "STEN2"
+
+            # Se preparan los datos de las esferas
+            for fila in esferas:
+                esfera_nombre = fila["nombre_e"]
+                poder_id = fila['nombre_p']
+                parametros = (fila['nombre_prm'], fila['valor'])
+
+                # Si la esfera todavía no existe, la creamos
+                if esfera_nombre not in esferas_dic:
+                    if version == "STEN1":
+                        pasiva = fila["pasiva_sten1"]
+                    elif version == "STEN2":
+                        pasiva = fila["pasiva_sten2"]
+
+                    esferas_dic[esfera_nombre] = {
+                        "afinidad": fila["afinidad"],
+                        "nivel": fila["nivel"],
+                        "pasiva": pasiva,
+                        "poderes": {}
+                    }
+
+                # Si el poder todavía no existe en esta esfera, lo creamos
+                if poder_id not in esferas_dic[esfera_nombre]["poderes"]:
+                    if version == "STEN1":
+                        efecto = fila["efecto_sten1"]
+                    elif version == "STEN2":
+                        efecto = fila["efecto_sten2"]
+
+                    esferas_dic[esfera_nombre]["poderes"][poder_id] = {
+                        "descripcion": fila["descripcion"],
+                        "efecto": efecto,
+                        "parametros": []
+                    }
+
+                # Agregamos parámetros solo si son de la versión correcta
+                if fila["version"] == version and parametros not in esferas_dic[esfera_nombre]["poderes"][poder_id]["parametros"]:
+                    esferas_dic[esfera_nombre]["poderes"][poder_id]["parametros"].append(parametros)
+
+            # Se muestran las esferas
+            for esfera, valores in esferas_dic.items():
+                print(f"\n·Esfera: [{esfera.upper()}]")
+                print(f"\n·Afinidad: {valores['afinidad']}")
+                print(f"·Nivel: {valores['nivel']}")
+                print(f"\n·Pasiva: {valores['pasiva']}")
+
+                print("\n↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓")
+                for poder, datos in valores["poderes"].items():
+                    print(f"\n·Poder: {poder}")
+                    print(f"Descripción: {datos['descripcion']}\nEfecto: {datos['efecto']}")
+                    print(f"\n·Parámetro:")
+                    for prm_nombre, valor in datos["parametros"]:
+                        print(f"\t{prm_nombre} = {valor}")
+                    print("\n------------------------------------------------------------------------------------------------")
+        else: # Si no se pasa personaje por argumento, se muestran todas las esferas
+            esferas = Esfera.leer_datos_esferas() # Borrar JSON
+            esferas = base_datos.select_esferas()
+            for fila in esferas:
+                esfera = dict(fila)
+                print(f"{esfera["id"]}. {esfera["nombre"]}")
 
     @staticmethod
     def _agregar_esfera(personaje):
