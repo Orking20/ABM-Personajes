@@ -397,6 +397,47 @@ class Menu:
             i = 1
             opciones_menu = [0]
             for pj_habilidad in pj_habilidades:
+                if pj_habilidad["nivel"] > 0:
+                    cant_espacios_nom = 0
+                    espacios_nom = ""
+                    cant_espacios_atr = 0
+                    espacios_atr = ""
+                    atributos_relacionados = Personaje.select_habilidad_atributo(pj_habilidad["id"])
+                    if len(pj_habilidad["nombre"]) < 32:
+                        cant_espacios_nom += 32 - len(pj_habilidad["nombre"])
+                        espacios_nom = " " * cant_espacios_nom
+                    if len(atributos_relacionados) == 1:
+                        cant_espacios_atr += 10
+                        espacios_atr = " " * cant_espacios_atr
+                    elif len(atributos_relacionados) == 2:
+                        cant_espacios_atr += 5
+                        espacios_atr = " " * cant_espacios_atr
+
+                    atr_rel = [str(a["atributo"]) for a in atributos_relacionados]
+                    print(f"{pj_habilidad["nombre"]}{espacios_nom} | {pj_habilidad["nivel"]} | {atr_rel}{espacios_atr} | {pj_habilidad["xp"]}/{pj_habilidad["xp_requerida"]}")
+                    opciones_menu.append(i)
+                i += 1
+
+            eleccion = Menu._input_eleccion_menu("\n1. Administrar\n0. Atrás\n: ",
+                                                "\nIngrese el número de la opción a la que quiera acceder, luego pulse 'Enter'.",
+                                                [0, 1])
+
+            if eleccion == 0:
+                break
+            elif eleccion == 1:
+                Menu._menu_administrar_habilidades(personaje)
+
+    @staticmethod
+    def _menu_administrar_habilidades(personaje):
+        """Abre el menu de administración de habilidades."""
+        while True:
+            print(f"\n-------------------------------- Habilidades de {personaje.nombre} --------------------------------")
+            print("\nNombre | Nivel | Atributos | XP\n")
+            pj_habilidades = Personaje.select_personaje_habilidad(personaje.id)
+
+            i = 1
+            opciones_menu = [0]
+            for pj_habilidad in pj_habilidades:
                 cant_espacios_nom = 0
                 espacios_nom = ""
                 cant_espacios_atr = 0
@@ -419,7 +460,6 @@ class Menu:
                 opciones_menu.append(i)
                 i += 1
 
-            print("0. Atrás")
             (num_hab, xp) = Menu._input_eleccion_menu_comando("\nIngrese el número de habilidad seguido de la experiencia que quiere agregar. Ejemplo: [35 5]\nSi quiere quitar experiencia o incluso bajar de nivel, use [35 -5]. La motivación se le devolverá al personaje automáticamente.\n: ",
                                                         f"Debes ingresar un número de habilidad entre el 1 y el {i}.", opciones_menu)
 
