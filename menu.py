@@ -424,12 +424,11 @@ class Menu:
             if num_hab == 0:
                 break
 
-            i = 1
-            for pj_habilidad in personaje.habilidades:
-                if num_hab == i:
+            habilidades = Personaje.select_personaje_habilidad(personaje.id)
+            for pj_habilidad in habilidades:
+                if num_hab == pj_habilidad["id"]:
                     personaje.subir_nivel_habilidad(pj_habilidad, xp)
                     break
-                i += 1
 
     @staticmethod
     def _menu_equipo(personaje):

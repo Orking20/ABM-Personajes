@@ -351,59 +351,68 @@ class Personaje:
 
     def _calcular_xp_req(self, habilidad, id_pj=0):
         """Calcula la experiencia que se necesita para subir de nivel una habilidad."""
-        atributo_mas_bajo = self._calcular_atributo_mas_bajo(habilidad.atributos_relacionados)
+        atributos = Personaje.select_habilidad_atributo(habilidad["id"])
+        lista_atributos = []
+
+        for fila in atributos:
+            lista_atributos.append(fila["atributo"])
+
+        atributo_mas_bajo = self._calcular_atributo_mas_bajo(lista_atributos)
         xp_req = 5
-        multiplicador = floor(habilidad.nivel / atributo_mas_bajo)
+        multiplicador = floor(habilidad["nivel"] / atributo_mas_bajo)
         i = 0
 
         while i < multiplicador:
             xp_req *= 2
             i += 1
         
-        habilidad.xp_max_req = xp_req
+        nueva_xp_req = xp_req
         if id_pj != 0:
-            self._actualizar_valor_habilidad(id_pj, habilidad, "XP requerida", habilidad.xp_max_req)
+            self._update_personaje_habilidad("xp_requerida", nueva_xp_req, habilidad["id"])
 
     def calcular_xp_req_habilidades(self, id_pj=0):
         """Calcula la experiencia requerida para la subida de nivel de todas las habilidades."""
-        for habilidad in self.habilidades:
+        habilidades = Personaje.select_personaje_habilidad(id_pj)
+        for habilidad in habilidades:
             self._calcular_xp_req(habilidad, id_pj)
 
-    def subir_nivel_habilidad(self, habilidad, xp):
+    def subir_nivel_habilidad(self, hab_dict, xp):
         """Sube el nivel de la habilidad."""
         if self.motivacion - xp >= 0:
-            xp_necesaria = habilidad.xp_max_req - habilidad.xp
+            xp_necesaria = hab_dict["xp_requerida"] - hab_dict["xp"]
+            pj = self.select_personaje()
+            motivacion = pj[0]["motivacion"]
 
             # Si se da experiencia negativa para bajar el nivel
             if xp < 0:
-                self.bajar_nivel_habilidad(habilidad, xp)
+                self.bajar_nivel_habilidad(hab_dict, xp)
             # Si la experiencía que se quiere añadir es mayor a la requerida
             elif xp > xp_necesaria:
-                habilidad.xp = 0
-                self.motivacion -= xp_necesaria # Se gasta solo la experiencia que necesita para subir el nivel
-                habilidad.nivel += 1
-                es_esfera = re.search(r"Esfera \((.*?)\)", habilidad.nombre)
+                nueva_xp = 0
+                nueva_motivacion = motivacion - xp_necesaria # Se gasta solo la experiencia que necesita para subir el nivel
+                nuevo_nivel = hab_dict["nivel"] + 1
+                es_esfera = re.search(r"Esfera \((.*?)\)", hab_dict["nombre"])
                 if es_esfera:
                     self.subir_nivel_esfera(es_esfera.group(1))
                 self.calcular_xp_req_habilidades(self.id)
-                self._actualizar_valor_habilidad(self.id, habilidad, "Nivel", habilidad.nivel)
+                self._update_personaje_habilidad("nivel", nuevo_nivel, hab_dict["id"])
             # Si la experiencía que se quiere añadir es menor a la requerida
             elif xp < xp_necesaria:
-                habilidad.xp += xp
-                self.motivacion -= xp
+                nueva_xp = hab_dict["xp"] + xp
+                nueva_motivacion = motivacion - xp
             # Si la experiencía que se quiere añadir es igual a la requerida
             else:
-                habilidad.xp = 0
-                self.motivacion -= xp
-                habilidad.nivel += 1
-                es_esfera = re.search(r"Esfera \((.*?)\)", habilidad.nombre)
+                nueva_xp = 0
+                nueva_motivacion = motivacion - xp
+                nuevo_nivel = hab_dict["nivel"] + 1
+                es_esfera = re.search(r"Esfera \((.*?)\)", hab_dict["nombre"])
                 if es_esfera:
                     self.subir_nivel_esfera(es_esfera.group(1))
                 self.calcular_xp_req_habilidades(self.id)
-                self._actualizar_valor_habilidad(self.id, habilidad, "Nivel", habilidad.nivel)
+                self._update_personaje_habilidad("nivel", nuevo_nivel, hab_dict["id"])
 
-            self._actualizar_valor(self.id, "Motivación", self.motivacion)
-            self._actualizar_valor_habilidad(self.id, habilidad, "XP", habilidad.xp)
+            self._update_personaje_habilidad("xp", nueva_xp, hab_dict["id"])
+            self.update_personaje("motivacion", nueva_motivacion)
         else:
             print("Necesitas más motivación para subir el nivel de esta habilidad.")
 
@@ -445,7 +454,7 @@ class Personaje:
         for fila in esferas:
             if fila["nombre"] == nombre:
                 nuevo_nivel = fila["nivel"] + 1
-                self._update_personaje_energia("nivel", nuevo_nivel, fila["id_esfera"])
+                self._update_personaje_esfera("nivel", nuevo_nivel, fila["id_esfera"])
                 self.calcular_afinidad()
                 break
         else: # El else en el for se ejecuta cuando termina el ciclio SOLO si no hubo un break
@@ -457,7 +466,7 @@ class Personaje:
         for fila in esferas:
             if fila["nombre"] == nombre:
                 nuevo_nivel = fila["nivel"] - 1
-                self._update_personaje_energia("nivel", nuevo_nivel, fila["id_esfera"])
+                self._update_personaje_esfera("nivel", nuevo_nivel, fila["id_esfera"])
                 self.calcular_afinidad()
                 break
         else: # El else en el for se ejecuta cuando termina el ciclio SOLO si no hubo un break
@@ -498,7 +507,7 @@ class Personaje:
             else:
                 print("No tienes tanta energía para gastar.")
 
-    def _calcular_atributo_mas_bajo(self, atributos_char):
+    def _calcular_atributo_mas_bajo(self, atributos_char: list):
         """Calcula el atributo más bajo de los pasados por parámetros."""
         atributos = self._convertir_atr_char_a_int(atributos_char)
         return min(atributos)
@@ -547,7 +556,7 @@ class Personaje:
         esferas = Personaje.select_personaje_esfera(self.id)
         for fila in esferas:
             afinidad = min(fila["nivel"], self.energia)
-            self._update_personaje_energia("afinidad", afinidad, fila["id_esfera"])
+            self._update_personaje_esfera("afinidad", afinidad, fila["id_esfera"])
 
     def equipar_arma(self, arma):
         """Equipa el arma pasada por argumento al personaje."""
@@ -1020,7 +1029,7 @@ class Personaje:
         if self.herida_grave:
             self.recibir_dano(1)
 
-    def _convertir_atr_char_a_int(self, atributos_char):
+    def _convertir_atr_char_a_int(self, atributos_char: list):
         """Convierte una lista de atributos con caracteres al valor numérico de dicho atributo"""
         atributos = []
         if 'F' in atributos_char:
@@ -1118,6 +1127,22 @@ class Personaje:
         finally:
             conexion.close()
 
+    def select_personaje(self):
+        """Lee y devuelve los datos de los personajes guardados en la base de datos."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
+            cursor = conexion.cursor()
+
+            cursor.execute("SELECT * FROM personajes WHERE id = ?", (self.id,))
+            personaje = cursor.fetchall()
+            return personaje
+        except sql.OperationalError as e:
+            print(f"La tabla de personajes no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
     @staticmethod
     def select_personaje_habilidad(id_personaje):
         """Lee y devuelve las habilidades de un personaje guardados en la base de datos."""
@@ -1126,12 +1151,12 @@ class Personaje:
             conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
             cursor = conexion.cursor()
 
-            #cursor.execute(f"SELECT * FROM personaje_habilidad WHERE id_personaje = {id_personaje}")
             cursor.execute(f"""
-                            SELECT h.id, h.nombre, h.tipo, ph.nivel, ph.xp, ph.xp_requerida
+                            SELECT h.id, h.nombre, h.tipo,
+                            ph.nivel, ph.xp, ph.xp_requerida
                             FROM personaje_habilidad ph
                             JOIN habilidades h ON ph.id_habilidad = h.id
-                            WHERE ph.id_personaje = ?;
+                            WHERE ph.id_personaje = ?
                             """, (id_personaje,)) # El segundo parámetro tiene que ser una tupla
             habilidades = cursor.fetchall()
             return habilidades
@@ -1326,7 +1351,7 @@ class Personaje:
 
     def update_personaje(self, clave, valor):
         """Actualiza un campo del personaje según el valor pasado."""
-        columnas_validas = {"rango", "fuerza", "agilidad", "resistencia", "voluntad", "inteligencia",
+        columnas_validas = ("rango", "fuerza", "agilidad", "resistencia", "voluntad", "inteligencia",
                             "liderazgo", "potencia", "defensa", "extension", "cantidad_esferas",
                             "vida", "vida_actual", "dano_recibido", "herida_grave", "muerte",
                             "aguante", "aguante_actual", "aguante_gastado_por_turno", "recuperacion",
@@ -1336,7 +1361,7 @@ class Personaje:
                             "modificador_aguante", "modificador_recuperacion",
                             "modificador_iniciativa", "modificador_luz", "modificador_oscuridad",
                             "modificador_elemental", "modificador_escudo_sobrenatural",
-                            "motivacion", "energia"}
+                            "motivacion", "energia")
 
         if clave not in columnas_validas:
             print("Esa columna no se puede modificar.")
@@ -1356,8 +1381,8 @@ class Personaje:
         finally:
             conexion.close()
 
-    def _update_personaje_energia(self, clave, valor, id_esfera):
-        """Actualiza un campo del la tabla personaje_esfera según el valor pasado."""
+    def _update_personaje_esfera(self, clave, valor, id_esfera):
+        """Actualiza un campo de la tabla personaje_esfera según el valor pasado."""
         columnas_validas = ("nivel", "afinidad")
 
         if clave not in columnas_validas:
@@ -1375,6 +1400,29 @@ class Personaje:
             conexion.close()
         except sql.OperationalError as e:
             print(f"La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    def _update_personaje_habilidad(self, clave, valor, id_habilidad):
+        """Actualiza un campo de la tabla personaje_habilidad según el valor pasado."""
+        columnas_validas = ("nivel", "xp", "xp_requerida")
+
+        if clave not in columnas_validas:
+            print("Esa columna no se puede modificar.")
+            return
+
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            cursor = conexion.cursor()
+
+            cursor.execute(f"UPDATE personaje_habilidad SET {clave} = ? WHERE id_personaje = ? AND id_habilidad = ?",
+                           (valor, self.id, id_habilidad))
+
+            conexion.commit()
+            conexion.close()
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_habilidad' no existe, o no se puede abrir por falta de persmisos.")
             print(f"Error detallado: {e}")
         finally:
             conexion.close()
