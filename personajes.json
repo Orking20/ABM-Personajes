@@ -41,7 +41,7 @@
         "Modificador oscuridad": 0,
         "Modificador elemental": 0,
         "Modificador escudo sobrenatural": 0,
-        "Motivaci\u00f3n": 0,
+        "Motivaci\u00f3n": 5,
         "Energ\u00eda": 0,
         "Habilidades": [
             {
@@ -164,7 +164,8 @@
                 "Pasiva": "La defensa del personaje se incrementa en la afinidad a efectos de determinar si recibe o no una mutaci\u00f3n del caos. A este efecto, la afinidad se debe reducir tanto como el nivel total de mutaciones del personaje (hasta un m\u00ednimo de 0). Esta cualidad no funciona cuando el personaje realiza un chequeo de corrupci\u00f3n del caos voluntariamente para obtener un beneficio.",
                 "Afinidad": 0
             }
-        ]
+        ],
+        "motivacion": 25
     },
     {
         "ID": 2,
