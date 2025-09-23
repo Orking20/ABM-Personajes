@@ -462,11 +462,14 @@ class Personaje:
         """Sube el nivel de una esfera."""
         esferas = Personaje.select_personaje_esfera(self.id)
         for fila in esferas:
-            if fila["nombre"] == nombre:
-                nuevo_nivel = fila["nivel"] + 1
-                self._update_personaje_esfera("nivel", nuevo_nivel, fila["id_esfera"])
-                self.calcular_afinidad()
-                break
+            esf_nom = re.search(r"\((.*?)\)", fila["nombre_e"])
+            if esf_nom:
+                esf_nom = esf_nom.group(1)
+                if esf_nom == nombre:
+                    nuevo_nivel = fila["nivel"] + 1
+                    self._update_personaje_esfera("nivel", nuevo_nivel, fila["id_esfera"])
+                    self.calcular_afinidad()
+                    break
         else: # El else en el for se ejecuta cuando termina el ciclio SOLO si no hubo un break
             print(f"No se encuentra una esfera con el nombre '{nombre}'")
 
@@ -474,11 +477,14 @@ class Personaje:
         """Sube el nivel de una esfera."""
         esferas = Personaje.select_personaje_esfera(self.id)
         for fila in esferas:
-            if fila["nombre"] == nombre:
-                nuevo_nivel = fila["nivel"] - 1
-                self._update_personaje_esfera("nivel", nuevo_nivel, fila["id_esfera"])
-                self.calcular_afinidad()
-                break
+            esf_nom = re.search(r"\((.*?)\)", fila["nombre_e"])
+            if esf_nom:
+                esf_nom = esf_nom.group(1)
+                if esf_nom == nombre:
+                    nuevo_nivel = fila["nivel"] - 1
+                    self._update_personaje_esfera("nivel", nuevo_nivel, fila["id_esfera"])
+                    self.calcular_afinidad()
+                    break
         else: # El else en el for se ejecuta cuando termina el ciclio SOLO si no hubo un break
             print(f"No se encuentra una esfera con el nombre '{nombre}'")
 
