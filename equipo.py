@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import sqlite3 as sql
 
 class Equipo:
     """Representa el equipo que lleva un personaje."""
@@ -43,51 +44,38 @@ class Arma(Equipo):
         self.tipo_dano = tipo_dano
         self.tipo_arma = tipo_arma
 
-    # @staticmethod
-    # def _get_id():
-    #     """Devuelve el último ID de las armas guardadas, o cero si no hay armas guardadas."""
-    #     lista_armas = Arma.leer_datos_armas()
-
-    #     if lista_armas:
-    #         ultima_arma = lista_armas[-1]
-    #         return ultima_arma["ID"]
-    #     else:
-    #         return 0
-
     @staticmethod
-    def leer_datos_armas(sten):
-        """Lee los datos de las armas guardadas en el archivo JSON."""
+    def select_armas(sten):
+        """Lee y devuelve los datos de las armas guardadas en la base de datos."""
         if sten == 1:
-            archivo = "armas_sten1.json"
+            version = "STEN1"
         elif sten == 2:
-            archivo = "armas_sten2.json"
-        path = Path(archivo)
+            version = "STEN2"
 
         try:
-            if not path.exists():
-                print(f"El archivo {archivo} no existe. Puedes crearlo indicando:\nID\nNombre\nEstructura\nPeso\nImpacto\nDano\nAlcance\nIniciativa\nTipo de dano\nTipo de arma\nCalidad")
-                return []
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
+            cursor = conexion.cursor()
 
-            # datos = path.read_text()
-            with path.open("r", encoding="utf-8") as datos:
-                return json.load(datos) # Armas en formato lista (no son objetos)
-        except json.JSONDecodeError:
-            print(f"El archivo {archivo} está corrupto o malformado.")
-            return []
-        except Exception as e:
-            print(f"Error al leer el archivo: {e}\nProbablemente el archivo esté vacío. Si es el caso puedes rellenarlo indicando:\nID\nNombre\nEstructura\nPeso\nImpacto\nDano\nAlcance\nIniciativa\nTipo de dano\nTipo de arma\nCalidad")
-            return []
+            cursor.execute("SELECT * FROM armas WHERE version = ?", (version,))
+            armas = cursor.fetchall()
+            return armas
+        except sql.OperationalError as e:
+            print(f"La tabla 'armas' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
 
     @staticmethod
-    def json_a_arma(sten):
-        """Lee el JSON de armas y devuelve una lista con esas armas pasadas a objetos Arma."""
-        armas_json = Arma.leer_datos_armas(sten)
+    def db_a_armas(sten):
+        """Lee la base de datos de armas y devuelve una lista con esos personajes como objetos Arma."""
+        armas_db = Arma.select_armas(sten)
         armas = []
 
-        for arma_json in armas_json:
-            arma = Arma(arma_json["Nombre"], arma_json["Estructura"], arma_json["Peso"], arma_json["Impacto"], arma_json["Dano"],
-                        arma_json["Alcance"], arma_json["Tipo de dano"], arma_json["Tipo de arma"])
-            arma.id = arma_json["ID"]
+        for arma_db in armas_db:
+            arma = Arma(arma_db["nombre"], arma_db["estructura"], arma_db["peso"], arma_db["impacto"],
+                        arma_db["dano"], arma_db["alcance"], arma_db["tipo_de_dano"], arma_db["tipo_de_arma"])
+            arma.id = arma_db["id"]
             armas.append(arma)
 
         return armas
@@ -142,7 +130,7 @@ class Arma(Equipo):
     @staticmethod
     def _arma_max_longitud(sten):
         """Retorna el nombre más largo de todas las armas."""
-        armas = Arma.json_a_arma(sten)
+        armas = Arma.db_a_armas(sten)
 
         palabras = []
 
@@ -166,55 +154,39 @@ class Armadura(Equipo):
         self.evasion = evasion
         self.penalizador = penalizador
 
-    # @staticmethod
-    # def _get_id():
-    #     """Devuelve el último ID de las armaduras guardadas, o cero si no hay armaduras guardadas."""
-    #     lista_armaduras = Armadura.leer_datos_armaduras()
-
-    #     if lista_armaduras:
-    #         ultima_armadura = lista_armaduras[-1]
-    #         return ultima_armadura["ID"]
-    #     else:
-    #         return 0
-
     @staticmethod
-    def leer_datos_armaduras(sten):
-        """Lee los datos de las armaduras guardadas en el archivo JSON."""
+    def select_armaduras(sten):
+        """Lee y devuelve los datos de las armaduras guardadas en la base de datos."""
         if sten == 1:
-            archivo = "armaduras_sten1.json"
+            version = "STEN1"
         elif sten == 2:
-            archivo = "armaduras_sten2.json"
-        path = Path(archivo)
+            version = "STEN2"
 
         try:
-            if not path.exists():
-                print(f"El archivo {archivo} no existe. Puedes crearlo indicando:\nID\nNombre\nEstructura\nPeso\nContundente\nCortante\nPerforante\nCobertura\nEvasión\nPenalizador")
-                return []
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
+            cursor = conexion.cursor()
 
-            # datos = path.read_text()
-            with path.open("r", encoding="utf-8") as datos:
-                return json.load(datos) # Armaduras en formato lista (no son objetos)
-        except json.JSONDecodeError:
-            print(f"El archivo {archivo} está corrupto o malformado.")
-            return []
-        except FileNotFoundError:
-            print()
-            return []
-        except Exception as e:
-            print(f"Error al leer el archivo: {e}\nProbablemente el archivo esté vacío. Si es el caso puedes rellenarlo indicando:\nID\nNombre\nEstructura\nPeso\nContundente\nCortante\nPerforante\nCobertura\nEvasión\nPenalizador")
-            return []
+            cursor.execute("SELECT * FROM armaduras WHERE version = ?", (version,))
+            armaduras = cursor.fetchall()
+            return armaduras
+        except sql.OperationalError as e:
+            print(f"La tabla 'armaduras' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
 
     @staticmethod
-    def json_a_armadura(sten):
-        """Lee el JSON de armaduras y devuelve una lista con esas armaduras pasadas a objetos Armadura."""
-        armaduras_json = Armadura.leer_datos_armaduras(sten)
+    def db_a_armaduras(sten):
+        """Lee la base de datos de armaduras y devuelve una lista con esos personajes como objetos Armadura."""
+        armaduras_db = Armadura.select_armaduras(sten)
         armaduras = []
 
-        for armadura_json in armaduras_json:
-            armadura = Armadura(armadura_json["Nombre"], armadura_json["Estructura"], armadura_json["Peso"],
-                                armadura_json["Contundente"], armadura_json["Cortante"], armadura_json["Perforante"],
-                                armadura_json["Cobertura"], armadura_json["Evasión"], armadura_json["Penalizador"])
-            armadura.id = armadura_json["ID"]
+        for armadura_db in armaduras_db:
+            armadura = Armadura(armadura_db["nombre"], armadura_db["estructura"], armadura_db["peso"],
+                                armadura_db["contundente"], armadura_db["cortante"], armadura_db["perforante"],
+                                armadura_db["cobertura"], armadura_db["evasion"], armadura_db["penalizador"])
+            armadura.id = armadura_db["id"]
             armaduras.append(armadura)
 
         return armaduras
@@ -269,7 +241,7 @@ class Armadura(Equipo):
     @staticmethod
     def _armadura_max_longitud(sten):
         """Retorna el nombre más largo de todas las armaduras."""
-        armaduras = Armadura.json_a_armadura(sten)
+        armaduras = Armadura.db_a_armaduras(sten)
 
         palabras = []
 
@@ -293,52 +265,39 @@ class Escudo(Equipo):
         self.evasion = evasion
         self.penalizador = penalizador
 
-    # @staticmethod
-    # def _get_id():
-    #     """Devuelve el último ID de los escudos guardados, o cero si no hay escudos guardados."""
-    #     lista_escudos = Escudo.leer_datos_escudos()
-
-    #     if lista_escudos:
-    #         ultima_escudos = lista_escudos[-1]
-    #         return ultima_escudos["ID"]
-    #     else:
-    #         return 0
-
     @staticmethod
-    def leer_datos_escudos(sten):
-        """Lee los datos de los escudos guardados en el archivo JSON."""
+    def select_escudos(sten):
+        """Lee y devuelve los datos de las escudos guardadas en la base de datos."""
         if sten == 1:
-            archivo = "escudos_sten1.json"
+            version = "STEN1"
         elif sten == 2:
-            archivo = "escudos_sten2.json"
-        path = Path(archivo)
+            version = "STEN2"
 
         try:
-            if not path.exists():
-                print(f"El archivo {archivo} no existe. Puedes crearlo indicando:\nID\nNombre\nEstructura\nPeso\nContundente\nCortante\nPerforante\nCobertura\nEvasión\nPenalizador")
-                return []
+            conexion = sql.connect(f"espada_negra.db")
+            conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
+            cursor = conexion.cursor()
 
-            # datos = path.read_text()
-            with path.open("r", encoding="utf-8") as datos:
-                return json.load(datos) # Escudos en formato lista (no son objetos)
-        except json.JSONDecodeError:
-            print(f"El archivo {archivo} está corrupto o malformado.")
-            return []
-        except Exception as e:
-            print(f"Error al leer el archivo: {e}\nProbablemente el archivo esté vacío. Si es el caso puedes rellenarlo indicando:\nID\nNombre\nEstructura\nPeso\nContundente\nCortante\nPerforante\nCobertura\nEvasión\nPenalizador")
-            return []
+            cursor.execute("SELECT * FROM escudos WHERE version = ?", (version,))
+            escudos = cursor.fetchall()
+            return escudos
+        except sql.OperationalError as e:
+            print(f"La tabla 'escudos' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
 
     @staticmethod
-    def json_a_escudo(sten):
-        """Lee el JSON de escudos y devuelve una lista con esos escudos pasados a objetos Escudo."""
-        escudos_json = Escudo.leer_datos_escudos(sten)
+    def db_a_escudos(sten):
+        """Lee la base de datos de escudos y devuelve una lista con esos personajes como objetos Escudo."""
+        escudos_db = Escudo.select_escudos(sten)
         escudos = []
 
-        for escudo_json in escudos_json:
-            escudo = Escudo(escudo_json["Nombre"], escudo_json["Estructura"], escudo_json["Peso"],
-                                escudo_json["Contundente"], escudo_json["Cortante"], escudo_json["Perforante"],
-                                escudo_json["Cobertura"], escudo_json["Evasión"], escudo_json["Penalizador"])
-            escudo.id = escudo_json["ID"]
+        for escudo_db in escudos_db:
+            escudo = Escudo(escudo_db["nombre"], escudo_db["estructura"], escudo_db["peso"],
+                            escudo_db["contundente"], escudo_db["cortante"], escudo_db["perforante"],
+                            escudo_db["cobertura"], escudo_db["evasion"], escudo_db["penalizador"])
+            escudo.id = escudo_db["id"]
             escudos.append(escudo)
 
         return escudos
@@ -393,7 +352,7 @@ class Escudo(Equipo):
     @staticmethod
     def _escudo_max_longitud(sten):
         """Retorna el nombre más largo de todos los escudos."""
-        escudos = Escudo.json_a_escudo(sten)
+        escudos = Escudo.db_a_escudos(sten)
 
         palabras = []
 

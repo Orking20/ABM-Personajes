@@ -530,7 +530,7 @@ class Menu:
     def _menu_equipar_armas(personaje):
         """Abre el menú de armas, donde el usuario puede agregar armas a su equipo."""
         while True:
-            armas = Arma.json_a_arma(personaje.sten) # Borrar JSON
+            armas = Arma.db_a_armas(personaje.sten)
             print("\nNombre | Impacto | Daño | Alcance | Tipo de daño | Tipo de arma | Estructura | Peso")
 
             opciones_menu = [0]
@@ -575,7 +575,7 @@ class Menu:
     def _menu_equipar_armaduras(personaje):
         """Abre el menú de armaduras, donde el usuario puede agregar armaduras a su equipo."""
         while True:
-            armaduras = Armadura.json_a_armadura(personaje.sten)
+            armaduras = Armadura.db_a_armaduras(personaje.sten)
             print("\nNombre | Contundente | Cortante | Perforante | Cobertura | Evasión | Penalizador | Estructura | Peso")
 
             opciones_menu = [0]
@@ -613,7 +613,7 @@ class Menu:
     def _menu_equipar_escudos(personaje):
         """Abre el menú de escudos, donde el usuario puede agregar escudos a su equipo."""
         while True:
-            escudos = Escudo.json_a_escudo(personaje.sten)
+            escudos = Escudo.db_a_escudos(personaje.sten)
             print("\nNombre | Contundente | Cortante | Perforante | Cobertura | Evasión | Penalizador | Estructura | Peso")
 
             opciones_menu = [0]
@@ -651,11 +651,11 @@ class Menu:
     def _desequipar_equipo(personaje, tipo_equipo, id_seleccionado):
         """Se encarga de desequipar cualquier tipo de equipo: armas, armaduras y escudos."""
         if tipo_equipo == "Armas":
-            equipo = Arma.json_a_arma(personaje.sten)
+            equipo = Arma.db_a_armas(personaje.sten)
         elif tipo_equipo == "Armaduras":
-            equipo = Armadura.json_a_armadura(personaje.sten)
+            equipo = Armadura.db_a_armaduras(personaje.sten)
         elif tipo_equipo == "Escudos":
-            equipo = Escudo.json_a_escudo(personaje.sten)
+            equipo = Escudo.db_a_escudos(personaje.sten)
         
         for item in equipo:
             if item.id == id_seleccionado:
@@ -772,8 +772,10 @@ class Menu:
                 espacios_ini = ""
                 espacios_peso = ""
                 espacios_tipo_arma = ""
-                if arma["id"] < 10:
+                for i in range(len(str(arma["id_pj_arma"])) - 1):
                     espacios_id += " "
+                #if arma["id_pj_arma"] < 10:
+                #    espacios_id += " "
                 for i in range(Menu._num_dif_palabras(arma["nombre"], equipo_max_len)):
                     espacios_nom += " "
                 for i in range(Menu._num_dif_palabras(arma["tipo_de_dano"], "Contundente")):
@@ -788,7 +790,7 @@ class Menu:
                     espacios_peso += " "
                 for i in range(Menu._num_dif_palabras(arma["tipo_de_arma"], "Proyectiles")):
                     espacios_tipo_arma += " "
-                print(f"{arma["id"]}.{espacios_id} {arma["nombre"]} {espacios_nom}| Impacto {arma["impacto"]} | Daño {arma["dano"]}{espacios_dano} | {arma["tipo_de_dano"]}{espacios_tipo_dano} | Iniciativa {arma["iniciativa"]}{espacios_ini} | Estructura {arma["estructura"]} | Peso {arma["peso"]}{espacios_peso} | Alcance {arma["alcance"]} | Tipo arma '{arma["tipo_de_arma"]}'{espacios_tipo_arma} | Calidad {arma["calidad"]}")
+                print(f"{arma["id_pj_arma"]}.{espacios_id} {arma["nombre"]} {espacios_nom}| Impacto {arma["impacto"]} | Daño {arma["dano"]}{espacios_dano} | {arma["tipo_de_dano"]}{espacios_tipo_dano} | Iniciativa {arma["iniciativa"]}{espacios_ini} | Estructura {arma["estructura"]} | Peso {arma["peso"]}{espacios_peso} | Alcance {arma["alcance"]} | Tipo arma '{arma["tipo_de_arma"]}'{espacios_tipo_arma} | Calidad {arma["calidad"]}")
 
         if armaduras:
             print("\nArmaduras:")
@@ -798,7 +800,7 @@ class Menu:
                 espacios_est = ""
                 espacios_peso = ""
                 espacios_pen = ""
-                if armadura["id"] < 10:
+                for i in range(len(str(armadura["id_pj_armadura"])) - 1):
                     espacios_id += " "
                 if armadura["estructura"] < 10:
                     espacios_est += " "
@@ -808,7 +810,7 @@ class Menu:
                     espacios_pen += " "
                 for i in range(Menu._num_dif_palabras(armadura["nombre"], equipo_max_len)):
                     espacios_nom += " "
-                print(f"{armadura["id"]}.{espacios_id} {armadura["nombre"]} {espacios_nom}| Contundente {armadura["contundente"]} | Cortante {armadura["cortante"]} | Perforante {armadura["perforante"]} | Cobertura {armadura["cobertura"]} | Evasion {armadura["evasion"]} | Estructura {armadura["estructura"]}{espacios_est} | Peso {armadura["peso"]}{espacios_peso} | Penalizador {armadura["penalizador"]}{espacios_pen} | Calidad {armadura["calidad"]}")
+                print(f"{armadura["id_pj_armadura"]}.{espacios_id} {armadura["nombre"]} {espacios_nom}| Contundente {armadura["contundente"]} | Cortante {armadura["cortante"]} | Perforante {armadura["perforante"]} | Cobertura {armadura["cobertura"]} | Evasion {armadura["evasion"]} | Estructura {armadura["estructura"]}{espacios_est} | Peso {armadura["peso"]}{espacios_peso} | Penalizador {armadura["penalizador"]}{espacios_pen} | Calidad {armadura["calidad"]}")
 
         if escudos:
             print("\nEscudos:")
@@ -818,11 +820,11 @@ class Menu:
                 espacios_peso = ""
                 for i in range(Menu._num_dif_palabras(escudo["nombre"], equipo_max_len)):
                     espacios_nom += " "
-                if escudo["id"] < 10:
+                for i in range(len(str(escudo["id_pj_escudo"])) - 1):
                     espacios_id += " "
                 if len(str(escudo["peso"])) < 2:
                     espacios_peso += "  "
-                print(f"{escudo["id"]}.{espacios_id} {escudo["nombre"]} {espacios_nom}| Contundente {escudo["contundente"]} | Cortante {escudo["cortante"]} | Perforante {escudo["perforante"]} | Cobertura {escudo["cobertura"]} | Evasion {escudo["evasion"]} | Estructura {escudo["estructura"]} | Peso {escudo["peso"]}{espacios_peso} | Penalizador {escudo["penalizador"]} | Calidad {escudo["calidad"]}")
+                print(f"{escudo["id_pj_escudo"]}.{espacios_id} {escudo["nombre"]} {espacios_nom}| Contundente {escudo["contundente"]} | Cortante {escudo["cortante"]} | Perforante {escudo["perforante"]} | Cobertura {escudo["cobertura"]} | Evasion {escudo["evasion"]} | Estructura {escudo["estructura"]} | Peso {escudo["peso"]}{espacios_peso} | Penalizador {escudo["penalizador"]} | Calidad {escudo["calidad"]}")
 
     @staticmethod
     def _menu_combate(personaje):

@@ -53,11 +53,11 @@ class Personaje:
         self.mod_res_oscuridad = 0
         self.mod_res_elemental = 0
         self.mod_escudo_sobrenatural = 0
-        self.habilidades = []
-        self.armas = []
-        self.armaduras = []
-        self.escudos = []
-        self.esferas = []
+        self.habilidades = [] # Borrar JSON
+        self.armas = [] # Borrar JSON
+        self.armaduras = [] # Borrar JSON
+        self.escudos = [] # Borrar JSON
+        self.esferas = [] # Borrar JSON
         self.motivacion = 0
         self.energia = 0
 
@@ -601,28 +601,28 @@ class Personaje:
 
     def desequipar_arma(self, arma):
         """Desequipa el arma pasada por argumento al personaje."""
-        for arma_pj in self.armas:
-            if arma.id == arma_pj.id:
-                self.armas.remove(arma_pj)
-                self._guardar_equipamento("Armas", self.armas)
+        armas = Personaje.select_personaje_arma(self.id)
+        for arma_pj in armas:
+            if arma.id == arma_pj["id_pj_arma"]:
+                Personaje.delete_personaje_arma(arma.id)
                 print("Arma desequipada")
                 break
 
     def desequipar_armadura(self, armadura):
         """Desequipa la armadura pasada por argumento al personaje."""
-        for armadura_pj in self.armaduras:
-            if armadura.id == armadura_pj.id:
-                self.armaduras.remove(armadura_pj)
-                self._guardar_equipamento("Armaduras", self.armaduras)
+        armaduras = Personaje.select_personaje_armadura(self.id)
+        for armadura_pj in armaduras:
+            if armadura.id == armadura_pj["id_pj_armadura"]:
+                Personaje.delete_personaje_armadura(armadura.id)
                 print("Armadura desequipada")
                 break
 
     def desequipar_escudo(self, escudo):
         """Desequipa el escudo pasado por argumento al personaje."""
-        for escudo_pj in self.escudos:
-            if escudo.id == escudo_pj.id:
-                self.escudos.remove(escudo_pj)
-                self._guardar_equipamento("Escudos", self.escudos)
+        escudos = Personaje.select_personaje_escudo(self.id)
+        for escudo_pj in escudos:
+            if escudo.id == escudo_pj["id_pj_escudo"]:
+                Personaje.delete_personaje_escudo(escudo.id)
                 print("Escudo desequipado")
                 break
 
@@ -1208,8 +1208,9 @@ class Personaje:
             cursor = conexion.cursor()
 
             cursor.execute(f"""
-                            SELECT a.id, a.nombre, a.estructura, a.peso, a.impacto, a.dano,
-                            a.alcance, a.tipo_de_dano, a.tipo_de_arma, a.version,
+                            SELECT a.id, a.nombre, a.peso, a.alcance,
+                            a.tipo_de_dano, a.tipo_de_arma, a.version,
+                            pa.id AS id_pj_arma, pa.estructura, pa.impacto, pa.dano,
                             pa.iniciativa, pa.calidad
                             FROM personaje_arma pa
                             JOIN armas a ON pa.id_arma = a.id
@@ -1232,8 +1233,9 @@ class Personaje:
             cursor = conexion.cursor()
 
             cursor.execute(f"""
-                            SELECT a.id, a.nombre, a.estructura, a.peso, a.contundente, a.cortante,
-                            a.perforante, a.cobertura, a.evasion, a.penalizador, a.version, pa.calidad
+                            SELECT a.id, a.nombre, a.version, a.penalizador,
+                            pa.id AS id_pj_armadura, pa.estructura, pa.peso, pa.contundente, pa.cortante,
+                            pa.perforante, pa.cobertura, pa.evasion, pa.calidad
                             FROM personaje_armadura pa
                             JOIN armaduras a ON pa.id_armadura = a.id
                             WHERE pa.id_personaje = ?;
@@ -1255,8 +1257,9 @@ class Personaje:
             cursor = conexion.cursor()
 
             cursor.execute(f"""
-                            SELECT e.id, e.nombre, e.estructura, e.peso, e.contundente, e.cortante,
-                            e.perforante, e.cobertura, e.evasion, e.penalizador, e.version, pe.calidad
+                            SELECT e.id, e.nombre, e.peso, e.penalizador, e.version,
+                            pe.id AS id_pj_escudo, pe.estructura, pe.contundente, pe.cortante,
+                            pe.perforante, pe.cobertura, pe.evasion, pe.calidad
                             FROM personaje_escudo pe
                             JOIN escudos e ON pe.id_escudo = e.id
                             WHERE pe.id_personaje = ?;
@@ -1453,7 +1456,9 @@ class Personaje:
             cursor.execute(f"""SELECT * FROM armas WHERE id = (?)""", (id_arma,))
             datos = cursor.fetchall()
             arma = dict(datos[0])
-            cursor.execute(f"""INSERT INTO personaje_arma VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            cursor.execute(f"""INSERT INTO personaje_arma
+                           (id_personaje, id_arma, estructura, impacto, dano, iniciativa, calidad)
+                           VALUES (?, ?, ?, ?, ?, ?, ?)""",
                            (self.id, id_arma, arma["estructura"], arma["impacto"], arma["dano"],
                             iniciativa, calidad))
 
@@ -1474,7 +1479,10 @@ class Personaje:
             cursor.execute(f"""SELECT * FROM armaduras WHERE id = (?)""", (id_armadura,))
             datos = cursor.fetchall()
             armadura = dict(datos[0])
-            cursor.execute(f"""INSERT INTO personaje_armadura VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            cursor.execute(f"""INSERT INTO personaje_armadura
+                           (id_personaje, id_armadura, estructura, peso, contundente,
+                           cortante, perforante, cobertura, evasion, calidad)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                            (self.id, id_armadura, armadura["estructura"], armadura["peso"],
                             armadura["contundente"], armadura["cortante"], armadura["perforante"],
                             armadura["cobertura"], armadura["evasion"], calidad))
@@ -1496,7 +1504,10 @@ class Personaje:
             cursor.execute(f"""SELECT * FROM escudos WHERE id = (?)""", (id_escudo,))
             datos = cursor.fetchall()
             escudo = dict(datos[0])
-            cursor.execute(f"""INSERT INTO personaje_escudo VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            cursor.execute(f"""INSERT INTO personaje_escudo
+                           (id_personaje, id_escudo, estructura, contundente,
+                           cortante, perforante, cobertura, evasion, calidad)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                            (self.id, id_escudo, escudo["estructura"], escudo["contundente"],
                             escudo["cortante"], escudo["perforante"], escudo["cobertura"],
                             escudo["evasion"], calidad))
@@ -1520,6 +1531,57 @@ class Personaje:
             conexion.commit()
         except sql.OperationalError as e:
             print(f"La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def delete_personaje_arma(id_arma):
+        """Elimina el arma seleccionada de las armas del personaje."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            cursor = conexion.cursor()
+
+            cursor.execute("DELETE FROM personaje_arma WHERE id = ?",
+                           (id_arma,))
+
+            conexion.commit()
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_arma' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def delete_personaje_armadura(id_armadura):
+        """Elimina el armadura seleccionada de las armaduras del personaje."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            cursor = conexion.cursor()
+
+            cursor.execute("DELETE FROM personaje_armadura WHERE id = ?",
+                           (id_armadura,))
+
+            conexion.commit()
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_armadura' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def delete_personaje_escudo(id_escudo):
+        """Elimina el escudo seleccionado de los escudos del personaje."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            cursor = conexion.cursor()
+
+            cursor.execute("DELETE FROM personaje_escudo WHERE id = ?",
+                           (id_escudo,))
+
+            conexion.commit()
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_escudo' no existe, o no se puede abrir por falta de persmisos.")
             print(f"Error detallado: {e}")
         finally:
             conexion.close()
@@ -1568,7 +1630,7 @@ class Personaje:
                         return
         print("Error al actualizar esfera.")
 
-    def _guardar_equipamento(self, clave_equipo, lista_equipo):
+    def _guardar_equipamento(self, clave_equipo, lista_equipo): # Borrar JSON
         """Guarda el equipo del personaje, ya sean armas, armaduras o escudos, dependiendo lo que se pase por parámetros."""
         personajes = Personaje.leer_datos_personajes()
         for pj in personajes:
