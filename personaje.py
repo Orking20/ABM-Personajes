@@ -351,7 +351,9 @@ class Personaje:
 
     def _calcular_xp_req(self, habilidad, id_pj=0):
         """Calcula la experiencia que se necesita para subir de nivel una habilidad."""
-        atributos = Personaje.select_habilidad_atributo(habilidad["id"])
+        id_habilidad = habilidad["id"]
+        nivel = habilidad["nivel"]
+        atributos = Personaje.select_habilidad_atributo(id_habilidad)
         lista_atributos = []
 
         for fila in atributos:
@@ -359,7 +361,7 @@ class Personaje:
 
         atributo_mas_bajo = self._calcular_atributo_mas_bajo(lista_atributos)
         xp_req = 5
-        multiplicador = floor(habilidad["nivel"] / atributo_mas_bajo)
+        multiplicador = floor(nivel / atributo_mas_bajo)
         i = 0
 
         while i < multiplicador:
@@ -378,14 +380,15 @@ class Personaje:
 
     def subir_nivel_habilidad(self, hab_dict, xp):
         """Sube el nivel de la habilidad."""
-        if self.motivacion - xp >= 0:
+        pj = self.select_personaje()
+        motivacion = pj[0]["motivacion"] # Se elige el primer personaje, porque en esta consulta, solo puede venir un personaje
+        if motivacion - xp >= 0:
             xp_necesaria = hab_dict["xp_requerida"] - hab_dict["xp"]
-            pj = self.select_personaje()
-            motivacion = pj[0]["motivacion"]
 
             # Si se da experiencia negativa para bajar el nivel
             if xp < 0:
                 self.bajar_nivel_habilidad(hab_dict, xp)
+                return
             # Si la experiencía que se quiere añadir es mayor a la requerida
             elif xp > xp_necesaria:
                 nueva_xp = 0
@@ -394,8 +397,8 @@ class Personaje:
                 es_esfera = re.search(r"Esfera \((.*?)\)", hab_dict["nombre"])
                 if es_esfera:
                     self.subir_nivel_esfera(es_esfera.group(1))
-                self.calcular_xp_req_habilidades(self.id)
                 self._update_personaje_habilidad("nivel", nuevo_nivel, hab_dict["id"])
+                self.calcular_xp_req_habilidades(self.id)
             # Si la experiencía que se quiere añadir es menor a la requerida
             elif xp < xp_necesaria:
                 nueva_xp = hab_dict["xp"] + xp
@@ -408,45 +411,52 @@ class Personaje:
                 es_esfera = re.search(r"Esfera \((.*?)\)", hab_dict["nombre"])
                 if es_esfera:
                     self.subir_nivel_esfera(es_esfera.group(1))
-                self.calcular_xp_req_habilidades(self.id)
                 self._update_personaje_habilidad("nivel", nuevo_nivel, hab_dict["id"])
+                self.calcular_xp_req_habilidades(self.id)
 
             self._update_personaje_habilidad("xp", nueva_xp, hab_dict["id"])
             self.update_personaje("motivacion", nueva_motivacion)
         else:
             print("Necesitas más motivación para subir el nivel de esta habilidad.")
 
-    def bajar_nivel_habilidad(self, habilidad, xp):
+    def bajar_nivel_habilidad(self, hab_dict, xp):
         """Baja el nivel de una habilidad."""
+        pj = self.select_personaje()
+        nueva_motivacion = pj[0]["motivacion"] # Se elige el primer personaje, porque en esta consulta, solo puede venir un personaje
         xp_en_positivo = xp * -1 # Se pasa la xp a positivo para manejarla con más facilidad
 
-        if habilidad.nivel > 0:
-            if xp_en_positivo <= habilidad.xp:
-                habilidad.xp -= xp_en_positivo
-                self.motivacion += xp_en_positivo
+        if hab_dict["nivel"] > 0:
+            if xp_en_positivo <= hab_dict["xp"]:
+                nueva_xp = hab_dict["xp"] - xp_en_positivo
+                nueva_motivacion += xp_en_positivo
             # Si se pasa más xp de la que se necesita para bajar el nivel, se baja 1 nivel y la xp queda a un xp de subir
-            elif xp_en_positivo > habilidad.xp:
-                habilidad.nivel -= 1
-                if habilidad.xp == 0:
-                    self.motivacion += 1
+            elif xp_en_positivo > hab_dict["xp"]:
+                nuevo_nivel = hab_dict["nivel"] - 1
+                if hab_dict["xp"] == 0:
+                    nueva_motivacion += 1
                 else:
-                    self.motivacion += habilidad.xp + 1
-                es_esfera = re.search(r"Esfera \((.*?)\)", habilidad.nombre)
+                    nueva_motivacion += hab_dict["xp"] + 1
+                es_esfera = re.search(r"Esfera \((.*?)\)", hab_dict["nombre"])
                 if es_esfera:
                     self.bajar_nivel_esfera(es_esfera.group(1))
-                self._actualizar_valor_habilidad(self.id, habilidad, "Nivel", habilidad.nivel)
+                self._update_personaje_habilidad("nivel", nuevo_nivel, hab_dict["id"])
                 self.calcular_xp_req_habilidades(self.id)
-                habilidad.xp = habilidad.xp_max_req - 1
+                # Se busca la nueva xp_requerida por la habilidad
+                pj_hab = Personaje.select_personaje_habilidad(pj[0]["id"])
+                for hab in pj_hab:
+                    if hab["id_habilidad"] == hab_dict["id"]:
+                        nueva_xp = hab["xp_requerida"] - 1
+                        break
         else:
-            if xp_en_positivo <= habilidad.xp:
-                habilidad.xp -= xp_en_positivo
-                self.motivacion += xp_en_positivo
+            if xp_en_positivo <= hab_dict["xp"]:
+                nueva_xp = hab_dict["xp"] - xp_en_positivo
+                nueva_motivacion += xp_en_positivo
             else:
-                self.motivacion += habilidad.xp
-                habilidad.xp = 0
+                nueva_motivacion += hab_dict["xp"]
+                nueva_xp = 0
 
-        self._actualizar_valor(self.id, "Motivación", self.motivacion)
-        self._actualizar_valor_habilidad(self.id, habilidad, "XP", habilidad.xp)
+        self.update_personaje("motivacion", nueva_motivacion)
+        self._update_personaje_habilidad("xp", nueva_xp, hab_dict["id"])
 
     def subir_nivel_esfera(self, nombre):
         """Sube el nivel de una esfera."""
@@ -1153,7 +1163,7 @@ class Personaje:
 
             cursor.execute(f"""
                             SELECT h.id, h.nombre, h.tipo,
-                            ph.nivel, ph.xp, ph.xp_requerida
+                            ph.id_habilidad, ph.nivel, ph.xp, ph.xp_requerida
                             FROM personaje_habilidad ph
                             JOIN habilidades h ON ph.id_habilidad = h.id
                             WHERE ph.id_personaje = ?

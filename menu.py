@@ -337,51 +337,53 @@ class Menu:
 
     @staticmethod
     def _mostrar_personaje(personaje):
+        personaje = personaje.select_personaje() # Se vuelve a leer el personaje para actualizar los valores
+        personaje = personaje[0]
         """Muestra el personaje pasado por parámetros."""
-        print(f"\n-------------------------------- {personaje.nombre} --------------------------------\n")
+        print(f"\n-------------------------------- {personaje["nombre"]} --------------------------------\n")
         consola = Console()
         tabla = Table(show_header=False, box=None, padding=(0, 1))
-        tabla.add_row(f"[underline]Jugador                                {personaje.jugador}[/]")
-        tabla.add_row(f"[underline]Rango                                  {Personaje.convertir_rango_a_str(personaje.rango)}[/]")
-        tabla.add_row(f"[underline]Fuerza                                 {personaje.fuerza}[/]")
-        tabla.add_row(f"[underline]Agilidad                               {personaje.agilidad}[/]")
-        tabla.add_row(f"[underline]Resistencia                            {personaje.resistencia}[/]")
-        tabla.add_row(f"[underline]Voluntad                               {personaje.voluntad}[/]")
-        tabla.add_row(f"[underline]Inteligencia                           {personaje.inteligencia}[/]")
-        tabla.add_row(f"[underline]Liderazgo                              {personaje.liderazgo}[/]")
-        tabla.add_row(f"[underline]Potencia                               {personaje.potencia}[/]")
-        tabla.add_row(f"[underline]Defensa                                {personaje.defensa}[/]")
-        tabla.add_row(f"[underline]Extensión                              {personaje.extension}[/]")
-        tabla.add_row(f"[underline]Esferas                                {personaje.cant_esferas}[/]")
-        tabla.add_row(f"[underline]Vida                                   {personaje.vida}[/]")
-        tabla.add_row(f"[underline]Muerte                                 {personaje.muerte}[/]")
-        tabla.add_row(f"[underline]Aguante                                {personaje.aguante}[/]")
-        tabla.add_row(f"[underline]Recuperación                           {personaje.recuperacion}[/]")
-        tabla.add_row(f"[underline]Iniciativa                             {personaje.iniciativa}[/]")
-        tabla.add_row(f"[underline]Carga total                            {personaje.carga_total}[/]")
-        tabla.add_row(f"[underline]Carga en manos                         {personaje.carga_en_manos}[/]")
-        tabla.add_row(f"[underline]Resistencia a la luz                   {personaje.resistencia_luz}[/]")
-        tabla.add_row(f"[underline]Resistencia a la oscuridad             {personaje.resistencia_oscuridad}[/]")
-        tabla.add_row(f"[underline]Resistencia elemental                  {personaje.resistencia_elemental}[/]")
-        tabla.add_row(f"[underline]Escudo sobrenatural                    {personaje.escudo_sobrenatural}[/]")
-        if personaje.mod_vida != 0:
-            tabla.add_row(f"[underline]Modificador vida                   {personaje.mod_vida}[/]")
-        if personaje.mod_aguante != 0:
-            tabla.add_row(f"[underline]Modificador aguante                {personaje.mod_aguante}[/]")
-        if personaje.mod_recuperacion != 0:
-            tabla.add_row(f"[underline]Modificador recuperación           {personaje.mod_recuperacion}[/]")
-        if personaje.mod_iniciativa != 0:
-            tabla.add_row(f"[underline]Modificador iniciativa             {personaje.mod_iniciativa}[/]")
-        if personaje.mod_res_luz != 0:
-            tabla.add_row(f"[underline]Modificador resistencia luz        {personaje.mod_res_luz}[/]")
-        if personaje.mod_res_oscuridad != 0:
-            tabla.add_row(f"[underline]Modificador resistencia oscuridad  {personaje.mod_res_oscuridad}[/]")
-        if personaje.mod_res_elemental != 0:
-            tabla.add_row(f"[underline]Modificador resistencia elemental  {personaje.mod_res_elemental}[/]")
-        if personaje.mod_escudo_sobrenatural != 0:
-            tabla.add_row(f"[underline]Modificador escudo sobrenatural    {personaje.mod_escudo_sobrenatural}[/]")
-        tabla.add_row(f"[underline]Motivación                             {personaje.motivacion}[/]")
-        tabla.add_row(f"[underline]Energía                                {personaje.energia}[/]")
+        tabla.add_row(f"[underline]Jugador                                {personaje["jugador"]}[/]")
+        tabla.add_row(f"[underline]Rango                                  {Personaje.convertir_rango_a_str(personaje["rango"])}[/]")
+        tabla.add_row(f"[underline]Fuerza                                 {personaje["fuerza"]}[/]")
+        tabla.add_row(f"[underline]Agilidad                               {personaje["agilidad"]}[/]")
+        tabla.add_row(f"[underline]Resistencia                            {personaje["resistencia"]}[/]")
+        tabla.add_row(f"[underline]Voluntad                               {personaje["voluntad"]}[/]")
+        tabla.add_row(f"[underline]Inteligencia                           {personaje["inteligencia"]}[/]")
+        tabla.add_row(f"[underline]Liderazgo                              {personaje["liderazgo"]}[/]")
+        tabla.add_row(f"[underline]Potencia                               {personaje["potencia"]}[/]")
+        tabla.add_row(f"[underline]Defensa                                {personaje["defensa"]}[/]")
+        tabla.add_row(f"[underline]Extensión                              {personaje["extension"]}[/]")
+        tabla.add_row(f"[underline]Esferas                                {personaje["cantidad_esferas"]}[/]")
+        tabla.add_row(f"[underline]Vida                                   {personaje["vida"]}[/]")
+        tabla.add_row(f"[underline]Muerte                                 {personaje["muerte"]}[/]")
+        tabla.add_row(f"[underline]Aguante                                {personaje["aguante"]}[/]")
+        tabla.add_row(f"[underline]Recuperación                           {personaje["recuperacion"]}[/]")
+        tabla.add_row(f"[underline]Iniciativa                             {personaje["iniciativa"]}[/]")
+        tabla.add_row(f"[underline]Carga total                            {personaje["carga_total"]}[/]")
+        tabla.add_row(f"[underline]Carga en manos                         {personaje["carga_en_manos"]}[/]")
+        tabla.add_row(f"[underline]Resistencia a la luz                   {personaje["resistencia_a_la_luz"]}[/]")
+        tabla.add_row(f"[underline]Resistencia a la oscuridad             {personaje["resistencia_a_la_oscuridad"]}[/]")
+        tabla.add_row(f"[underline]Resistencia elemental                  {personaje["resistencia_elemental"]}[/]")
+        tabla.add_row(f"[underline]Escudo sobrenatural                    {personaje["escudo_sobrenatural"]}[/]")
+        if personaje["modificador_vida"] != 0:
+            tabla.add_row(f"[underline]Modificador vida                   {personaje["modificador_vida"]}[/]")
+        if personaje["modificador_aguante"] != 0:
+            tabla.add_row(f"[underline]Modificador aguante                {personaje["modificador_aguante"]}[/]")
+        if personaje["modificador_recuperacion"] != 0:
+            tabla.add_row(f"[underline]Modificador recuperación           {personaje["modificador_recuperacion"]}[/]")
+        if personaje["modificador_iniciativa"] != 0:
+            tabla.add_row(f"[underline]Modificador iniciativa             {personaje["modificador_iniciativa"]}[/]")
+        if personaje["modificador_luz"] != 0:
+            tabla.add_row(f"[underline]Modificador resistencia luz        {personaje["modificador_luz"]}[/]")
+        if personaje["modificador_oscuridad"] != 0:
+            tabla.add_row(f"[underline]Modificador resistencia oscuridad  {personaje["modificador_oscuridad"]}[/]")
+        if personaje["modificador_elemental"] != 0:
+            tabla.add_row(f"[underline]Modificador resistencia elemental  {personaje["modificador_elemental"]}[/]")
+        if personaje["modificador_escudo_sobrenatural"] != 0:
+            tabla.add_row(f"[underline]Modificador escudo sobrenatural    {personaje["modificador_escudo_sobrenatural"]}[/]")
+        tabla.add_row(f"[underline]Motivación                             {personaje["motivacion"]}[/]")
+        tabla.add_row(f"[underline]Energía                                {personaje["energia"]}[/]")
         consola.print(tabla)
 
     @staticmethod
