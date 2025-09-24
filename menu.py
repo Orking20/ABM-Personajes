@@ -502,9 +502,9 @@ class Menu:
                         elif opc_menu == 7:
                             Menu._menu_cambiar_cualidad_arma(personaje, id)
                         elif opc_menu == 8:
-                            Menu._menu_cambiar_cualidad_proteccion(personaje, id, "Armaduras")
+                            Menu._menu_cambiar_cualidad_armadura(personaje, id)
                         elif opc_menu == 9:
-                            Menu._menu_cambiar_cualidad_proteccion(personaje, id, "Escudos")
+                            Menu._menu_cambiar_cualidad_escudo(personaje, id)
                     except ValueError:
                         print("\nPor favor, ingresa solo números válidos.")
             else:
@@ -674,54 +674,90 @@ class Menu:
     def _menu_cambiar_cualidad_arma(personaje, id_seleccionado):
         """Abre el menú que se encarga de acompañar al usuario a cambiar cualidades de su arma."""
         while True:
-            eleccion = Menu._input_eleccion_menu("\nElije la cualidad que quieres cambiar de tu arma.\n1. Impacto\n2. Daño\n3. Calidad\n0. Atrás\n: ",
-                                                 "Debe ingresar una opción del menú.", [0, 1, 2, 3])
+            eleccion = Menu._input_eleccion_menu("\nElije la cualidad que quieres cambiar de tu arma.\n1. Impacto\n2. Daño\n3. Calidad\n4. Estructura\n0. Atrás\n: ",
+                                                 "Debe ingresar una opción del menú.", [0, 1, 2, 3, 4])
 
             if eleccion == 0:
                 break
             elif eleccion == 1:
-                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_impacto_arma", "Armas") # Llamada a función cambiar_impacto_arma en personaje
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_arma", "impacto") # Llamada a función cambiar_cualidad_arma en personaje
                 break
             elif eleccion == 2:
-                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_dano_arma", "Armas") # Llamada a función cambiar_dano_arma en personaje
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_arma", "dano") # Llamada a función cambiar_cualidad_arma en personaje
                 break
             elif eleccion == 3:
                 Menu._asignar_calidad(personaje, "Armas", id_seleccionado)
                 break
+            elif eleccion == 4:
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_arma", "estructura") # Llamada a función cambiar_cualidad_arma en personaje
 
     @staticmethod
-    def _menu_cambiar_cualidad_proteccion(personaje, id_seleccionado, tipo_proteccion):
-        """Abre el menú que se encarga de acompañar al usuario a cambiar cualidades de su armadura o escudo."""
+    def _menu_cambiar_cualidad_armadura(personaje, id_seleccionado):
+        """Abre el menú que se encarga de acompañar al usuario a cambiar cualidades de su armadura."""
         while True:
-            eleccion = Menu._input_eleccion_menu("\nElije la cualidad que quieres cambiar de tu armadura.\n1. Contundente\n2. Cortante\n3. Perforante\n4. Estructura\n5. Cobertura\n6. Evasión\n7. Calidad\n0. Atrás\n: ",
+            eleccion = Menu._input_eleccion_menu("\nElije la cualidad que quieres cambiar de tu armadura.\n1. Contundente\n2. Cortante\n3. Perforante\n4. Estructura\n5. Peso\n6. Cobertura\n7. Evasión\n8. Calidad\n0. Atrás\n: ",
+                                                "Debe ingresar una opción del menú.", [0, 1, 2, 3, 4, 5, 6, 7, 8])
+
+            if eleccion == 0:
+                break
+            elif eleccion == 1:
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_armadura", "contundente") # Llamada a función cambiar_cualidad_armadura en personaje
+                break
+            elif eleccion == 2:
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_armadura", "cortante") # Llamada a función cambiar_cualidad_armadura en personaje
+                break
+            elif eleccion == 3:
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_armadura", "perforante") # Llamada a función cambiar_cualidad_armadura en personaje
+                break
+            elif eleccion == 4:
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_armadura", "estructura") # Llamada a función cambiar_cualidad_armadura en personaje
+                break
+            elif eleccion == 5:
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_armadura", "peso") # Llamada a función cambiar_cualidad_armadura en personaje
+                break
+            elif eleccion == 6:
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_armadura", "cobertura") # Llamada a función cambiar_cualidad_armadura en personaje
+                break
+            elif eleccion == 7:
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_armadura", "evasion") # Llamada a función cambiar_cualidad_armadura en personaje
+                break
+            elif eleccion == 8:
+                Menu._asignar_calidad(personaje, "Armaduras", id_seleccionado)
+                break
+
+    @staticmethod
+    def _menu_cambiar_cualidad_escudo(personaje, id_seleccionado):
+        """Abre el menú que se encarga de acompañar al usuario a cambiar cualidades de su escudo."""
+        while True:
+            eleccion = Menu._input_eleccion_menu("\nElije la cualidad que quieres cambiar de tu escudo.\n1. Contundente\n2. Cortante\n3. Perforante\n4. Estructura\n5. Cobertura\n6. Evasión\n7. Calidad\n0. Atrás\n: ",
                                                 "Debe ingresar una opción del menú.", [0, 1, 2, 3, 4, 5, 6, 7])
 
             if eleccion == 0:
                 break
             elif eleccion == 1:
-                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_contundente_armadura", tipo_proteccion) # Llamada a función cambiar_contundente_armadura en personaje
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_escudo", "contundente") # Llamada a función cambiar_cualidad_escudo en personaje
                 break
             elif eleccion == 2:
-                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cortante_armadura", tipo_proteccion) # Llamada a función cambiar_cortante_armadura en personaje
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_escudo", "cortante") # Llamada a función cambiar_cualidad_escudo en personaje
                 break
             elif eleccion == 3:
-                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_perforante_armadura", tipo_proteccion) # Llamada a función cambiar_perforante_armadura en personaje
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_escudo", "perforante") # Llamada a función cambiar_cualidad_escudo en personaje
                 break
             elif eleccion == 4:
-                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_estructura_armadura", tipo_proteccion) # Llamada a función cambiar_estructura_armadura en personaje
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_escudo", "estructura") # Llamada a función cambiar_cualidad_escudo en personaje
                 break
             elif eleccion == 5:
-                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cobertura_armadura", tipo_proteccion) # Llamada a función cambiar_cobertura_armadura en personaje
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_escudo", "cobertura") # Llamada a función cambiar_cualidad_escudo en personaje
                 break
             elif eleccion == 6:
-                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_evasion_armadura", tipo_proteccion) # Llamada a función cambiar_evasion_armadura en personaje
+                Menu._menu_cambiar_cualidad(personaje, id_seleccionado, "cambiar_cualidad_escudo", "evasion") # Llamada a función cambiar_cualidad_escudo en personaje
                 break
             elif eleccion == 7:
-                Menu._asignar_calidad(personaje, tipo_proteccion, id_seleccionado)
+                Menu._asignar_calidad(personaje, "Escudos", id_seleccionado)
                 break
 
     @staticmethod
-    def _menu_cambiar_cualidad(personaje, id, nombre_metodo, tipo_equipo):
+    def _menu_cambiar_cualidad(personaje, id, nombre_metodo, columna):
         """Acompaña al usuario a sumar o restar una cantidad a una cualidad de arma, armadura o escudo."""
         while True:
             (opc_menu, valor) = Menu._input_eleccion_menu_comando("\nElija si sumar o restar, seguido del valor que quieras operar. Ejemplo [1 2]\n1. Sumar\n2. Restar\n0. Atrás\n: ",
@@ -736,7 +772,8 @@ class Menu:
                     print(f"Error: el método '{nombre_metodo}' no existe en el objeto personaje.")
                     return
 
-                metodo(id, opc_menu, valor, tipo_equipo)
+                metodo(id, opc_menu, columna, valor)
+                break
 
     @staticmethod
     def _asignar_calidad(personaje, tipo_equipo, id_seleccionado):

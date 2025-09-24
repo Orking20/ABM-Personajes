@@ -696,109 +696,89 @@ class Personaje:
                 self._actualizar_valor_equipo(self.id, escudo, "Escudos", "Estructura", escudo.estructura)
                 return
 
-    def cambiar_impacto_arma(self, id_arma, operador, valor, tipo_equipo):
-        """Cambia el impacto de un arma. operador 1: Suma. operador 2: resta"""
-        arma = self.id_a_arma(id_arma)
-        if operador == 1: # Suma
-            arma.impacto += valor
-        elif operador == 2: # Resta
-            arma.impacto -= valor
+    def cambiar_cualidad_arma(self, id_arma, operador, columna, valor):
+        """Cambia una cualidad de un arma. operador 1: Suma. operador 2: resta"""
+        armas = Personaje.select_personaje_arma(self.id)
+
+        for arma in armas:
+            if arma["id_pj_arma"] == id_arma:
+                existe = True
+                cualidad = arma[columna]
+                break
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
-            return
+            existe = False
 
-        self._actualizar_valor_equipo(self.id, arma, tipo_equipo, "Impacto", arma.impacto)
+        if existe:
+            if operador == 1: # Suma
+                nuevo_valor = cualidad + valor
+            elif operador == 2: # Resta
+                nuevo_valor = cualidad - valor
+                if nuevo_valor < 0:
+                    print(f"\n\033[31mEl nuevo valor de tu cualidad no puede estar por debajo de cero.\033[0m") # Se pinta de color rojo
+                    return
+            else:
+                print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+                return
 
-    def cambiar_dano_arma(self, id_arma, operador, valor, tipo_equipo):
-        """Cambia el daño de un arma. operador 1: Suma. operador 2: resta"""
-        arma = self.id_a_arma(id_arma)
-        if operador == 1: # Suma
-            arma.dano += valor
-        elif operador == 2: # Resta
-            arma.dano -= valor
+            Personaje._update_personaje_equipo("personaje_arma", id_arma, columna, nuevo_valor)
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
-            return
+            print("Ese ID de arma no existe, o no corresponde con el personaje.")
 
-        self._actualizar_valor_equipo(self.id, arma, tipo_equipo, "Dano", arma.dano)
+    def cambiar_cualidad_armadura(self, id_armadura, operador, columna, valor):
+        """Cambia una cualidad de una armadura. operador 1: Suma. operador 2: resta"""
+        armaduras = Personaje.select_personaje_armadura(self.id)
 
-    def cambiar_contundente_armadura(self, id_proteccion, operador, valor, tipo_proteccion):
-        """Cambia la resistencia contundente de una armadura. operador 1: Suma. operador 2: resta"""
-        proteccion = self.id_a_armadura(id_proteccion)
-        if operador == 1: # Suma
-            proteccion.contundente += valor
-        elif operador == 2: # Resta
-            proteccion.contundente -= valor
+        for armadura in armaduras:
+            if armadura["id_pj_armadura"] == id_armadura:
+                existe = True
+                cualidad = armadura[columna]
+                break
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
-            return
+            existe = False
 
-        self._actualizar_valor_equipo(self.id, proteccion, tipo_proteccion, "Contundente", proteccion.contundente)
+        if existe:
+            if operador == 1: # Suma
+                nuevo_valor = cualidad + valor
+            elif operador == 2: # Resta
+                nuevo_valor = cualidad - valor
+                if nuevo_valor < 0:
+                    print(f"\n\033[31mEl nuevo valor de tu cualidad no puede estar por debajo de cero.\033[0m") # Se pinta de color rojo
+                    return
+            else:
+                print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+                return
 
-    def cambiar_cortante_armadura(self, id_proteccion, operador, valor, tipo_proteccion):
-        """Cambia la resistencia cortante de una armadura. operador 1: Suma. operador 2: resta"""
-        proteccion = self.id_a_armadura(id_proteccion)
-        if operador == 1: # Suma
-            proteccion.cortante += valor
-        elif operador == 2: # Resta
-            proteccion.cortante -= valor
+            Personaje._update_personaje_equipo("personaje_armadura", id_armadura, columna, nuevo_valor)
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
-            return
+            print("Ese ID de armadura no existe, o no corresponde con el personaje.")
 
-        self._actualizar_valor_equipo(self.id, proteccion, tipo_proteccion, "Cortante", proteccion.cortante)
+    def cambiar_cualidad_escudo(self, id_escudo, operador, columna, valor):
+        """Cambia una cualidad de un escudo. operador 1: Suma. operador 2: resta"""
+        escudos = Personaje.select_personaje_escudo(self.id)
 
-    def cambiar_perforante_armadura(self, id_proteccion, operador, valor, tipo_proteccion):
-        """Cambia la resistencia perforante de una armadura. operador 1: Suma. operador 2: resta"""
-        proteccion = self.id_a_armadura(id_proteccion)
-        if operador == 1: # Suma
-            proteccion.perforante += valor
-        elif operador == 2: # Resta
-            proteccion.perforante -= valor
+        for escudo in escudos:
+            if escudo["id_pj_escudo"] == id_escudo:
+                existe = True
+                cualidad = escudo[columna]
+                break
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
-            return
+            existe = False
 
-        self._actualizar_valor_equipo(self.id, proteccion, tipo_proteccion, "Perforante", proteccion.perforante)
+        if existe:
+            if operador == 1: # Suma
+                nuevo_valor = cualidad + valor
+            elif operador == 2: # Resta
+                nuevo_valor = cualidad - valor
+                if nuevo_valor < 0:
+                    print(f"\n\033[31mEl nuevo valor de tu cualidad no puede estar por debajo de cero.\033[0m") # Se pinta de color rojo
+                    return
+            else:
+                print("\n\033[31mOperador inválido. El operador tiene que ser 1 para suma, o 2 para resta.\033[0m")
+                return
 
-    def cambiar_estructura_armadura(self, id_proteccion, operador, valor, tipo_proteccion):
-        """Cambia la estructura de una armadura. operador 1: Suma. operador 2: resta"""
-        proteccion = self.id_a_armadura(id_proteccion)
-        if operador == 1: # Suma
-            proteccion.estructura += valor
-        elif operador == 2: # Resta
-            proteccion.estructura -= valor
+            Personaje._update_personaje_equipo("personaje_escudo", id_escudo, columna, nuevo_valor)
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
-            return
-
-        self._actualizar_valor_equipo(self.id, proteccion, tipo_proteccion, "Estructura", proteccion.estructura)
-
-    def cambiar_cobertura_armadura(self, id_proteccion, operador, valor, tipo_proteccion):
-        """Cambia la cobertura de una armadura. operador 1: Suma. operador 2: resta"""
-        proteccion = self.id_a_armadura(id_proteccion)
-        if operador == 1: # Suma
-            proteccion.cobertura += valor
-        elif operador == 2: # Resta
-            proteccion.cobertura -= valor
-        else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
-            return
-
-        self._actualizar_valor_equipo(self.id, proteccion, tipo_proteccion, "Cobertura", proteccion.cobertura)
-
-    def cambiar_evasion_armadura(self, id_proteccion, operador, valor, tipo_proteccion):
-        """Cambia la evasión cortante de una armadura. operador 1: Suma. operador 2: resta"""
-        proteccion = self.id_a_armadura(id_proteccion)
-        if operador == 1: # Suma
-            proteccion.evasion += valor
-        elif operador == 2: # Resta
-            proteccion.evasion -= valor
-        else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
-            return
-
-        self._actualizar_valor_equipo(self.id, proteccion, tipo_proteccion, "Evasión", proteccion.evasion)
+            print("Ese ID de escudo no existe, o no corresponde con el personaje.")
 
     def modificador_vida(self, operador, valor):
         """Cambia el modificador a la vida del personaje. operador 1: Suma. operador 2: resta"""
@@ -1082,21 +1062,21 @@ class Personaje:
         elif rango_pj == 4:
             return "Héroe"
 
-    def id_a_arma(self, id):
+    def id_a_arma(self, id): # Borrar JSON
         """Mediante el ID de arma, consigue y devuelve un objeto Arma."""
         for arma in self.armas:
             if id == arma.id:
                 return arma
         print(f"Arma con ID {id} no encontrada.")
 
-    def id_a_armadura(self, id):
+    def id_a_armadura(self, id): # Borrar JSON
         """Mediante el ID de armadura, consigue y devuelve un objeto Armadura."""
         for armadura in self.armaduras:
             if id == armadura.id:
                 return armadura
         print(f"Armadura con ID {id} no encontrada.")
 
-    def id_a_escudo(self, id):
+    def id_a_escudo(self, id): # Borrar JSON
         """Mediante el ID de escudo, consigue y devuelve un objeto Escudo."""
         for escudo in self.escudos:
             if id == escudo.id:
@@ -1104,7 +1084,7 @@ class Personaje:
         print(f"Escudo con ID {id} no encontrado.")
 
     @staticmethod
-    def leer_datos_personajes():
+    def leer_datos_personajes(): # Borrar JSON
         """Lee los datos de los personajes guardados en el archivo JSON."""
         path = Path("personajes.json")
         try:
@@ -1396,6 +1376,44 @@ class Personaje:
             conexion.close()
         except sql.OperationalError as e:
             print(f"La tabla 'personajes' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def _update_personaje_equipo(tabla, id, columna, valor):
+        """Actualiza un campo de la tabla personaje_esfera según el valor pasado."""
+        tablas_validas = ("personaje_arma", "personaje_armadura", "personaje_escudo")
+
+        if tabla not in tablas_validas:
+            print("Esa tabla no se puede modificar.")
+            return
+
+        match tabla:
+            case "personaje_arma":
+                columnas_validas = ("estructura", "impacto", "dano", "calidad")
+            case "personaje_armadura":
+                columnas_validas = ("estructura", "peso", "contundente", "cortante",
+                                    "perforante", "cobertura", "evasion", "calidad")
+            case "personaje_escudo":
+                columnas_validas = ("estructura", "contundente", "cortante", "perforante",
+                                    "cobertura", "evasion", "calidad")
+
+        if columna not in columnas_validas:
+            print(f"La columna '{columna}' no se puede modificar.")
+            return
+
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            cursor = conexion.cursor()
+
+            cursor.execute(f"UPDATE {tabla} SET {columna} = ? WHERE id = ?",
+                           (valor, id))
+
+            conexion.commit()
+            conexion.close()
+        except sql.OperationalError as e:
+            print(f"La tabla '{tabla}' no existe, o no se puede abrir por falta de persmisos.")
             print(f"Error detallado: {e}")
         finally:
             conexion.close()
