@@ -786,10 +786,9 @@ class Menu:
                     personaje.cambiar_calidad_objeto(id_seleccionado, tipo_equipo, nueva_calidad)
                     return
                 else:
-                    print("\nEl equipo solo puede tener calidad entre 0 y 5.")
+                    print("\n\033[31mEl equipo solo puede tener calidad entre 0 y 5.\033[0m")
             except ValueError:
-                print("\nIngrese un número válido entre 0 y 5.")
-
+                print("\n\033[31mIngrese un número válido entre 0 y 5.\033[0m")
 
     @staticmethod
     def _mostrar_equipo(personaje):

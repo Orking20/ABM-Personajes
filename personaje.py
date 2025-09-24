@@ -630,71 +630,107 @@ class Personaje:
         """Cambia la calidad de cualquier equipo: arma, armadura o escudo."""
         if nueva_calidad >= 0 or nueva_calidad <= 5:
             if tipo_equipo == "Armas":
-                arma = self.id_a_arma(id_equipo)
-                arma.calidad = nueva_calidad
-                self._aplicar_efecto_calidad_arma(arma)
-                self._actualizar_valor_equipo(self.id, arma, "Armas", "Calidad", nueva_calidad)
+                armas = Personaje.select_personaje_arma(self.id)
+                for arma in armas:
+                    if arma["id_pj_arma"] == id_equipo:
+                        existe = True
+                        calidad_anterior = arma["calidad"]
+                        break
+                
+                if existe:
+                    Personaje._update_personaje_equipo("personaje_arma", id_equipo, "calidad", nueva_calidad)
+                    self._aplicar_efecto_calidad_arma(id_equipo, calidad_anterior)
+                else:
+                    print("Ese ID de arma no existe, o no corresponde con el personaje.")
             elif tipo_equipo == "Armaduras":
-                armadura = self.id_a_armadura(id_equipo)
-                armadura.calidad = nueva_calidad
-                self._aplicar_efecto_calidad_armadura(armadura)
-                self._actualizar_valor_equipo(self.id, armadura, "Armaduras", "Calidad", nueva_calidad)
+                armaduras = Personaje.select_personaje_armadura(self.id)
+                for armadura in armaduras:
+                    if armadura["id_pj_armadura"] == id_equipo:
+                        existe = True
+                        calidad_anterior = armadura["calidad"]
+                        break
+
+                if existe:
+                    Personaje._update_personaje_equipo("personaje_armadura", id_equipo, "calidad", nueva_calidad)
+                    self._aplicar_efecto_calidad_armadura(id_equipo, calidad_anterior)
+                else:
+                    print("Ese ID de armadura no existe, o no corresponde con el personaje.")
             elif tipo_equipo == "Escudos":
-                escudo = self.id_a_escudo(id_equipo)
-                escudo.calidad = nueva_calidad
-                self._aplicar_efecto_calidad_escudo(escudo)
-                self._actualizar_valor_equipo(self.id, escudo, "Escudos", "Calidad", nueva_calidad)
+                escudos = Personaje.select_personaje_escudo(self.id)
+                for escudo in escudos:
+                    if escudo["id_pj_escudo"] == id_equipo:
+                        existe = True
+                        calidad_anterior = escudo["calidad"]
+                        break
+
+                if existe:
+                    Personaje._update_personaje_equipo("personaje_escudo", id_equipo, "calidad", nueva_calidad)
+                    self._aplicar_efecto_calidad_escudo(id_equipo, calidad_anterior)
+                else:
+                    print("Ese ID del escudo no existe, o no corresponde con el personaje.")
         else:
-            print("La calidad del equipo no puede ser inferior a cero ni mayor a cinco.")
+            print("\033[31mLa calidad del equipo no puede ser inferior a cero ni mayor a cinco.\033[0m")
 
-    def _aplicar_efecto_calidad_arma(self, arma):
+    def _aplicar_efecto_calidad_arma(self, id_arma, calidad_anterior):
         """Aplica el efecto en el arma según la calidad."""
-        armas_json = Arma.leer_datos_armas(self.sten)
-        for arma_json in armas_json:
-            if arma.nombre == arma_json["Nombre"]:
-                i = -1
-                while i < arma.calidad - 1:
-                    i += 1
+        armas = Personaje.select_personaje_arma(self.id)
+        for arma in armas:
+            if id_arma == arma["id_pj_arma"]:
+                nueva_calidad = arma["calidad"]
+                if nueva_calidad > calidad_anterior:
+                    diferencia_calidad = nueva_calidad - calidad_anterior
+                    estructura = arma["estructura"] + diferencia_calidad
+                elif nueva_calidad < calidad_anterior:
+                    diferencia_calidad = calidad_anterior - nueva_calidad
+                    estructura = arma["estructura"] - diferencia_calidad
+                else: # Si la calidad anterior es igual a la nueva
+                    break
 
-                arma.estructura = arma_json["Estructura"] + i
                 if self.sten == 2:
-                    arma.iniciativa = arma_json["Alcance"] + self.agilidad + self.inteligencia + i
-                    self._actualizar_valor_equipo(self.id, arma, "Armas", "Iniciativa", arma.iniciativa)
+                    iniciativa = arma["alcance"] + self.agilidad + self.inteligencia + diferencia_calidad
+                    Personaje._update_personaje_equipo("personaje_arma", id_arma, "iniciativa", iniciativa)
 
-                self._actualizar_valor_equipo(self.id, arma, "Armas", "Estructura", arma.estructura)
-                return
+                Personaje._update_personaje_equipo("personaje_arma", id_arma, "estructura", estructura)
+                break
 
-    def _aplicar_efecto_calidad_armadura(self, armadura):
+    def _aplicar_efecto_calidad_armadura(self, id_armadura, calidad_anterior):
         """Aplica el efecto en la armadura según la calidad."""
-        armaduras_json = Armadura.leer_datos_armaduras(self.sten)
-        for armadura_json in armaduras_json:
-            if armadura.nombre == armadura_json["Nombre"]:
-                i = -1
-                j = 1
-                while i < armadura.calidad - 1:
-                    i += 1
-                    j -= 1
+        armaduras = Personaje.select_personaje_armadura(self.id)
+        for armadura in armaduras:
+            if id_armadura == armadura["id_pj_armadura"]:
+                nueva_calidad = armadura["calidad"]
+                if nueva_calidad > calidad_anterior:
+                    diferencia_calidad = nueva_calidad - calidad_anterior
+                    estructura = armadura["estructura"] + diferencia_calidad
+                    peso = armadura["peso"] - diferencia_calidad
+                elif nueva_calidad < calidad_anterior:
+                    diferencia_calidad = calidad_anterior - nueva_calidad
+                    estructura = armadura["estructura"] - diferencia_calidad
+                    peso = armadura["peso"] + diferencia_calidad
+                else: # Si la calidad anterior es igual a la nueva
+                    break
 
-                armadura.estructura = armadura_json["Estructura"] + i
-                armadura.peso = armadura_json["Peso"] + j
+                Personaje._update_personaje_equipo("personaje_armadura", id_armadura, "estructura", estructura)
+                Personaje._update_personaje_equipo("personaje_armadura", id_armadura, "peso", peso)
+                break
 
-                self._actualizar_valor_equipo(self.id, armadura, "Armaduras", "Estructura", armadura.estructura)
-                self._actualizar_valor_equipo(self.id, armadura, "Armaduras", "Peso", armadura.peso)
-                return
+    def _aplicar_efecto_calidad_escudo(self, id_escudo, calidad_anterior):
+        """Aplica el efecto en el escudo según la calidad."""
+        escudos = Personaje.select_personaje_escudo(self.id)
+        for escudo in escudos:
+            if id_escudo == escudo["id_pj_escudo"]:
+                nueva_calidad = escudo["calidad"]
+                if nueva_calidad > calidad_anterior:
+                    diferencia_calidad = nueva_calidad - calidad_anterior
+                    estructura = escudo["estructura"] + diferencia_calidad
+                elif nueva_calidad < calidad_anterior:
+                    diferencia_calidad = calidad_anterior - nueva_calidad
+                    estructura = escudo["estructura"] - diferencia_calidad
+                else: # Si la calidad anterior es igual a la nueva
+                    break
 
-    def _aplicar_efecto_calidad_escudo(self, escudo):
-        """Aplica el efecto en la escudo según la calidad."""
-        escudos_json = Escudo.leer_datos_escudos(self.sten)
-        for escudo_json in escudos_json:
-            if escudo.nombre == escudo_json["Nombre"]:
-                i = -1
-                while i < escudo.calidad - 1:
-                    i += 1
-
-                escudo.estructura = escudo_json["Estructura"] + i
-
-                self._actualizar_valor_equipo(self.id, escudo, "Escudos", "Estructura", escudo.estructura)
-                return
+                Personaje._update_personaje_equipo("personaje_escudo", id_escudo, "estructura", estructura)
+                break
 
     def cambiar_cualidad_arma(self, id_arma, operador, columna, valor):
         """Cambia una cualidad de un arma. operador 1: Suma. operador 2: resta"""
@@ -1061,27 +1097,6 @@ class Personaje:
             return "Luchador"
         elif rango_pj == 4:
             return "Héroe"
-
-    def id_a_arma(self, id): # Borrar JSON
-        """Mediante el ID de arma, consigue y devuelve un objeto Arma."""
-        for arma in self.armas:
-            if id == arma.id:
-                return arma
-        print(f"Arma con ID {id} no encontrada.")
-
-    def id_a_armadura(self, id): # Borrar JSON
-        """Mediante el ID de armadura, consigue y devuelve un objeto Armadura."""
-        for armadura in self.armaduras:
-            if id == armadura.id:
-                return armadura
-        print(f"Armadura con ID {id} no encontrada.")
-
-    def id_a_escudo(self, id): # Borrar JSON
-        """Mediante el ID de escudo, consigue y devuelve un objeto Escudo."""
-        for escudo in self.escudos:
-            if id == escudo.id:
-                return escudo
-        print(f"Escudo con ID {id} no encontrado.")
 
     @staticmethod
     def leer_datos_personajes(): # Borrar JSON
@@ -1613,7 +1628,7 @@ class Personaje:
                 self.guardar_personajes(personajes, False)
                 break
 
-    def _actualizar_valor_habilidad(self, id_pj, habilidad, clave, valor):
+    def _actualizar_valor_habilidad(self, id_pj, habilidad, clave, valor): # Borrar JSON
         """Actualiza un solo atributo de una habilidad del JSON de personajes."""
         personajes = Personaje.leer_datos_personajes()
         for pj in personajes:
@@ -1625,7 +1640,7 @@ class Personaje:
                         self.guardar_personajes(personajes, False)
                         break
 
-    def _actualizar_valor_equipo(self, id_pj, equipo, tipo_equipo, clave, valor):
+    def _actualizar_valor_equipo(self, id_pj, equipo, tipo_equipo, clave, valor): # Borrar JSON
         """Actualiza un solo atributo de un arma del JSON de personajes."""
         personajes = Personaje.leer_datos_personajes()
         for pj in personajes:
@@ -1636,7 +1651,7 @@ class Personaje:
                         self.guardar_personajes(personajes, False)
                         break
 
-    def _actualizar_esfera(self, esfera, clave, valor):
+    def _actualizar_esfera(self, esfera, clave, valor): # Borrar JSON
         """Actualiza un solo atributo de una esfera del JSON de personajes."""
         personajes = Personaje.leer_datos_personajes()
         for pj in personajes:
