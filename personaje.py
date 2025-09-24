@@ -217,28 +217,15 @@ class Personaje:
         for nombre, atributos, tipo in lista_habilidades:
             self.habilidades.append(Habilidad(nombre, atributos, tipo))
 
-    def _agregar_habilidad(self, nombre, atributos, tipo, es_esfera=False):
-        """Agrega una habilidad al personaje."""
-        if len(nombre) > 0 and Personaje._validar_tipo_habilidad(tipo) and Personaje._validar_atributos_habilidad(atributos):
-            if es_esfera:
-                nombre = f"Esfera ({nombre})"
-            self.habilidades.append(Habilidad(f"{nombre}", atributos, tipo))
-            self.calcular_xp_req_habilidades()
-            self._guardar_habilidad()
-
-    def _quitar_habilidad(self, nombre_hab, es_esfera=False):
+    def _resetear_habilidad(self, id_hab):
         """Quita una habilidad al personaje."""
-        if es_esfera:
-            nombre_hab = f"Esfera ({nombre_hab})"
-        i = 0
-        for hab in self.habilidades:
-            if i <= 55:
-                if hab.nombre == nombre_hab:
-                    self.habilidades.remove(hab)
-                    self._guardar_habilidad()
-            else:
-                print("No puedes eliminar las habilidades por defecto.")
-            i += 1
+        habilidades = Personaje.select_personaje_habilidad(self.id)
+        for hab in habilidades:
+            if hab["id_personaje"] == self.id and hab["id_habilidad"] == id_hab:
+                self._update_personaje_habilidad("nivel", 0, id_hab)
+                self._update_personaje_habilidad("xp", 0, id_hab)
+                self._update_personaje_habilidad("xp_requerida", 5, id_hab)
+                break
 
     @staticmethod
     def _validar_tipo_habilidad(tipo):
@@ -530,27 +517,20 @@ class Personaje:
 
     def agregar_esfera(self, id_esfera):
         """Agrega la esfera pasada por parámetros si el personaje tiene hueco para esferas."""
-        if len(self.esferas) < self.cant_esferas:
-            if self.sten == 1:
-                esferas = Esfera.json_a_esfera()
-                #clave_parametros = "Parámetros"
-                #clave_efecto = "Efecto"
-            elif self.sten == 2:
-                esferas = Esfera.json_a_esfera(2)
-                #clave_parametros = "Parámetros STEN2"
-                #clave_efecto = "Efecto STEN2"
+        #Se calcula la cantidad de esferas del personaje
+        esferas_pj = Personaje.select_personaje_esfera(self.id)
+        cantidad = 0
+        id_anterior = None
+        for esfera in esferas_pj:
+            if esfera["id"] != id_anterior:
+                id_anterior = esfera["id"]
+                cantidad += 1
+
+        if cantidad < self.cant_esferas:
+            esferas = base_datos.select_esferas()
             for esfera in esferas:
-                if esfera.id == id_esfera:
-                    esfera.nivel = 0
-                    #i = 0
-                    #for poder in esfera.poderes:
-                    #    esfera.poderes[i]["Parámetros"] = poder[clave_parametros]
-                    #    esfera.poderes[i]["Efecto"] = poder[clave_efecto]
-                    #    i += 1
-                    self.esferas.append(esfera)
-                    self._guardar_esfera() # Borrar JSON
-                    self._agregar_habilidad(esfera.nombre, "P", "Sobrenaturales", True)
-                    self.insert_personaje_esfera(esfera.id, esfera.nivel, 0)
+                if esfera["id"] == id_esfera:
+                    self.insert_personaje_esfera(id_esfera, 0, 0)
                     return
             print("El ID de esfera pasado no existe.")
         else:
@@ -558,14 +538,15 @@ class Personaje:
 
     def quitar_esfera(self, id_esfera):
         """Quita la esfera pasada por parámetros del personaje."""
-        for esfera in self.esferas:
-            if id_esfera == esfera.id:
-                self.esferas.remove(esfera)
-                self._quitar_habilidad(esfera.nombre, True)
-                self._guardar_esfera()
+        habilidades = Personaje.select_personaje_habilidad(self.id)
+        for hab in habilidades:
+            if id_esfera == hab["id"]:
+                self._resetear_habilidad(id_esfera)
+                self._delete_personaje_esfera(id_esfera)
                 print("\nEsfera eliminada con éxito.")
-            else:
-                print(f"\nEsa esfera no se encuentra en el personaje.")
+                break
+        else:
+            print(f"\nEsa esfera no se encuentra en el personaje.")
 
     def calcular_afinidad(self):
         """Calcula y guarda la afinidad de cada esfera del personaje."""
@@ -1164,7 +1145,7 @@ class Personaje:
 
             cursor.execute(f"""
                             SELECT h.id, h.nombre, h.tipo,
-                            ph.id_habilidad, ph.nivel, ph.xp, ph.xp_requerida
+                            ph.id_personaje, ph.id_habilidad, ph.nivel, ph.xp, ph.xp_requerida
                             FROM personaje_habilidad ph
                             JOIN habilidades h ON ph.id_habilidad = h.id
                             WHERE ph.id_personaje = ?
@@ -1456,11 +1437,11 @@ class Personaje:
         finally:
             conexion.close()
 
-    def _update_personaje_habilidad(self, clave, valor, id_habilidad):
+    def _update_personaje_habilidad(self, columna, valor, id_habilidad):
         """Actualiza un campo de la tabla personaje_habilidad según el valor pasado."""
         columnas_validas = ("nivel", "xp", "xp_requerida")
 
-        if clave not in columnas_validas:
+        if columna not in columnas_validas:
             print("Esa columna no se puede modificar.")
             return
 
@@ -1468,7 +1449,7 @@ class Personaje:
             conexion = sql.connect(f"espada_negra.db")
             cursor = conexion.cursor()
 
-            cursor.execute(f"UPDATE personaje_habilidad SET {clave} = ? WHERE id_personaje = ? AND id_habilidad = ?",
+            cursor.execute(f"UPDATE personaje_habilidad SET {columna} = ? WHERE id_personaje = ? AND id_habilidad = ?",
                            (valor, self.id, id_habilidad))
 
             conexion.commit()
@@ -1619,6 +1600,22 @@ class Personaje:
         finally:
             conexion.close()
 
+    def _delete_personaje_esfera(self, id_esfera):
+        """Elimina la esfera seleccionada del personaje."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            cursor = conexion.cursor()
+
+            cursor.execute("DELETE FROM personaje_esfera WHERE id_personaje = ? AND id_esfera = ?",
+                           (self.id, id_esfera))
+
+            conexion.commit()
+        except sql.OperationalError as e:
+            print(f"La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.")
+            print(f"Error detallado: {e}")
+        finally:
+            conexion.close()
+
     def _actualizar_valor(self, id_pj, clave, valor): # Borrar JSON
         """Actualiza un solo atributo del JSON de personajes."""
         personajes = Personaje.leer_datos_personajes()
@@ -1688,7 +1685,7 @@ class Personaje:
                 except Exception as e:
                     print(f"Error al guardar el archivo: {e}")
 
-    def _guardar_esfera(self):
+    def _guardar_esfera(self): # Borrar JSON
         """Guarda una esfera en el personaje."""
         personajes = Personaje.leer_datos_personajes()
         for pj in personajes:
@@ -1712,7 +1709,7 @@ class Personaje:
                 except Exception as e:
                     print(f"Error al guardar el archivo: {e}")
 
-    def _guardar_habilidad(self):
+    def _guardar_habilidad(self): # Borrar JSON
         """Guarda una habilidad en el personaje."""
         personajes = Personaje.leer_datos_personajes()
         for pj in personajes:

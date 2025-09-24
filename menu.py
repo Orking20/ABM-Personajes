@@ -986,6 +986,7 @@ class Menu:
                         pasiva = fila["pasiva_sten2"]
 
                     esferas_dic[esfera_nombre] = {
+                        "id": fila["id"],
                         "afinidad": fila["afinidad"],
                         "nivel": fila["nivel"],
                         "pasiva": pasiva,
@@ -1012,9 +1013,10 @@ class Menu:
             # Se muestran las esferas
             for esfera, valores in esferas_dic.items():
                 print(f"\n·Esfera: [{esfera.upper()}]")
-                print(f"\n·Afinidad: {valores['afinidad']}")
-                print(f"·Nivel: {valores['nivel']}")
-                print(f"\n·Pasiva: {valores['pasiva']}")
+                print(f"\n·ID: {valores["id"]}")
+                print(f"·Afinidad: {valores["afinidad"]}")
+                print(f"·Nivel: {valores["nivel"]}")
+                print(f"\n·Pasiva: {valores["pasiva"]}")
 
                 print("\n↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓")
                 for poder, datos in valores["poderes"].items():
@@ -1037,7 +1039,7 @@ class Menu:
         while True:
             print(f"\n-------------------------------- Agregar esfera a {personaje.nombre} --------------------------------")
             Menu._mostrar_esferas()
-            opciones = list(range(26 + 1))
+            opciones = [0] + list(range(40, 65 + 1))
             eleccion = Menu._input_eleccion_menu(f"\nElija la esfera que quieres agregar a {personaje.nombre}\n: ",
                                                  "\nIngrese una esfera válida.", opciones)
 
@@ -1054,12 +1056,19 @@ class Menu:
             print(f"\n-------------------------------- Quitar esfera a {personaje.nombre} --------------------------------")
             print("\nIMPORTANTE: Esta opción está solo por si agregaste una esfera por error al personaje. Según las reglas del juego, una vez agregas una esfera a un personaje, esta te acompaña para siempre.")
 
+            habilidades = Personaje.select_personaje_habilidad(personaje.id)
+            esferas = Personaje.select_personaje_esfera(personaje.id)
+
+            nombres = []
+            for esfera in esferas:
+                if esfera["nombre_e"] not in nombres:
+                    nombres.append(f"Esfera ({esfera["nombre_e"]})")
+
             opciones = [0]
-            i = 0
-            for esfera in personaje.esferas:
-                print(f"{esfera.id}. {esfera.nombre}")
-                i += 1
-                opciones.append(i)
+            for hab in habilidades:
+                if hab["nombre"] in nombres:
+                    print(f"{hab["id"]}. {hab["nombre"]}")
+                    opciones.append(hab["id"])
 
             eleccion = Menu._input_eleccion_menu(f"\nElija la esfera que quieres eliminar a {personaje.nombre}\n: ",
                                                  "\nIngrese una esfera válida.", opciones)
