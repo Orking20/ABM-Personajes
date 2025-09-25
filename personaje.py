@@ -933,8 +933,8 @@ class Personaje:
         else:
             print("No puedes gastar más puntos de aguante que tu resistencia por turno.")
 
-        self._actualizar_valor(self.id, "Aguante actual", self.aguante_actual)
-        self._actualizar_valor(self.id, "Aguante gastado por turno", self.aguante_gastado_por_turno)
+        self._update_personaje("aguante_actual", self.aguante_actual)
+        self._update_personaje("aguante_gastado_por_turno", self.aguante_gastado_por_turno)
 
     def recuperar_aguante(self, recuperacion):
         """Recupera tantos puntos de aguante al personaje como los pasados por parámetro, hasta un máximo como su aguante total."""
@@ -945,7 +945,7 @@ class Personaje:
             self.aguante_actual = self.aguante
             print("Aguante recuperado completamente")
 
-        self._actualizar_valor(self.id, "Aguante actual", self.aguante_actual)
+        self._update_personaje("aguante_actual", self.aguante_actual)
 
     def recibir_dano(self, dano):
         """Recibe el daño y lo ve reflejado en su vida actual, en si queda aturdido y en si recibe heridas."""
@@ -957,24 +957,24 @@ class Personaje:
             self.turnos_aturdido = 2
             self.concentracion = 0
             print(f"Quedas aturdido este turno y el siguiente, y pierdes todos los puntos de concentración.")
-            self._actualizar_valor(self.id, "Turnos aturdido", self.turnos_aturdido)
-            self._actualizar_valor(self.id, "Concentración", self.concentracion)
+            self._update_personaje("concentracion", self.concentracion)
+            self._update_personaje("turnos_aturdido", self.turnos_aturdido)
         elif dano > self.voluntad:
             self.turnos_aturdido = 1
             print(f"Quedas aturdido este turno.")
             concentracion_perdida = dano - self.voluntad
             if self.concentracion > 0 and concentracion_perdida > 0:
                 self.perder_concentracion(concentracion_perdida)
-            self._actualizar_valor(self.id, "Turnos aturdido", self.turnos_aturdido)
+            self._update_personaje("turnos_aturdido", self.turnos_aturdido)
 
         if dano > self.fuerza * 3 and self.sten == 1:
             print("A elección del atacante:\nBrazo: -2 daño, -1 vida por turno\nPierna: -6 iniciativa, -1 vida por turno\nTorso o cabeza: -6 aguante, -1 vida por turno\nSi el golpe fue en un brazo o una pierna, la extremidad se verá comprometida y no podrá utilizarse.")
             self.herida_grave = True
-            self._actualizar_valor(self.id, "Herida grave", self.herida_grave)
+            self._update_personaje("herida_grave", self.herida_grave)
         elif dano > self.fuerza * 3 and self.sten == 2:
             print("A elección del atacante: Pierde un punto del atributo a todos los efectos. -1 vida por turno\nSi el atributo dañado es fuerza o agilidad, respectivamente un brazo o una pierna se verá comprometido y no podrá utilizarse. Una vez se recupere, pierde un punto del atributo solamente con uno de los aspectos de dicho atributo (a elección del atacante).")
             self.herida_grave = True
-            self._actualizar_valor(self.id, "Herida grave", self.herida_grave)
+            self._update_personaje("herida_grave", self.herida_grave)
         elif dano > self.fuerza * 2 and self.sten == 1:
             print("A elección del atacante:\nBrazo: -1 daño\nPierna: -3 iniciativa\nTorso o cabeza: -3 aguante")
         elif dano > self.fuerza * 2 and self.sten == 2:
@@ -987,8 +987,8 @@ class Personaje:
         if self.dano_recibido >= self.muerte:
             print(f"{self.nombre} muere.")
 
-        self._actualizar_valor(self.id, "Vida actual", self.vida_actual)
-        self._actualizar_valor(self.id, "Dano recibido", self.dano_recibido)
+        self._update_personaje("vida_actual", self.vida_actual)
+        self._update_personaje("dano_recibido", self.dano_recibido)
 
     def recuperar_vida(self, puntos_restaurar):
         """Recupera los puntos de vida pasados por parámetros y los refleja en su vida actual."""
@@ -1001,8 +1001,8 @@ class Personaje:
             self.dano_recibido = 0
             print("Vida restaurada completamente")
 
-        self._actualizar_valor(self.id, "Vida actual", self.vida_actual)
-        self._actualizar_valor(self.id, "Dano recibido", self.dano_recibido)
+        self._update_personaje("vida_actual", self.vida_actual)
+        self._update_personaje("dano_recibido", self.dano_recibido)
 
     def curar_herida_grave(self):
         """Cura una herida grave en caso de tenerla."""
@@ -1010,6 +1010,7 @@ class Personaje:
             self.herida_grave = False
             print("Herida curada.")
             self._actualizar_valor(self.id, "Herida grave", self.herida_grave)
+            self._update_personaje("herida_grave", self.herida_grave)
         else:
             print(f"{self.nombre} no tiene ninguna herida grave.")
 
@@ -1017,7 +1018,7 @@ class Personaje:
         """Gana los puntos de concentración pasados por parámetros."""
         self.concentracion += puntos_concentracion
         print(f"Concentración +{puntos_concentracion}")
-        self._actualizar_valor(self.id, "Concentración", self.concentracion)
+        self._update_personaje("concentracion", self.concentracion)
 
     def perder_concentracion(self, puntos_concentracion):
         """Pierde los puntos de concentración pasados por parámetros."""
@@ -1026,18 +1027,18 @@ class Personaje:
         else:
             self.concentracion = 0
         print(f"Concentración -{puntos_concentracion}")
-        self._actualizar_valor(self.id, "Concentración", self.concentracion)
+        self._update_personaje("concentracion", self.concentracion)
 
     def ronda_nueva(self):
         """Se encarga de retirar aturdimiento y aguante usado por turno del personaje en caso de tenerlo."""
         if self.aguante_gastado_por_turno > 0:
             self.aguante_gastado_por_turno = 0
-            self._actualizar_valor(self.id, "Aguante gastado por turno", self.aguante_gastado_por_turno)
+            self._update_personaje("aguante_gastado_por_turno", self.aguante_gastado_por_turno)
 
         if self.turnos_aturdido > 0:
             self.turnos_aturdido -= 1
             print("Turnos aturdidos -1")
-            self._actualizar_valor(self.id, "Turnos aturdido", self.turnos_aturdido)
+            self._update_personaje("turnos_aturdido", self.turnos_aturdido)
 
         if self.herida_grave:
             self.recibir_dano(1)
