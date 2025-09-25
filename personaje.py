@@ -811,8 +811,8 @@ class Personaje:
             print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
             return
 
-        self._actualizar_valor(self.id, "Modificador vida", self.mod_vida)
-        self._actualizar_valor(self.id, "Vida", self.vida)
+        self._update_personaje("modificador_vida", self.mod_vida)
+        self._update_personaje("vida", self.vida)
 
     def modificador_aguante(self, operador, valor):
         """Cambia el modificador al aguante del personaje. operador 1: Suma. operador 2: resta"""
@@ -828,8 +828,8 @@ class Personaje:
             print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
             return
 
-        self._actualizar_valor(self.id, "Modificador aguante", self.mod_aguante)
-        self._actualizar_valor(self.id, "Aguante", self.aguante)
+        self._update_personaje("modificador_aguante", self.mod_aguante)
+        self._update_personaje("aguante", self.aguante)
 
     def modificador_recuperacion(self, operador, valor):
         """Cambia el modificador a la recuperación del personaje. operador 1: Suma. operador 2: resta"""
@@ -843,8 +843,8 @@ class Personaje:
             print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
             return
 
-        self._actualizar_valor(self.id, "Modificador recuperación", self.mod_recuperacion)
-        self._actualizar_valor(self.id, "Recuperación", self.mod_recuperacion)
+        self._update_personaje("modificador_recuperacion", self.mod_recuperacion)
+        self._update_personaje("recuperacion", self.recuperacion)
 
     def modificador_iniciativa(self, operador, valor):
         """Cambia el modificador a la iniciativa del personaje. operador 1: Suma. operador 2: resta"""
@@ -858,8 +858,8 @@ class Personaje:
             print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
             return
 
-        self._actualizar_valor(self.id, "Modificador iniciativa", self.mod_iniciativa)
-        self._actualizar_valor(self.id, "Iniciativa", self.iniciativa)
+        self._update_personaje("modificador_iniciativa", self.mod_iniciativa)
+        self._update_personaje("iniciativa", self.iniciativa)
 
     def modificador_luz(self, operador, valor):
         """Cambia el modificador a la resistencia a la luz del personaje. operador 1: Suma. operador 2: resta"""
@@ -873,8 +873,8 @@ class Personaje:
             print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
             return
 
-        self._actualizar_valor(self.id, "Modificador luz", self.mod_res_luz)
-        self._actualizar_valor(self.id, "Resistencia a la luz", self.resistencia_luz)
+        self._update_personaje("modificador_luz", self.mod_res_luz)
+        self._update_personaje("resistencia_a_la_luz", self.resistencia_luz)
 
     def modificador_oscuridad(self, operador, valor):
         """Cambia el modificador a la resistencia a la oscuridad del personaje. operador 1: Suma. operador 2: resta"""
@@ -888,8 +888,8 @@ class Personaje:
             print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
             return
 
-        self._actualizar_valor(self.id, "Modificador oscuridad", self.mod_res_oscuridad)
-        self._actualizar_valor(self.id, "Resistencia a la oscuridad", self.resistencia_oscuridad)
+        self._update_personaje("modificador_oscuridad", self.mod_res_oscuridad)
+        self._update_personaje("resistencia_a_la_oscuridad", self.resistencia_oscuridad)
 
     def modificador_elemental(self, operador, valor):
         """Cambia el modificador a la resistencia elemental del personaje. operador 1: Suma. operador 2: resta"""
@@ -903,8 +903,8 @@ class Personaje:
             print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
             return
 
-        self._actualizar_valor(self.id, "Modificador elemental", self.mod_res_elemental)
-        self._actualizar_valor(self.id, "Resistencia elemental", self.resistencia_elemental)
+        self._update_personaje("modificador_elemental", self.mod_res_elemental)
+        self._update_personaje("resistencia_elemental", self.resistencia_elemental)
 
     def modificador_escudo_sobrenatural(self, operador, valor):
         """Cambia el modificador al escudo sobrenatural del personaje. operador 1: Suma. operador 2: resta"""
@@ -918,8 +918,8 @@ class Personaje:
             print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
             return
 
-        self._actualizar_valor(self.id, "Modificador escudo sobrenatural", self.mod_escudo_sobrenatural)
-        self._actualizar_valor(self.id, "Escudo sobrenatural", self.escudo_sobrenatural)
+        self._update_personaje("modificador_escudo_sobrenatural", self.mod_escudo_sobrenatural)
+        self._update_personaje("escudo_sobrenatural", self.escudo_sobrenatural)
 
     def gastar_aguante(self):
         """Le resta un punto de aguante al personaje si puede."""

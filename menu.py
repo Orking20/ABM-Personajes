@@ -367,21 +367,21 @@ class Menu:
         tabla.add_row(f"[underline]Resistencia elemental                  {personaje["resistencia_elemental"]}[/]")
         tabla.add_row(f"[underline]Escudo sobrenatural                    {personaje["escudo_sobrenatural"]}[/]")
         if personaje["modificador_vida"] != 0:
-            tabla.add_row(f"[underline]Modificador vida                   {personaje["modificador_vida"]}[/]")
+            tabla.add_row(f"[underline]Modificador vida                       {personaje["modificador_vida"]}[/]")
         if personaje["modificador_aguante"] != 0:
-            tabla.add_row(f"[underline]Modificador aguante                {personaje["modificador_aguante"]}[/]")
+            tabla.add_row(f"[underline]Modificador aguante                    {personaje["modificador_aguante"]}[/]")
         if personaje["modificador_recuperacion"] != 0:
-            tabla.add_row(f"[underline]Modificador recuperación           {personaje["modificador_recuperacion"]}[/]")
+            tabla.add_row(f"[underline]Modificador recuperación               {personaje["modificador_recuperacion"]}[/]")
         if personaje["modificador_iniciativa"] != 0:
-            tabla.add_row(f"[underline]Modificador iniciativa             {personaje["modificador_iniciativa"]}[/]")
+            tabla.add_row(f"[underline]Modificador iniciativa                 {personaje["modificador_iniciativa"]}[/]")
         if personaje["modificador_luz"] != 0:
-            tabla.add_row(f"[underline]Modificador resistencia luz        {personaje["modificador_luz"]}[/]")
+            tabla.add_row(f"[underline]Modificador resistencia luz            {personaje["modificador_luz"]}[/]")
         if personaje["modificador_oscuridad"] != 0:
-            tabla.add_row(f"[underline]Modificador resistencia oscuridad  {personaje["modificador_oscuridad"]}[/]")
+            tabla.add_row(f"[underline]Modificador resistencia oscuridad      {personaje["modificador_oscuridad"]}[/]")
         if personaje["modificador_elemental"] != 0:
-            tabla.add_row(f"[underline]Modificador resistencia elemental  {personaje["modificador_elemental"]}[/]")
+            tabla.add_row(f"[underline]Modificador resistencia elemental      {personaje["modificador_elemental"]}[/]")
         if personaje["modificador_escudo_sobrenatural"] != 0:
-            tabla.add_row(f"[underline]Modificador escudo sobrenatural    {personaje["modificador_escudo_sobrenatural"]}[/]")
+            tabla.add_row(f"[underline]Modificador escudo sobrenatural        {personaje["modificador_escudo_sobrenatural"]}[/]")
         tabla.add_row(f"[underline]Motivación                             {personaje["motivacion"]}[/]")
         tabla.add_row(f"[underline]Energía                                {personaje["energia"]}[/]")
         consola.print(tabla)
@@ -1141,20 +1141,28 @@ class Menu:
                 break
             elif eleccion == 1:
                 Menu._menu_mod_cualidades(personaje, "modificador_vida")
+                break
             elif eleccion == 2:
                 Menu._menu_mod_cualidades(personaje, "modificador_aguante")
+                break
             elif eleccion == 3:
                 Menu._menu_mod_cualidades(personaje, "modificador_recuperacion")
+                break
             elif eleccion == 4:
                 Menu._menu_mod_cualidades(personaje, "modificador_iniciativa")
+                break
             elif eleccion == 5:
                 Menu._menu_mod_cualidades(personaje, "modificador_luz")
+                break
             elif eleccion == 6:
                 Menu._menu_mod_cualidades(personaje, "modificador_oscuridad")
+                break
             elif eleccion == 7:
                 Menu._menu_mod_cualidades(personaje, "modificador_elemental")
+                break
             elif eleccion == 8:
                 Menu._menu_mod_cualidades(personaje, "modificador_escudo_sobrenatural")
+                break
 
     @staticmethod
     def _menu_mod_cualidades(personaje, nombre_metodo):
