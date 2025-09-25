@@ -402,7 +402,7 @@ class Personaje:
                 self.calcular_xp_req_habilidades(self.id)
 
             self._update_personaje_habilidad("xp", nueva_xp, hab_dict["id"])
-            self.update_personaje("motivacion", nueva_motivacion)
+            self._update_personaje("motivacion", nueva_motivacion)
         else:
             print("Necesitas más motivación para subir el nivel de esta habilidad.")
 
@@ -442,7 +442,7 @@ class Personaje:
                 nueva_motivacion += hab_dict["xp"]
                 nueva_xp = 0
 
-        self.update_personaje("motivacion", nueva_motivacion)
+        self._update_personaje("motivacion", nueva_motivacion)
         self._update_personaje_habilidad("xp", nueva_xp, hab_dict["id"])
 
     def subir_nivel_esfera(self, nombre):
@@ -478,20 +478,20 @@ class Personaje:
     def agregar_motivacion(self, motivacion):
         """Agrega la cantidad de motivación indicada al personaje."""
         self.motivacion += motivacion
-        self.update_personaje("motivacion", self.motivacion)
+        self._update_personaje("motivacion", self.motivacion)
 
     def quitar_motivacion(self, motivacion):
         """Sustrae la cantidad de motivación indicada al personaje."""
         if self.motivacion - motivacion >= 0:
             self.motivacion -= motivacion
-            self.update_personaje("motivacion", self.motivacion)
+            self._update_personaje("motivacion", self.motivacion)
         else:
             print("No tienes tanta motivación para quitar.")
 
     def agregar_energia(self, energia):
         """Agrega la cantidad de energía indicada al personaje."""
         self.energia += energia
-        self.update_personaje("energia", self.energia)
+        self._update_personaje("energia", self.energia)
         self.calcular_afinidad()
 
     def gastar_energia(self, energia=1):
@@ -502,7 +502,7 @@ class Personaje:
                 print(f"Se gasta {energia} punto de energía")
             else:
                 print(f"Se gasta {energia} puntos de energía")
-            self.update_personaje("energia", self.energia)
+            self._update_personaje("energia", self.energia)
             self.calcular_afinidad()
         else:
             if energia == 1:
@@ -530,7 +530,7 @@ class Personaje:
             esferas = base_datos.select_esferas()
             for esfera in esferas:
                 if esfera["id"] == id_esfera:
-                    self.insert_personaje_esfera(id_esfera, 0, 0)
+                    self._insert_personaje_esfera(id_esfera, 0, 0)
                     return
             print("El ID de esfera pasado no existe.")
         else:
@@ -560,7 +560,7 @@ class Personaje:
         self.armas.append(arma)
         arma.iniciativa = arma.alcance + self.agilidad + self.inteligencia
         arma.asignar_calidad(1)
-        self.insert_personaje_arma(arma.id, arma.iniciativa, arma.calidad)
+        self._insert_personaje_arma(arma.id, arma.iniciativa, arma.calidad)
         arma.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armas) # Borrar JSON
         self._guardar_equipamento("Armas", self.armas) # Borrar JSON
 
@@ -568,7 +568,7 @@ class Personaje:
         """Equipa la armadura pasada por argumento al personaje."""
         self.armaduras.append(armadura)
         armadura.asignar_calidad(1)
-        self.insert_personaje_armadura(armadura.id, armadura.calidad)
+        self._insert_personaje_armadura(armadura.id, armadura.calidad)
         armadura.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armaduras) # Borrar JSON
         self._guardar_equipamento("Armaduras", self.armaduras) # Borrar JSON
 
@@ -576,7 +576,7 @@ class Personaje:
         """Equipa el escudo pasado por argumento al personaje."""
         self.escudos.append(escudo)
         escudo.asignar_calidad(1)
-        self.insert_personaje_escudo(escudo.id, escudo.calidad)
+        self._insert_personaje_escudo(escudo.id, escudo.calidad)
         escudo.id = Personaje._get_ultimo_id_equipo_de_personaje(self.escudos) # Borrar JSON
         self._guardar_equipamento("Escudos", self.escudos) # Borrar JSON
 
@@ -585,7 +585,7 @@ class Personaje:
         armas = Personaje.select_personaje_arma(self.id)
         for arma_pj in armas:
             if arma.id == arma_pj["id_pj_arma"]:
-                Personaje.delete_personaje_arma(arma.id)
+                Personaje._delete_personaje_arma(arma.id)
                 print("Arma desequipada")
                 break
 
@@ -594,7 +594,7 @@ class Personaje:
         armaduras = Personaje.select_personaje_armadura(self.id)
         for armadura_pj in armaduras:
             if armadura.id == armadura_pj["id_pj_armadura"]:
-                Personaje.delete_personaje_armadura(armadura.id)
+                Personaje._delete_personaje_armadura(armadura.id)
                 print("Armadura desequipada")
                 break
 
@@ -603,7 +603,7 @@ class Personaje:
         escudos = Personaje.select_personaje_escudo(self.id)
         for escudo_pj in escudos:
             if escudo.id == escudo_pj["id_pj_escudo"]:
-                Personaje.delete_personaje_escudo(escudo.id)
+                Personaje._delete_personaje_escudo(escudo.id)
                 print("Escudo desequipado")
                 break
 
@@ -1344,7 +1344,7 @@ class Personaje:
         finally:
             conexion.close()
 
-    def update_personaje(self, clave, valor):
+    def _update_personaje(self, columna, valor):
         """Actualiza un campo del personaje según el valor pasado."""
         columnas_validas = ("rango", "fuerza", "agilidad", "resistencia", "voluntad", "inteligencia",
                             "liderazgo", "potencia", "defensa", "extension", "cantidad_esferas",
@@ -1358,7 +1358,7 @@ class Personaje:
                             "modificador_elemental", "modificador_escudo_sobrenatural",
                             "motivacion", "energia")
 
-        if clave not in columnas_validas:
+        if columna not in columnas_validas:
             print("Esa columna no se puede modificar.")
             return
 
@@ -1366,7 +1366,7 @@ class Personaje:
             conexion = sql.connect(f"espada_negra.db")
             cursor = conexion.cursor()
 
-            cursor.execute(f"UPDATE personajes SET {clave} = ? WHERE id = ?", (valor, self.id))
+            cursor.execute(f"UPDATE personajes SET {columna} = ? WHERE id = ?", (valor, self.id))
 
             conexion.commit()
             conexion.close()
@@ -1414,11 +1414,11 @@ class Personaje:
         finally:
             conexion.close()
 
-    def _update_personaje_esfera(self, clave, valor, id_esfera):
+    def _update_personaje_esfera(self, columna, valor, id_esfera):
         """Actualiza un campo de la tabla personaje_esfera según el valor pasado."""
         columnas_validas = ("nivel", "afinidad")
 
-        if clave not in columnas_validas:
+        if columna not in columnas_validas:
             print("Esa columna no se puede modificar.")
             return
 
@@ -1426,7 +1426,7 @@ class Personaje:
             conexion = sql.connect(f"espada_negra.db")
             cursor = conexion.cursor()
 
-            cursor.execute(f"UPDATE personaje_esfera SET {clave} = ? WHERE id_personaje = ? AND id_esfera = ?",
+            cursor.execute(f"UPDATE personaje_esfera SET {columna} = ? WHERE id_personaje = ? AND id_esfera = ?",
                            (valor, self.id, id_esfera))
 
             conexion.commit()
@@ -1460,7 +1460,7 @@ class Personaje:
         finally:
             conexion.close()
 
-    def insert_personaje_arma(self, id_arma, iniciativa, calidad):
+    def _insert_personaje_arma(self, id_arma, iniciativa, calidad):
         """Inserta un arma a un personaje en la tabla personaje_arma."""
         try:
             conexion = sql.connect(f"espada_negra.db")
@@ -1483,7 +1483,7 @@ class Personaje:
         finally:
             conexion.close()
 
-    def insert_personaje_armadura(self, id_armadura, calidad):
+    def _insert_personaje_armadura(self, id_armadura, calidad):
         """Inserta un armadura a un personaje en la tabla personaje_armadura."""
         try:
             conexion = sql.connect(f"espada_negra.db")
@@ -1508,7 +1508,7 @@ class Personaje:
         finally:
             conexion.close()
 
-    def insert_personaje_escudo(self, id_escudo, calidad):
+    def _insert_personaje_escudo(self, id_escudo, calidad):
         """Inserta un escudo a un personaje en la tabla personaje_escudo."""
         try:
             conexion = sql.connect(f"espada_negra.db")
@@ -1533,7 +1533,7 @@ class Personaje:
         finally:
             conexion.close()
 
-    def insert_personaje_esfera(self, id_esfera, nivel, afinidad):
+    def _insert_personaje_esfera(self, id_esfera, nivel, afinidad):
         """Inserta un esfera a un personaje en la tabla personaje_esfera."""
         try:
             conexion = sql.connect(f"espada_negra.db")
@@ -1550,7 +1550,7 @@ class Personaje:
             conexion.close()
 
     @staticmethod
-    def delete_personaje_arma(id_arma):
+    def _delete_personaje_arma(id_arma):
         """Elimina el arma seleccionada de las armas del personaje."""
         try:
             conexion = sql.connect(f"espada_negra.db")
@@ -1567,7 +1567,7 @@ class Personaje:
             conexion.close()
 
     @staticmethod
-    def delete_personaje_armadura(id_armadura):
+    def _delete_personaje_armadura(id_armadura):
         """Elimina el armadura seleccionada de las armaduras del personaje."""
         try:
             conexion = sql.connect(f"espada_negra.db")
@@ -1584,7 +1584,7 @@ class Personaje:
             conexion.close()
 
     @staticmethod
-    def delete_personaje_escudo(id_escudo):
+    def _delete_personaje_escudo(id_escudo):
         """Elimina el escudo seleccionado de los escudos del personaje."""
         try:
             conexion = sql.connect(f"espada_negra.db")
