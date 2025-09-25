@@ -136,21 +136,21 @@ class Personaje:
                     valor_atributo = self._get_atributo_by_str(atributo1.lower())
                     valor_atributo += 1
                     self._set_atributo_by_str(atributo1.lower(), valor_atributo)
-                    self._actualizar_valor(self.id, atributo1, valor_atributo)
+                    self._update_personaje(atributo1.lower(), valor_atributo)
                 elif eleccion == 2:
                     valor_atributo = self._get_atributo_by_str(atributo2.lower())
                     valor_atributo += 1
                     self._set_atributo_by_str(atributo2.lower(), valor_atributo)
-                    self._actualizar_valor(self.id, atributo2, valor_atributo)
+                    self._update_personaje(atributo2.lower(), valor_atributo)
                 elif eleccion == 3:
                     valor_atributo = self._get_atributo_by_str(atributo3.lower())
                     valor_atributo += 1
                     self._set_atributo_by_str(atributo3.lower(), valor_atributo)
-                    self._actualizar_valor(self.id, atributo3, valor_atributo)
+                    self._update_personaje(atributo3.lower(), valor_atributo)
 
             self.rango += 1
-            self._actualizar_valor(self.id, "Rango", self.rango)
-            self.actualizar_cualidades(self.sten)
+            self._update_personaje("rango", self.rango)
+            self._actualizar_cualidades()
         else:
             print(f"Eres {Personaje.convertir_rango_a_str(self.rango)}! Has alcanzado el máximo rango.")
 
@@ -245,27 +245,64 @@ class Personaje:
                 return False
         return True
 
-    def actualizar_cualidades(self, sten):
+    def _actualizar_cualidades(self):
         """Actualiza las cualidades de un personaje, como la vida, aguante, resistencia, etc."""
-        self.sten = sten
+        pj = self.select_personaje()
+        pj = pj[0]
+        cant_esferas = pj["extension"]
+        aguante = (pj["resistencia"] * 5) + pj["modificador_aguante"]
+        recuperacion = (pj["resistencia"]) + pj["modificador_recuperacion"]
+        iniciativa = (pj["agilidad"] + pj["inteligencia"]) + pj["modificador_iniciativa"]
+        carga_total = pj["fuerza"] * 5
+        carga_en_manos = pj["fuerza"]
+        resistencia_luz = pj["defensa"] + pj["modificador_luz"]
+        resistencia_oscuridad = pj["defensa"] + pj["modificador_oscuridad"]
+        resistencia_elemental = pj["fuerza"] + pj["modificador_elemental"]
+        escudo_sobrenatural = pj["voluntad"] + pj["defensa"] + pj["modificador_escudo_sobrenatural"]
+        if pj["sten"] == 1:
+            vida = (pj["voluntad"] * 3) + pj["modificador_vida"]
+            muerte = pj["fuerza"] * 6
+        elif pj["sten"] == 2:
+            vida = (pj["voluntad"] * 5) + pj["modificador_vida"]
+            muerte = pj["fuerza"] * 10
+        vida_actual = vida
+        aguante_actual = aguante
+
+        self._update_personaje("cantidad_esferas", cant_esferas)
+        self._update_personaje("aguante", aguante)
+        self._update_personaje("recuperacion", recuperacion)
+        self._update_personaje("iniciativa", iniciativa)
+        self._update_personaje("carga_total", carga_total)
+        self._update_personaje("carga_en_manos", carga_en_manos)
+        self._update_personaje("resistencia_a_la_luz", resistencia_luz)
+        self._update_personaje("resistencia_a_la_oscuridad", resistencia_oscuridad)
+        self._update_personaje("resistencia_elemental", resistencia_elemental)
+        self._update_personaje("escudo_sobrenatural", escudo_sobrenatural)
+        self._update_personaje("vida", vida)
+        self._update_personaje("muerte", muerte)
+        self._update_personaje("vida_actual", vida_actual)
+        self._update_personaje("aguante_actual", aguante_actual)
+
+    def asignar_cualidades(self):
+        """Asigna las cualidades del personaje."""
         self.cant_esferas = self.extension
-        self.aguante = self.resistencia * 5
-        self.recuperacion = self.resistencia
-        self.iniciativa = self.agilidad + self.inteligencia
+        self.aguante = (self.resistencia * 5) + self.mod_aguante
+        self.recuperacion = (self.resistencia) + self.mod_recuperacion
+        self.iniciativa = (self.agilidad + self.inteligencia) + self.mod_iniciativa
         self.carga_total = self.fuerza * 5
         self.carga_en_manos = self.fuerza
-        self.resistencia_luz = self.defensa
-        self.resistencia_oscuridad = self.defensa
-        self.resistencia_elemental = self.fuerza
-        self.escudo_sobrenatural = self.voluntad + self.defensa
-        self.aguante_actual = self.aguante
+        self.resistencia_luz = self.defensa + self.mod_res_luz
+        self.resistencia_oscuridad = self.defensa + self.mod_res_oscuridad
+        self.resistencia_elemental = self.fuerza + self.mod_res_elemental
+        self.escudo_sobrenatural = self.voluntad + self.defensa + self.mod_escudo_sobrenatural
         if self.sten == 1:
-            self.vida = self.voluntad * 3
+            self.vida = (self.voluntad * 3) + self.mod_vida
             self.muerte = self.fuerza * 6
-        elif sten == 2:
-            self.vida = self.voluntad * 5
+        elif self.sten == 2:
+            self.vida = (self.voluntad * 5) + self.mod_vida
             self.muerte = self.fuerza * 10
         self.vida_actual = self.vida
+        self.aguante_actual = self.aguante
 
     def _get_atributo_by_str(self, atributo_str):
         """Obtiene el valor del atributo pasado en string."""

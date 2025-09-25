@@ -42,7 +42,7 @@ class Menu:
 
         personaje.asignar_habilidades()
         personaje.calcular_xp_req_habilidades()
-        personaje.actualizar_cualidades(personaje.sten)
+        personaje.asignar_cualidades()
         personajes = Personaje.leer_datos_personajes() # Borrar JSON
         personaje.guardar_personajes(personajes) # Borrar JSON
         personaje.insert_personaje()
@@ -1122,13 +1122,15 @@ class Menu:
     def _menu_ascender(personaje):
         """Abre el menú para ascender un personaje."""
         while True:
-            eleccion = Menu._input_eleccion_menu(f"\n¿ESTÁS SEGURO de que quieres ascender a {personaje.nombre}? Esta decisión no se puede deshacer.\n1. Estoy seguro\n2. No\n: ",
-                                                "\nDebes ingresar una opción de las que se muestran en el menú.")
+            eleccion = Menu._input_eleccion_menu(f"\n¿ESTÁS SEGURO de que quieres ascender a {personaje.nombre}? Esta decisión no se puede deshacer.\n9. Estoy seguro\n0. No\n: ",
+                                                "\nDebes ingresar una opción de las que se muestran en el menú.",
+                                                [0, 9])
 
-            if eleccion == 2:
+            if eleccion == 0:
                 break
-            elif eleccion == 1:
+            elif eleccion == 9:
                 personaje.ascender()
+                break
 
     @staticmethod
     def _menu_modificadores(personaje):
