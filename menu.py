@@ -382,6 +382,8 @@ class Menu:
             tabla.add_row(f"[underline]Modificador resistencia elemental      {personaje["modificador_elemental"]}[/]")
         if personaje["modificador_escudo_sobrenatural"] != 0:
             tabla.add_row(f"[underline]Modificador escudo sobrenatural        {personaje["modificador_escudo_sobrenatural"]}[/]")
+        if personaje["modificador_carga_total"] != 0:
+            tabla.add_row(f"[underline]Modificador carga total                {personaje["modificador_carga_total"]}[/]")
         tabla.add_row(f"[underline]Motivación                             {personaje["motivacion"]}[/]")
         tabla.add_row(f"[underline]Energía                                {personaje["energia"]}[/]")
         consola.print(tabla)
@@ -1136,8 +1138,8 @@ class Menu:
     def _menu_modificadores(personaje):
         """Abre el menú que acompaña al usuario a aplicar distintos modificadores a alguna de sus cualidades."""
         while True:
-            eleccion = Menu._input_eleccion_menu("\nElija una de las siguientes cualidades para agregar un bonificador o perjuicio.\n1. Vida\n2. Aguante\n3. Recuperación\n4. Iniciativa\n5. Resitencia luz\n6. Resitencia oscuridad\n7. Resistencia elemental\n8. Escudo sobrenatural\n0. Atrás\n: ",
-                                                "Debes ingresar una opción de las que se muestran en el menú.", [0, 1, 2, 3, 4, 5, 6, 7, 8])
+            eleccion = Menu._input_eleccion_menu("\nElija una de las siguientes cualidades para agregar un bonificador o perjuicio.\n1. Vida\n2. Aguante\n3. Recuperación\n4. Iniciativa\n5. Resitencia luz\n6. Resitencia oscuridad\n7. Resistencia elemental\n8. Escudo sobrenatural\n9. Carga total\n0. Atrás\n: ",
+                                                "Debes ingresar una opción de las que se muestran en el menú.", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
             if eleccion == 0:
                 break
@@ -1164,6 +1166,9 @@ class Menu:
                 break
             elif eleccion == 8:
                 Menu._menu_mod_cualidades(personaje, "modificador_escudo_sobrenatural")
+                break
+            elif eleccion == 9:
+                Menu._menu_mod_cualidades(personaje, "modificador_carga_total")
                 break
 
     @staticmethod

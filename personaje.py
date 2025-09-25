@@ -53,6 +53,7 @@ class Personaje:
         self.mod_res_oscuridad = 0
         self.mod_res_elemental = 0
         self.mod_escudo_sobrenatural = 0
+        self.mod_carga_total = 0
         self.habilidades = [] # Borrar JSON
         self.armas = [] # Borrar JSON
         self.armaduras = [] # Borrar JSON
@@ -253,7 +254,7 @@ class Personaje:
         aguante = (pj["resistencia"] * 5) + pj["modificador_aguante"]
         recuperacion = (pj["resistencia"]) + pj["modificador_recuperacion"]
         iniciativa = (pj["agilidad"] + pj["inteligencia"]) + pj["modificador_iniciativa"]
-        carga_total = pj["fuerza"] * 5
+        carga_total = pj["fuerza"] * 5 + pj["modificador_escudo_sobrenatural"]
         carga_en_manos = pj["fuerza"]
         resistencia_luz = pj["defensa"] + pj["modificador_luz"]
         resistencia_oscuridad = pj["defensa"] + pj["modificador_oscuridad"]
@@ -289,7 +290,7 @@ class Personaje:
         self.aguante = (self.resistencia * 5) + self.mod_aguante
         self.recuperacion = (self.resistencia) + self.mod_recuperacion
         self.iniciativa = (self.agilidad + self.inteligencia) + self.mod_iniciativa
-        self.carga_total = self.fuerza * 5
+        self.carga_total = self.fuerza * 5 + self.mod_carga_total
         self.carga_en_manos = self.fuerza
         self.resistencia_luz = self.defensa + self.mod_res_luz
         self.resistencia_oscuridad = self.defensa + self.mod_res_oscuridad
@@ -958,6 +959,21 @@ class Personaje:
         self._update_personaje("modificador_escudo_sobrenatural", self.mod_escudo_sobrenatural)
         self._update_personaje("escudo_sobrenatural", self.escudo_sobrenatural)
 
+    def modificador_carga_total(self, operador, valor):
+        """Cambia el modificador a la carga total del personaje. operador 1: Suma. operador 2: resta"""
+        if operador == 1: # Suma
+            self.mod_carga_total += valor
+            self.carga_total += valor
+        elif operador == 2: # Resta
+            self.mod_carga_total -= valor
+            self.carga_total -= valor
+        else:
+            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+            return
+
+        self._update_personaje("modificador_carga_total", self.mod_carga_total)
+        self._update_personaje("carga_total", self.carga_total)
+
     def gastar_aguante(self):
         """Le resta un punto de aguante al personaje si puede."""
         if self.aguante_gastado_por_turno < self.resistencia:
@@ -1358,7 +1374,7 @@ class Personaje:
                         INSERT INTO personajes
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                           ?, ?)""", (self.id, self.jugador, self.nombre, self.sten, self.rango,
+                           ?, ?, ?)""", (self.id, self.jugador, self.nombre, self.sten, self.rango,
                         self.fuerza, self.agilidad, self.resistencia, self.voluntad,
                         self.inteligencia, self.liderazgo, self.potencia, self.defensa,
                         self.extension, self.cant_esferas, self.vida, self.vida_actual,
@@ -1370,7 +1386,7 @@ class Personaje:
                         self.turnos_aturdido, self.mod_vida, self.mod_aguante,
                         self.mod_recuperacion, self.mod_iniciativa, self.mod_res_luz,
                         self.mod_res_oscuridad, self.mod_res_elemental,
-                        self.mod_escudo_sobrenatural, self.motivacion, self.energia))
+                        self.mod_escudo_sobrenatural, self.mod_carga_total, self.motivacion, self.energia))
 
             for hab in habilidades:
                 cursor.execute(f"""INSERT INTO personaje_habilidad VALUES (?, ?, ?, ?, ?)""", (self.id, hab [0], 0, 0, 5))
@@ -1394,7 +1410,7 @@ class Personaje:
                             "modificador_aguante", "modificador_recuperacion",
                             "modificador_iniciativa", "modificador_luz", "modificador_oscuridad",
                             "modificador_elemental", "modificador_escudo_sobrenatural",
-                            "motivacion", "energia")
+                            "modificador_carga_total", "motivacion", "energia")
 
         if columna not in columnas_validas:
             print("Esa columna no se puede modificar.")
@@ -1833,7 +1849,7 @@ class Personaje:
                                      , pj_db["modificador_recuperacion"], pj_db["modificador_iniciativa"]
                                      , pj_db["modificador_luz"], pj_db["modificador_oscuridad"]
                                      , pj_db["modificador_elemental"], pj_db["modificador_escudo_sobrenatural"]
-                                     , pj_db["motivacion"], pj_db["energia"])
+                                     , pj_db["modificador_carga_total"], pj_db["motivacion"], pj_db["energia"])
             personajes.append(personaje)
 
         return personajes
@@ -1841,7 +1857,7 @@ class Personaje:
     def _set_atributos(self, id, jugador, nombre, sten, rango, f, a, r, v, i, l, p, d, e, esf, vida, vida_act, dano_recibido,
                        herida_grave, muerte, aguante, aguante_act, aguante_gas_por_tur, rec, ini, carga_total, carga_manos,
                        res_luz, res_osc, res_ele, esc_sob, concentracion, tur_atur, mod_vida, mod_agu, mod_rec, mod_ini, mod_luz,
-                       mod_osc, mod_ele, mod_esc_sob, mot, ene):
+                       mod_osc, mod_ele, mod_esc_sob, mod_carga_total, mot, ene):
         """Asigna todos los valores pasados por argumentos al personaje."""
         self.id = id
         self.jugador = jugador
@@ -1884,6 +1900,7 @@ class Personaje:
         self.mod_res_oscuridad = mod_osc
         self.mod_res_elemental = mod_ele
         self.mod_escudo_sobrenatural = mod_esc_sob
+        self.mod_carga_total = mod_carga_total
         #for hab_json in habilidades_json:
         #    habilidad = Habilidad(hab_json["Nombre"], hab_json["Atributos relacionados"], hab_json["Tipo"])
         #    habilidad.set_atributos(hab_json["Nivel"], hab_json["XP"], hab_json["XP requerida"])
