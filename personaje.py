@@ -306,7 +306,9 @@ class Personaje:
                 nuevo_nivel = hab_dict["nivel"] + 1
                 es_esfera = re.search(r"Esfera \((.*?)\)", hab_dict["nombre"])
                 if es_esfera:
-                    self.subir_nivel_esfera(es_esfera.group(1))
+                    tiene_esfera = self.subir_nivel_esfera(es_esfera.group(1))
+                    if not tiene_esfera:
+                        return
                 self._update_personaje_habilidad("nivel", nuevo_nivel, hab_dict["id"])
                 self.calcular_xp_req_habilidades(self.id)
             # Si la experiencía que se quiere añadir es menor a la requerida
@@ -320,7 +322,9 @@ class Personaje:
                 nuevo_nivel = hab_dict["nivel"] + 1
                 es_esfera = re.search(r"Esfera \((.*?)\)", hab_dict["nombre"])
                 if es_esfera:
-                    self.subir_nivel_esfera(es_esfera.group(1))
+                    tiene_esfera = self.subir_nivel_esfera(es_esfera.group(1))
+                    if not tiene_esfera:
+                        return
                 self._update_personaje_habilidad("nivel", nuevo_nivel, hab_dict["id"])
                 self.calcular_xp_req_habilidades(self.id)
 
@@ -369,7 +373,7 @@ class Personaje:
         self._update_personaje_habilidad("xp", nueva_xp, hab_dict["id"])
 
     def subir_nivel_esfera(self, nombre):
-        """Sube el nivel de una esfera."""
+        """Sube el nivel de una esfera. Si no tiene la esfera devuelve False."""
         esferas = Personaje.select_personaje_esfera(self.id)
         for fila in esferas:
             esf_nom = re.search(r"\((.*?)\)", fila["nombre_e"])
@@ -379,9 +383,10 @@ class Personaje:
                     nuevo_nivel = fila["nivel"] + 1
                     self._update_personaje_esfera("nivel", nuevo_nivel, fila["id_esfera"])
                     self.calcular_afinidad()
-                    break
+                    return True
         else: # El else en el for se ejecuta cuando termina el ciclio SOLO si no hubo un break
             print(f"No se encuentra una esfera con el nombre '{nombre}'")
+            return False
 
     def bajar_nivel_esfera(self, nombre):
         """Sube el nivel de una esfera."""
