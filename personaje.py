@@ -352,7 +352,7 @@ class Personaje:
                     nueva_motivacion += hab_dict["xp"] + 1
                 es_esfera = re.search(r"Esfera \((.*?)\)", hab_dict["nombre"])
                 if es_esfera:
-                    self.bajar_nivel_esfera(es_esfera.group(1))
+                    self.bajar_nivel_esfera(hab_dict["id"])
                 self._update_personaje_habilidad("nivel", nuevo_nivel, hab_dict["id"])
                 self.calcular_xp_req_habilidades(self.id)
                 # Se busca la nueva xp_requerida por la habilidad
@@ -376,32 +376,29 @@ class Personaje:
         """Sube el nivel de una esfera. Si no tiene la esfera devuelve False."""
         esferas = Personaje.select_personaje_esfera(self.id)
         for fila in esferas:
-            esf_nom = re.search(r"\((.*?)\)", fila["nombre_e"])
-            if esf_nom:
-                esf_nom = esf_nom.group(1)
-                if esf_nom == nombre:
-                    nuevo_nivel = fila["nivel"] + 1
-                    self._update_personaje_esfera("nivel", nuevo_nivel, fila["id_esfera"])
-                    self.calcular_afinidad()
-                    return True
+            #esf_nom = re.search(r"\((.*?)\)", fila["nombre_e"])
+            #if esf_nom:
+            #    esf_nom = esf_nom.group(1)
+            if fila["nombre_e"] == nombre:
+                nuevo_nivel = fila["nivel"] + 1
+                self._update_personaje_esfera("nivel", nuevo_nivel, fila["id_esfera"])
+                self.calcular_afinidad()
+                return True
         else: # El else en el for se ejecuta cuando termina el ciclio SOLO si no hubo un break
             print(f"No se encuentra una esfera con el nombre '{nombre}'")
             return False
 
-    def bajar_nivel_esfera(self, nombre):
+    def bajar_nivel_esfera(self, id_hab):
         """Sube el nivel de una esfera."""
         esferas = Personaje.select_personaje_esfera(self.id)
         for fila in esferas:
-            esf_nom = re.search(r"\((.*?)\)", fila["nombre_e"])
-            if esf_nom:
-                esf_nom = esf_nom.group(1)
-                if esf_nom == nombre:
-                    nuevo_nivel = fila["nivel"] - 1
-                    self._update_personaje_esfera("nivel", nuevo_nivel, fila["id_esfera"])
-                    self.calcular_afinidad()
-                    break
+            if fila["id"] == id_hab:
+                nuevo_nivel = fila["nivel"] - 1
+                self._update_personaje_esfera("nivel", nuevo_nivel, fila["id_esfera"])
+                self.calcular_afinidad()
+                break
         else: # El else en el for se ejecuta cuando termina el ciclio SOLO si no hubo un break
-            print(f"No se encuentra una esfera con el nombre '{nombre}'")
+            print(f"No se encuentra una esfera con el id '{id_hab}'")
 
     def agregar_motivacion(self, motivacion):
         """Agrega la cantidad de motivación indicada al personaje."""
@@ -1158,7 +1155,7 @@ class Personaje:
 
             cursor.execute(f"""
                             SELECT e.id, e.nombre AS nombre_e, e.pasiva_sten1, e.pasiva_sten2,
-                            pe.nivel, pe.afinidad,
+                            pe.id_esfera, pe.nivel, pe.afinidad,
                             p.nombre AS nombre_p, p.descripcion, p.efecto_sten1, p.efecto_sten2,
                             prm.version, prm.nombre AS nombre_prm, prm.valor
                             FROM personaje_esfera pe
