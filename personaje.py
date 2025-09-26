@@ -1,7 +1,4 @@
-from pathlib import Path
-from habilidad import Habilidad
-from equipo import Arma, Armadura, Escudo
-from esfera import Esfera
+from colores import Color
 import base_datos
 from math import floor
 import re
@@ -60,21 +57,21 @@ class Personaje:
         if len(nombre) > 0:
             self.jugador = nombre
         else:
-            print("El nombre del jugador no puede estar vacío.")
+            print(f"{Color.AMARILLO}El nombre del jugador no puede estar vacío.{Color.FIN}")
 
     def asignar_nombre(self, nombre):
         """El usuario asigna el nombre del personaje."""
         if len(nombre) > 0:
             self.nombre = nombre
         else:
-            print("El nombre del personaje no puede estar vacío.")
+            print(f"{Color.AMARILLO}El nombre del personaje no puede estar vacío.{Color.FIN}")
 
     def asignar_sten(self, sten):
         """El usuario asigna la versión STEN que usará el personaje."""
         if sten == 1 or sten == 2:
             self.sten = sten
         else:
-            print("La versión de STEN solo puede ser 1 o 2.")
+            print(f"{Color.AMARILLO}La versión de STEN solo puede ser 1 o 2.{Color.FIN}")
 
     def asignar_rango(self, rango):
         """Asigna el rango al personaje."""
@@ -92,7 +89,7 @@ class Personaje:
             self.rango = rango
             return (primario, secundario, terciario)
         else:
-            print("\nEl rango del personaje es inválido. Solo pueden ser números enteros entre el 1 y el 4.")
+            print(f"\n{Color.AMARILLO}El rango del personaje es inválido. Solo pueden ser números enteros entre el 1 y el 4.{Color.FIN}")
 
     def asignar_enfoque(self, enfoque, primario, secundario, terciario):
         """Acompaña al usuario a elegir su enfoque."""
@@ -123,7 +120,7 @@ class Personaje:
                 if eleccion == 0:
                     return None
                 elif eleccion < 0 or eleccion > 3:
-                    print("Para subir un atributo debe ingresar un número entre el 1 y el 3.")
+                    print(f"{Color.AMARILLO}Para subir un atributo debe ingresar un número entre el 1 y el 3.{Color.FIN}")
                     return None
                 # Dependiendo de la elección del usuario se sube uno u otro atributo
                 elif eleccion == 1:
@@ -146,7 +143,7 @@ class Personaje:
             self._update_personaje("rango", self.rango)
             self._actualizar_cualidades()
         else:
-            print(f"Eres {Personaje.convertir_rango_a_str(self.rango)}! Has alcanzado el máximo rango.")
+            print(f"{Color.AMARILLO}Eres {Personaje.convertir_rango_a_str(self.rango)}! Has alcanzado el máximo rango.{Color.FIN}")
 
     def _resetear_habilidad(self, id_hab):
         """Quita una habilidad al personaje."""
@@ -331,7 +328,7 @@ class Personaje:
             self._update_personaje_habilidad("xp", nueva_xp, hab_dict["id"])
             self._update_personaje("motivacion", nueva_motivacion)
         else:
-            print("Necesitas más motivación para subir el nivel de esta habilidad.")
+            print(f"{Color.AMARILLO}Necesitas más motivación para subir el nivel de esta habilidad.{Color.FIN}")
 
     def bajar_nivel_habilidad(self, hab_dict, xp):
         """Baja el nivel de una habilidad."""
@@ -385,7 +382,7 @@ class Personaje:
                 self.calcular_afinidad()
                 return True
         else: # El else en el for se ejecuta cuando termina el ciclio SOLO si no hubo un break
-            print(f"No se encuentra una esfera con el nombre '{nombre}'")
+            print(f"{Color.AMARILLO}No se encuentra una esfera con el nombre '{nombre}'{Color.FIN}")
             return False
 
     def bajar_nivel_esfera(self, id_hab):
@@ -398,7 +395,7 @@ class Personaje:
                 self.calcular_afinidad()
                 break
         else: # El else en el for se ejecuta cuando termina el ciclio SOLO si no hubo un break
-            print(f"No se encuentra una esfera con el id '{id_hab}'")
+            print(f"{Color.AMARILLO}No se encuentra una esfera con el id '{id_hab}'{Color.FIN}")
 
     def agregar_motivacion(self, motivacion):
         """Agrega la cantidad de motivación indicada al personaje."""
@@ -411,7 +408,7 @@ class Personaje:
             self.motivacion -= motivacion
             self._update_personaje("motivacion", self.motivacion)
         else:
-            print("No tienes tanta motivación para quitar.")
+            print(f"{Color.AMARILLO}No tienes tanta motivación para quitar.{Color.FIN}")
 
     def agregar_energia(self, energia):
         """Agrega la cantidad de energía indicada al personaje."""
@@ -424,16 +421,16 @@ class Personaje:
         if self.energia - energia >= 0:
             self.energia -= energia
             if energia == 1:
-                print(f"Se gasta {energia} punto de energía")
+                print(f"{Color.NARANJA}Se gasta {energia} punto de energía{Color.FIN}")
             else:
-                print(f"Se gasta {energia} puntos de energía")
+                print(f"{Color.NARANJA}Se gasta {energia} puntos de energía{Color.FIN}")
             self._update_personaje("energia", self.energia)
             self.calcular_afinidad()
         else:
             if energia == 1:
-                print("No tienes más energía para gastar.")
+                print(f"{Color.AMARILLO}No tienes más energía para gastar.{Color.FIN}")
             else:
-                print("No tienes tanta energía para gastar.")
+                print(f"{Color.AMARILLO}No tienes tanta energía para gastar.{Color.FIN}")
 
     def _calcular_atributo_mas_bajo(self, atributos_char: list):
         """Calcula el atributo más bajo de los pasados por parámetros."""
@@ -457,9 +454,9 @@ class Personaje:
                 if esfera["id"] == id_esfera:
                     self._insert_personaje_esfera(id_esfera, 0, 0)
                     return
-            print("El ID de esfera pasado no existe.")
+            print(f"{Color.AMARILLO}El ID de esfera pasado no existe.{Color.FIN}")
         else:
-            print(f"\nNo puedes llevar más esferas. Tu número máximo de esferas es {self.cant_esferas}")
+            print(f"\n{Color.AMARILLO}No puedes llevar más esferas. Tu número máximo de esferas es {self.cant_esferas}{Color.FIN}")
 
     def quitar_esfera(self, id_esfera):
         """Quita la esfera pasada por parámetros del personaje."""
@@ -468,10 +465,10 @@ class Personaje:
             if id_esfera == hab["id"]:
                 self._resetear_habilidad(id_esfera)
                 self._delete_personaje_esfera(id_esfera)
-                print("\nEsfera eliminada con éxito.")
+                print(f"\n{Color.VERDE}Esfera eliminada con éxito.{Color.FIN}")
                 break
         else:
-            print(f"\nEsa esfera no se encuentra en el personaje.")
+            print(f"\n{Color.AMARILLO}Esa esfera no se encuentra en el personaje.{Color.FIN}")
 
     def calcular_afinidad(self):
         """Calcula y guarda la afinidad de cada esfera del personaje."""
@@ -499,17 +496,17 @@ class Personaje:
     def desequipar_arma(self, id_arma):
         """Desequipa el arma pasada por argumento al personaje."""
         Personaje._delete_personaje_arma(id_arma)
-        print("Arma desequipada")
+        print(f"{Color.VERDE}Arma desequipada{Color.FIN}")
 
     def desequipar_armadura(self, id_armadura):
         """Desequipa la armadura pasada por argumento al personaje."""
         Personaje._delete_personaje_armadura(id_armadura)
-        print("Armadura desequipada")
+        print(f"{Color.VERDE}Armadura desequipada{Color.FIN}")
 
     def desequipar_escudo(self, id_escudo):
         """Desequipa el escudo pasado por argumento al personaje."""
         Personaje._delete_personaje_escudo(id_escudo)
-        print("Escudo desequipado")
+        print(f"{Color.VERDE}Escudo desequipado{Color.FIN}")
 
     def cambiar_calidad_objeto(self, id_equipo, tipo_equipo, nueva_calidad):
         """Cambia la calidad de cualquier equipo: arma, armadura o escudo."""
@@ -526,7 +523,7 @@ class Personaje:
                     Personaje._update_personaje_equipo("personaje_arma", id_equipo, "calidad", nueva_calidad)
                     self._aplicar_efecto_calidad_arma(id_equipo, calidad_anterior)
                 else:
-                    print("Ese ID de arma no existe, o no corresponde con el personaje.")
+                    print(f"{Color.AMARILLO}Ese ID de arma no existe, o no corresponde con el personaje.{Color.FIN}")
             elif tipo_equipo == "Armaduras":
                 armaduras = Personaje.select_personaje_armadura(self.id)
                 for armadura in armaduras:
@@ -539,7 +536,7 @@ class Personaje:
                     Personaje._update_personaje_equipo("personaje_armadura", id_equipo, "calidad", nueva_calidad)
                     self._aplicar_efecto_calidad_armadura(id_equipo, calidad_anterior)
                 else:
-                    print("Ese ID de armadura no existe, o no corresponde con el personaje.")
+                    print(f"{Color.AMARILLO}Ese ID de armadura no existe, o no corresponde con el personaje.{Color.FIN}")
             elif tipo_equipo == "Escudos":
                 escudos = Personaje.select_personaje_escudo(self.id)
                 for escudo in escudos:
@@ -552,9 +549,9 @@ class Personaje:
                     Personaje._update_personaje_equipo("personaje_escudo", id_equipo, "calidad", nueva_calidad)
                     self._aplicar_efecto_calidad_escudo(id_equipo, calidad_anterior)
                 else:
-                    print("Ese ID del escudo no existe, o no corresponde con el personaje.")
+                    print(f"{Color.AMARILLO}Ese ID del escudo no existe, o no corresponde con el personaje.{Color.FIN}")
         else:
-            print("\033[31mLa calidad del equipo no puede ser inferior a cero ni mayor a cinco.\033[0m")
+            print(f"{Color.AMARILLO}La calidad del equipo no puede ser inferior a cero ni mayor a cinco.{Color.FIN}")
 
     def _aplicar_efecto_calidad_arma(self, id_arma, calidad_anterior):
         """Aplica el efecto en el arma según la calidad."""
@@ -635,15 +632,15 @@ class Personaje:
             elif operador == 2: # Resta
                 nuevo_valor = cualidad - valor
                 if nuevo_valor < 0:
-                    print(f"\n\033[31mEl nuevo valor de tu cualidad no puede estar por debajo de cero.\033[0m") # Se pinta de color rojo
+                    print(f"\n{Color.AMARILLO}El nuevo valor de tu cualidad no puede estar por debajo de cero.{Color.FIN}")
                     return
             else:
-                print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+                print(f"{Color.AMARILLO}Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.{Color.FIN}")
                 return
 
             Personaje._update_personaje_equipo("personaje_arma", id_arma, columna, nuevo_valor)
         else:
-            print("Ese ID de arma no existe, o no corresponde con el personaje.")
+            print(f"{Color.AMARILLO}Ese ID de arma no existe, o no corresponde con el personaje.{Color.FIN}")
 
     def cambiar_cualidad_armadura(self, id_armadura, operador, columna, valor):
         """Cambia una cualidad de una armadura. operador 1: Suma. operador 2: resta"""
@@ -663,15 +660,15 @@ class Personaje:
             elif operador == 2: # Resta
                 nuevo_valor = cualidad - valor
                 if nuevo_valor < 0:
-                    print(f"\n\033[31mEl nuevo valor de tu cualidad no puede estar por debajo de cero.\033[0m") # Se pinta de color rojo
+                    print(f"\n{Color.AMARILLO}El nuevo valor de tu cualidad no puede estar por debajo de cero.{Color.FIN}")
                     return
             else:
-                print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+                print(f"{Color.AMARILLO}Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.{Color.FIN}")
                 return
 
             Personaje._update_personaje_equipo("personaje_armadura", id_armadura, columna, nuevo_valor)
         else:
-            print("Ese ID de armadura no existe, o no corresponde con el personaje.")
+            print(f"{Color.AMARILLO}Ese ID de armadura no existe, o no corresponde con el personaje.{Color.FIN}")
 
     def cambiar_cualidad_escudo(self, id_escudo, operador, columna, valor):
         """Cambia una cualidad de un escudo. operador 1: Suma. operador 2: resta"""
@@ -691,15 +688,15 @@ class Personaje:
             elif operador == 2: # Resta
                 nuevo_valor = cualidad - valor
                 if nuevo_valor < 0:
-                    print(f"\n\033[31mEl nuevo valor de tu cualidad no puede estar por debajo de cero.\033[0m") # Se pinta de color rojo
+                    print(f"\n{Color.AMARILLO}El nuevo valor de tu cualidad no puede estar por debajo de cero.{Color.FIN}")
                     return
             else:
-                print("\n\033[31mOperador inválido. El operador tiene que ser 1 para suma, o 2 para resta.\033[0m")
+                print(f"\n{Color.AMARILLO}Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.{Color.FIN}")
                 return
 
             Personaje._update_personaje_equipo("personaje_escudo", id_escudo, columna, nuevo_valor)
         else:
-            print("Ese ID de escudo no existe, o no corresponde con el personaje.")
+            print(f"{Color.AMARILLO}Ese ID de escudo no existe, o no corresponde con el personaje.{Color.FIN}")
 
     def modificador_vida(self, operador, valor):
         """Cambia el modificador a la vida del personaje. operador 1: Suma. operador 2: resta"""
@@ -712,7 +709,7 @@ class Personaje:
             self.vida -= valor
             self.vida_actual -= valor
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+            print(f"{Color.AMARILLO}Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.{Color.FIN}")
             return
 
         self._update_personaje("modificador_vida", self.mod_vida)
@@ -729,7 +726,7 @@ class Personaje:
             self.aguante -= valor
             self.aguante_actual -= valor
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+            print(f"{Color.AMARILLO}Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.{Color.FIN}")
             return
 
         self._update_personaje("modificador_aguante", self.mod_aguante)
@@ -744,7 +741,7 @@ class Personaje:
             self.mod_recuperacion -= valor
             self.recuperacion -= valor
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+            print(f"{Color.AMARILLO}Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.{Color.FIN}")
             return
 
         self._update_personaje("modificador_recuperacion", self.mod_recuperacion)
@@ -759,7 +756,7 @@ class Personaje:
             self.mod_iniciativa -= valor
             self.iniciativa -= valor
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+            print(f"{Color.AMARILLO}Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.{Color.FIN}")
             return
 
         self._update_personaje("modificador_iniciativa", self.mod_iniciativa)
@@ -774,7 +771,7 @@ class Personaje:
             self.mod_res_luz -= valor
             self.resistencia_luz -= valor
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+            print(f"{Color.AMARILLO}Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.{Color.FIN}")
             return
 
         self._update_personaje("modificador_luz", self.mod_res_luz)
@@ -789,7 +786,7 @@ class Personaje:
             self.mod_res_oscuridad -= valor
             self.resistencia_oscuridad -= valor
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+            print(f"{Color.AMARILLO}Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.{Color.FIN}")
             return
 
         self._update_personaje("modificador_oscuridad", self.mod_res_oscuridad)
@@ -804,7 +801,7 @@ class Personaje:
             self.mod_res_elemental -= valor
             self.resistencia_elemental -= valor
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+            print(f"{Color.AMARILLO}Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.{Color.FIN}")
             return
 
         self._update_personaje("modificador_elemental", self.mod_res_elemental)
@@ -819,7 +816,7 @@ class Personaje:
             self.mod_escudo_sobrenatural -= valor
             self.escudo_sobrenatural -= valor
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+            print(f"{Color.AMARILLO}Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.{Color.FIN}")
             return
 
         self._update_personaje("modificador_escudo_sobrenatural", self.mod_escudo_sobrenatural)
@@ -834,7 +831,7 @@ class Personaje:
             self.mod_carga_total -= valor
             self.carga_total -= valor
         else:
-            print("Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.")
+            print(f"{Color.AMARILLO}Operador inválido. El operador tiene que ser 1 para suma, o 2 para resta.{Color.FIN}")
             return
 
         self._update_personaje("modificador_carga_total", self.mod_carga_total)
@@ -846,11 +843,11 @@ class Personaje:
             if self.aguante_actual - 1 >= 0:
                 self.aguante_actual -= 1
                 self.aguante_gastado_por_turno += 1
-                print("Aguante -1")
+                print(f"{Color.NARANJA}Aguante -1{Color.FIN}")
             else:
-                print(f"\nYa no te queda aguante para gastar.")
+                print(f"\n{Color.AMARILLO}Ya no te queda aguante para gastar.{Color.FIN}")
         else:
-            print("No puedes gastar más puntos de aguante que tu resistencia por turno.")
+            print(f"{Color.AMARILLO}No puedes gastar más puntos de aguante que tu resistencia por turno.{Color.FIN}")
 
         self._update_personaje("aguante_actual", self.aguante_actual)
         self._update_personaje("aguante_gastado_por_turno", self.aguante_gastado_por_turno)
@@ -859,10 +856,10 @@ class Personaje:
         """Recupera tantos puntos de aguante al personaje como los pasados por parámetro, hasta un máximo como su aguante total."""
         if self.aguante_actual + recuperacion <= self.aguante:
             self.aguante_actual += recuperacion
-            print(f"Aguante +{recuperacion}")
+            print(f"{Color.NARANJA}Aguante +{recuperacion}{Color.FIN}")
         else:
             self.aguante_actual = self.aguante
-            print("Aguante recuperado completamente")
+            print(f"{Color.NARANJA}Aguante recuperado completamente{Color.FIN}")
 
         self._update_personaje("aguante_actual", self.aguante_actual)
 
@@ -870,41 +867,41 @@ class Personaje:
         """Recibe el daño y lo ve reflejado en su vida actual, en si queda aturdido y en si recibe heridas."""
         self.vida_actual -= dano
         self.dano_recibido += dano
-        print(f"Vida -{dano}")
+        print(f"{Color.NARANJA}Vida -{dano}{Color.FIN}")
 
         if dano > self.voluntad * 2:
             self.turnos_aturdido = 2
             self.concentracion = 0
-            print(f"Quedas aturdido este turno y el siguiente, y pierdes todos los puntos de concentración.")
+            print(f"{Color.NARANJA}Quedas aturdido este turno y el siguiente, y pierdes todos los puntos de concentración.{Color.FIN}")
             self._update_personaje("concentracion", self.concentracion)
             self._update_personaje("turnos_aturdido", self.turnos_aturdido)
         elif dano > self.voluntad:
             self.turnos_aturdido = 1
-            print(f"Quedas aturdido este turno.")
+            print(f"{Color.NARANJA}Quedas aturdido este turno.{Color.FIN}")
             concentracion_perdida = dano - self.voluntad
             if self.concentracion > 0 and concentracion_perdida > 0:
                 self.perder_concentracion(concentracion_perdida)
             self._update_personaje("turnos_aturdido", self.turnos_aturdido)
 
         if dano > self.fuerza * 3 and self.sten == 1:
-            print("A elección del atacante:\nBrazo: -2 daño, -1 vida por turno\nPierna: -6 iniciativa, -1 vida por turno\nTorso o cabeza: -6 aguante, -1 vida por turno\nSi el golpe fue en un brazo o una pierna, la extremidad se verá comprometida y no podrá utilizarse.")
+            print(f"{Color.NARANJA}A elección del atacante:\nBrazo: -2 daño, -1 vida por turno\nPierna: -6 iniciativa, -1 vida por turno\nTorso o cabeza: -6 aguante, -1 vida por turno\nSi el golpe fue en un brazo o una pierna, la extremidad se verá comprometida y no podrá utilizarse.{Color.FIN}")
             self.herida_grave = True
             self._update_personaje("herida_grave", self.herida_grave)
         elif dano > self.fuerza * 3 and self.sten == 2:
-            print("A elección del atacante: Pierde un punto del atributo a todos los efectos. -1 vida por turno\nSi el atributo dañado es fuerza o agilidad, respectivamente un brazo o una pierna se verá comprometido y no podrá utilizarse. Una vez se recupere, pierde un punto del atributo solamente con uno de los aspectos de dicho atributo (a elección del atacante).")
+            print(f"{Color.NARANJA}A elección del atacante: Pierde un punto del atributo a todos los efectos. -1 vida por turno\nSi el atributo dañado es fuerza o agilidad, respectivamente un brazo o una pierna se verá comprometido y no podrá utilizarse. Una vez se recupere, pierde un punto del atributo solamente con uno de los aspectos de dicho atributo (a elección del atacante).{Color.FIN}")
             self.herida_grave = True
             self._update_personaje("herida_grave", self.herida_grave)
         elif dano > self.fuerza * 2 and self.sten == 1:
-            print("A elección del atacante:\nBrazo: -1 daño\nPierna: -3 iniciativa\nTorso o cabeza: -3 aguante")
+            print(f"{Color.NARANJA}A elección del atacante:\nBrazo: -1 daño\nPierna: -3 iniciativa\nTorso o cabeza: -3 aguante{Color.FIN}")
         elif dano > self.fuerza * 2 and self.sten == 2:
-            print("A elección del atacante: El personaje pierde un punto del atributo en relación con únicamente uno de los aspectos de dicho atributo, hasta que recibe cirugía médica.")
+            print(f"{Color.NARANJA}A elección del atacante: El personaje pierde un punto del atributo en relación con únicamente uno de los aspectos de dicho atributo, hasta que recibe cirugía médica.{Color.FIN}")
 
         if self.vida_actual <= 0:
             self.vida_actual = 0
-            print(f"{self.nombre} cae inconsciente. Sus puntos de vida llegaron a cero.")
+            print(f"{Color.NARANJA}{self.nombre} cae inconsciente. Sus puntos de vida llegaron a cero.{Color.FIN}")
 
         if self.dano_recibido >= self.muerte:
-            print(f"{self.nombre} muere.")
+            print(f"{Color.NARANJA}{self.nombre} muere.{Color.FIN}")
 
         self._update_personaje("vida_actual", self.vida_actual)
         self._update_personaje("dano_recibido", self.dano_recibido)
@@ -914,11 +911,11 @@ class Personaje:
         if self.vida_actual + puntos_restaurar <= self.vida:
             self.vida_actual += puntos_restaurar
             self.dano_recibido -= puntos_restaurar
-            print(f"Vida +{puntos_restaurar}")
+            print(f"{Color.NARANJA}Vida +{puntos_restaurar}{Color.FIN}")
         else:
             self.vida_actual = self.vida
             self.dano_recibido = 0
-            print("Vida restaurada completamente")
+            print(f"{Color.NARANJA}Vida restaurada completamente{Color.FIN}")
 
         self._update_personaje("vida_actual", self.vida_actual)
         self._update_personaje("dano_recibido", self.dano_recibido)
@@ -927,16 +924,16 @@ class Personaje:
         """Cura una herida grave en caso de tenerla."""
         if self.herida_grave:
             self.herida_grave = False
-            print("Herida curada.")
+            print(f"{Color.NARANJA}Herida curada.{Color.FIN}")
             self._actualizar_valor(self.id, "Herida grave", self.herida_grave)
             self._update_personaje("herida_grave", self.herida_grave)
         else:
-            print(f"{self.nombre} no tiene ninguna herida grave.")
+            print(f"{Color.AMARILLO}{self.nombre} no tiene ninguna herida grave.{Color.FIN}")
 
     def ganar_concentracion(self, puntos_concentracion):
         """Gana los puntos de concentración pasados por parámetros."""
         self.concentracion += puntos_concentracion
-        print(f"Concentración +{puntos_concentracion}")
+        print(f"{Color.NARANJA}Concentración +{puntos_concentracion}{Color.FIN}")
         self._update_personaje("concentracion", self.concentracion)
 
     def perder_concentracion(self, puntos_concentracion):
@@ -945,7 +942,7 @@ class Personaje:
             self.concentracion -= puntos_concentracion
         else:
             self.concentracion = 0
-        print(f"Concentración -{puntos_concentracion}")
+        print(f"{Color.NARANJA}Concentración -{puntos_concentracion}{Color.FIN}")
         self._update_personaje("concentracion", self.concentracion)
 
     def ronda_nueva(self):
@@ -956,7 +953,7 @@ class Personaje:
 
         if self.turnos_aturdido > 0:
             self.turnos_aturdido -= 1
-            print("Turnos aturdidos -1")
+            print(f"{Color.NARANJA}Turnos aturdidos -1{Color.FIN}")
             self._update_personaje("turnos_aturdido", self.turnos_aturdido)
 
         if self.herida_grave:
@@ -1011,8 +1008,8 @@ class Personaje:
             personajes = cursor.fetchall()
             return personajes
         except sql.OperationalError as e:
-            print(f"La tabla de personajes no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla de personajes no existe, o no se puede abrir por falta de persmisos.{Color.ROJO}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1027,8 +1024,8 @@ class Personaje:
             personaje = cursor.fetchall()
             return personaje
         except sql.OperationalError as e:
-            print(f"La tabla de personajes no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla de personajes no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1050,8 +1047,8 @@ class Personaje:
             habilidades = cursor.fetchall()
             return habilidades
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_habilidad' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_habilidad' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1067,8 +1064,8 @@ class Personaje:
             atributos = cursor.fetchall()
             return atributos
         except sql.OperationalError as e:
-            print(f"La tabla 'habilidad_atributo' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'habilidad_atributo' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1092,8 +1089,8 @@ class Personaje:
             armas = cursor.fetchall()
             return armas
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_arma' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_arma' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1116,8 +1113,8 @@ class Personaje:
             armaduras = cursor.fetchall()
             return armaduras
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_armadura' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_armadura' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1140,8 +1137,8 @@ class Personaje:
             escudos = cursor.fetchall()
             return escudos
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_escudo' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_escudo' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1167,8 +1164,8 @@ class Personaje:
             esferas = cursor.fetchall()
             return esferas
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1211,8 +1208,8 @@ class Personaje:
 
             conexion.commit()
         except sql.OperationalError as e:
-            print(f"La tabla 'personajes' o 'personaje_habilidad' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personajes' o 'personaje_habilidad' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1231,7 +1228,7 @@ class Personaje:
                             "modificador_carga_total", "motivacion", "energia")
 
         if columna not in columnas_validas:
-            print("Esa columna no se puede modificar.")
+            print(f"{Color.ROJO}Esa columna no se puede modificar.{Color.FIN}")
             return
 
         try:
@@ -1243,8 +1240,8 @@ class Personaje:
             conexion.commit()
             conexion.close()
         except sql.OperationalError as e:
-            print(f"La tabla 'personajes' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personajes' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1254,7 +1251,7 @@ class Personaje:
         tablas_validas = ("personaje_arma", "personaje_armadura", "personaje_escudo")
 
         if tabla not in tablas_validas:
-            print("Esa tabla no se puede modificar.")
+            print(f"{Color.ROJO}Esa tabla no se puede modificar.{Color.FIN}")
             return
 
         match tabla:
@@ -1268,7 +1265,7 @@ class Personaje:
                                     "cobertura", "evasion", "calidad")
 
         if columna not in columnas_validas:
-            print(f"La columna '{columna}' no se puede modificar.")
+            print(f"{Color.ROJO}La columna '{columna}' no se puede modificar.{Color.FIN}")
             return
 
         try:
@@ -1281,8 +1278,8 @@ class Personaje:
             conexion.commit()
             conexion.close()
         except sql.OperationalError as e:
-            print(f"La tabla '{tabla}' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla '{tabla}' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1291,7 +1288,7 @@ class Personaje:
         columnas_validas = ("nivel", "afinidad")
 
         if columna not in columnas_validas:
-            print("Esa columna no se puede modificar.")
+            print(f"{Color.ROJO}Esa columna no se puede modificar.{Color.FIN}")
             return
 
         try:
@@ -1304,8 +1301,8 @@ class Personaje:
             conexion.commit()
             conexion.close()
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1314,7 +1311,7 @@ class Personaje:
         columnas_validas = ("nivel", "xp", "xp_requerida")
 
         if columna not in columnas_validas:
-            print("Esa columna no se puede modificar.")
+            print(f"{Color.ROJO}Esa columna no se puede modificar.{Color.FIN}")
             return
 
         try:
@@ -1327,8 +1324,8 @@ class Personaje:
             conexion.commit()
             conexion.close()
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_habilidad' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_habilidad' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1350,8 +1347,8 @@ class Personaje:
 
             conexion.commit()
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_arma' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_arma' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1375,8 +1372,8 @@ class Personaje:
 
             conexion.commit()
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_armadura' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_armadura' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1400,8 +1397,8 @@ class Personaje:
 
             conexion.commit()
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_escudo' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_escudo' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1416,8 +1413,8 @@ class Personaje:
 
             conexion.commit()
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1433,8 +1430,8 @@ class Personaje:
 
             conexion.commit()
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_arma' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_arma' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1450,8 +1447,8 @@ class Personaje:
 
             conexion.commit()
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_armadura' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_armadura' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1467,8 +1464,8 @@ class Personaje:
 
             conexion.commit()
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_escudo' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_escudo' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 
@@ -1483,8 +1480,8 @@ class Personaje:
 
             conexion.commit()
         except sql.OperationalError as e:
-            print(f"La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.")
-            print(f"Error detallado: {e}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_esfera' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()
 

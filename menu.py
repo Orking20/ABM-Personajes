@@ -1,17 +1,15 @@
 from personaje import Personaje
 from equipo import Equipo, Arma, Armadura, Escudo
-from esfera import Esfera
+from colores import Color
 import base_datos
-from rich.console import Console
-from rich.table import Table
-from collections import defaultdict
+from itertools import zip_longest
 
 class Menu:
     """Clase que sirve para que el usuario pueda controlar e interaccionar con sus personajes mediante un menú."""
 
     def menu_principal(self):
         """Muestra el menú principal para crear, administrar personajes, etc."""
-        print("\n-------------------------------- Espada Negra --------------------------------")
+        print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Espada Negra{Color.FIN} {Color.MARRON}--------------------------------{Color.FIN}")
         eleccion = Menu._input_eleccion_menu("\n1. Crear personaje\n2. Ver personajes\n0. Salir\n: ",
                                              "\nDebes ingresar un número entre 0 y 2 del menú.", [0, 1, 2])
 
@@ -57,7 +55,7 @@ class Menu:
                 personaje.asignar_sten(eleccion)
                 return True
             else:
-                print("La versión de STEN solo puede ser 1 o 2.")
+                print(f"{Color.AMARILLO}La versión de STEN solo puede ser 1 o 2.{Color.FIN}")
 
     @staticmethod
     def _asignar_jugador(personaje):
@@ -73,7 +71,7 @@ class Menu:
                 personaje.asignar_jugador(nombre)
                 return True
             else:
-                print("El nombre del jugador no puede estar vacío.")
+                print(f"{Color.AMARILLO}El nombre del jugador no puede estar vacío.{Color.FIN}")
 
     @staticmethod
     def _asignar_nombre(personaje):
@@ -89,7 +87,7 @@ class Menu:
                 personaje.asignar_nombre(nombre)
                 return True
             else:
-                print("El nombre del personaje no puede estar vacío.")
+                print(f"{Color.AMARILLO}El nombre del personaje no puede estar vacío.{Color.FIN}")
 
     @staticmethod
     def _asignar_atributos(personaje):
@@ -269,7 +267,7 @@ class Menu:
         while True:
             personajes = Personaje.db_a_personaje() # Obtenemos los personajes como objetos
 
-            print("\n-------------------------------- Personajes --------------------------------")
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Personajes{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}")
 
             opciones_pjs = "\n"
             opciones_menu = [0]
@@ -281,7 +279,7 @@ class Menu:
                     opciones_pjs += f"{i}. {personaje.nombre}\n"
                     opciones_menu.append(i)
             else:
-                print("Todavía no tienes personajes creados.\n")
+                print(f"{Color.AMARILLO}Todavía no tienes personajes creados.{Color.FIN}\n")
 
             opciones_pjs += "0. Atrás\n: "
 
@@ -328,63 +326,85 @@ class Menu:
                 Menu._menu_modificadores(personaje)
 
     @staticmethod
+    def formatear_seccion(titulo, datos, ancho=33, k_space=33, v_space=5):
+        lineas = [f"{titulo}"]
+        lineas += [f"{k:<{k_space}} {v:<{v_space}}" for k, v in datos]
+        return [linea.ljust(ancho) for linea in lineas]
+
+    @staticmethod
     def _mostrar_personaje(personaje):
         personaje = personaje.select_personaje() # Se vuelve a leer el personaje para actualizar los valores
         personaje = personaje[0]
         """Muestra el personaje pasado por parámetros."""
-        print(f"\n-------------------------------- {personaje["nombre"]} --------------------------------\n")
-        consola = Console()
-        tabla = Table(show_header=False, box=None, padding=(0, 1))
-        tabla.add_row(f"[underline]Jugador                                {personaje["jugador"]}[/]")
-        tabla.add_row(f"[underline]Rango                                  {Personaje.convertir_rango_a_str(personaje["rango"])}[/]")
-        tabla.add_row(f"[underline]Fuerza                                 {personaje["fuerza"]}[/]")
-        tabla.add_row(f"[underline]Agilidad                               {personaje["agilidad"]}[/]")
-        tabla.add_row(f"[underline]Resistencia                            {personaje["resistencia"]}[/]")
-        tabla.add_row(f"[underline]Voluntad                               {personaje["voluntad"]}[/]")
-        tabla.add_row(f"[underline]Inteligencia                           {personaje["inteligencia"]}[/]")
-        tabla.add_row(f"[underline]Liderazgo                              {personaje["liderazgo"]}[/]")
-        tabla.add_row(f"[underline]Potencia                               {personaje["potencia"]}[/]")
-        tabla.add_row(f"[underline]Defensa                                {personaje["defensa"]}[/]")
-        tabla.add_row(f"[underline]Extensión                              {personaje["extension"]}[/]")
-        tabla.add_row(f"[underline]Esferas                                {personaje["cantidad_esferas"]}[/]")
-        tabla.add_row(f"[underline]Vida                                   {personaje["vida"]}[/]")
-        tabla.add_row(f"[underline]Muerte                                 {personaje["muerte"]}[/]")
-        tabla.add_row(f"[underline]Aguante                                {personaje["aguante"]}[/]")
-        tabla.add_row(f"[underline]Recuperación                           {personaje["recuperacion"]}[/]")
-        tabla.add_row(f"[underline]Iniciativa                             {personaje["iniciativa"]}[/]")
-        tabla.add_row(f"[underline]Carga total                            {personaje["carga_total"]}[/]")
-        tabla.add_row(f"[underline]Carga en manos                         {personaje["carga_en_manos"]}[/]")
-        tabla.add_row(f"[underline]Resistencia a la luz                   {personaje["resistencia_a_la_luz"]}[/]")
-        tabla.add_row(f"[underline]Resistencia a la oscuridad             {personaje["resistencia_a_la_oscuridad"]}[/]")
-        tabla.add_row(f"[underline]Resistencia elemental                  {personaje["resistencia_elemental"]}[/]")
-        tabla.add_row(f"[underline]Escudo sobrenatural                    {personaje["escudo_sobrenatural"]}[/]")
+        print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}{personaje["nombre"]}{Color.FIN}{Color.MARRON} --------------------------------\n{Color.FIN}")
+        print(f"Jugador: {personaje["jugador"]}")
+        print(f"Rango: {Personaje.convertir_rango_a_str(personaje["rango"])}\n")
+
+        atributos = [
+            ("Fuerza", personaje["fuerza"]),
+            ("Agilidad", personaje["agilidad"]),
+            ("Resistencia", personaje["resistencia"]),
+            ("Voluntad", personaje["voluntad"]),
+            ("Inteligencia", personaje["inteligencia"]),
+            ("Liderazgo", personaje["liderazgo"]),
+            ("Potencia", personaje["potencia"]),
+            ("Defensa", personaje["defensa"]),
+            ("Extensión", personaje["extension"])
+        ]
+
+        cualidades = [
+            ("Esferas", personaje["cantidad_esferas"]),
+            ("Vida", personaje["vida"]),
+            ("Muerte", personaje["muerte"]),
+            ("Aguante", personaje["aguante"]),
+            ("Recuperación", personaje["recuperacion"]),
+            ("Iniciativa", personaje["iniciativa"]),
+            ("Carga total", personaje["carga_total"]),
+            ("Carga en manos", personaje["carga_en_manos"]),
+            ("Motivación", personaje["motivacion"]),
+            ("Energía", personaje["energia"])
+        ]
+
+        resistencias = [
+            ("Resistencia a la luz", personaje["resistencia_a_la_luz"]),
+            ("Resistencia a la oscuridad", personaje["resistencia_a_la_oscuridad"]),
+            ("Resistencia elemental", personaje["resistencia_elemental"]),
+            ("Escudo sobrenatural", personaje["escudo_sobrenatural"])
+        ]
+
+        modificadores = []
         if personaje["modificador_vida"] != 0:
-            tabla.add_row(f"[underline]Modificador vida                       {personaje["modificador_vida"]}[/]")
+            modificadores.append((f"Modificador vida", personaje["modificador_vida"]))
         if personaje["modificador_aguante"] != 0:
-            tabla.add_row(f"[underline]Modificador aguante                    {personaje["modificador_aguante"]}[/]")
+            modificadores.append((f"Modificador aguante", personaje["modificador_aguante"]))
         if personaje["modificador_recuperacion"] != 0:
-            tabla.add_row(f"[underline]Modificador recuperación               {personaje["modificador_recuperacion"]}[/]")
+            modificadores.append((f"Modificador recuperación", personaje["modificador_recuperacion"]))
         if personaje["modificador_iniciativa"] != 0:
-            tabla.add_row(f"[underline]Modificador iniciativa                 {personaje["modificador_iniciativa"]}[/]")
+            modificadores.append((f"Modificador iniciativa", personaje["modificador_iniciativa"]))
         if personaje["modificador_luz"] != 0:
-            tabla.add_row(f"[underline]Modificador resistencia luz            {personaje["modificador_luz"]}[/]")
+            modificadores.append((f"Modificador resistencia luz", personaje["modificador_luz"]))
         if personaje["modificador_oscuridad"] != 0:
-            tabla.add_row(f"[underline]Modificador resistencia oscuridad      {personaje["modificador_oscuridad"]}[/]")
+            modificadores.append((f"Modificador resistencia oscuridad", personaje["modificador_oscuridad"]))
         if personaje["modificador_elemental"] != 0:
-            tabla.add_row(f"[underline]Modificador resistencia elemental      {personaje["modificador_elemental"]}[/]")
+            modificadores.append((f"Modificador resistencia elemental", personaje["modificador_elemental"]))
         if personaje["modificador_escudo_sobrenatural"] != 0:
-            tabla.add_row(f"[underline]Modificador escudo sobrenatural        {personaje["modificador_escudo_sobrenatural"]}[/]")
+            modificadores.append((f"Modificador escudo sobrenatural", personaje["modificador_escudo_sobrenatural"]))
         if personaje["modificador_carga_total"] != 0:
-            tabla.add_row(f"[underline]Modificador carga total                {personaje["modificador_carga_total"]}[/]")
-        tabla.add_row(f"[underline]Motivación                             {personaje["motivacion"]}[/]")
-        tabla.add_row(f"[underline]Energía                                {personaje["energia"]}[/]")
-        consola.print(tabla)
+            modificadores.append((f"Modificador carga total", personaje["modificador_carga_total"]))
+
+        col1 = Menu.formatear_seccion("==== Atributos ====", atributos, k_space=17)
+        col2 = Menu.formatear_seccion("==== Cualidades ====", cualidades, k_space=17)
+        col3 = Menu.formatear_seccion("======= Resistencias ========", resistencias, k_space=27)
+        col4 = Menu.formatear_seccion("========== Modificadores ==========", modificadores)
+
+        for fila in zip_longest(col1, col2, col3, col4, fillvalue=" " * 33):
+            print("  ".join(fila))
 
     @staticmethod
     def _menu_habilidades(personaje):
         """Abre el menú de habilidades del personaje."""
         while True:
-            print(f"\n-------------------------------- Habilidades de {personaje.nombre} --------------------------------")
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Habilidades de {personaje.nombre}{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}")
             print("\nNombre | Nivel | Atributos | XP\n")
             pj_habilidades = Personaje.select_personaje_habilidad(personaje.id)
 
@@ -425,7 +445,7 @@ class Menu:
     def _menu_administrar_habilidades(personaje):
         """Abre el menu de administración de habilidades."""
         while True:
-            print(f"\n-------------------------------- Habilidades de {personaje.nombre} --------------------------------")
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Habilidades de {personaje.nombre}{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}")
             print("\nNombre | Nivel | Atributos | XP\n")
             pj_habilidades = Personaje.select_personaje_habilidad(personaje.id)
 
@@ -450,7 +470,12 @@ class Menu:
                     espacios_atr = " " * cant_espacios_atr
 
                 atr_rel = [str(a["atributo"]) for a in atributos_relacionados]
-                print(f"{i}. {pj_habilidad["nombre"]}{espacios_nom} | {pj_habilidad["nivel"]} | {atr_rel}{espacios_atr} | {pj_habilidad["xp"]}/{pj_habilidad["xp_requerida"]}")
+                if pj_habilidad["Nivel"] > 0:
+                    print(f"{Color.NARANJA}{i}. {pj_habilidad["nombre"]}{espacios_nom} | {pj_habilidad["nivel"]} | {atr_rel}{espacios_atr} | {pj_habilidad["xp"]}/{pj_habilidad["xp_requerida"]}{Color.FIN}")
+                elif pj_habilidad["xp"] > 0:
+                    print(f"{Color.NARANJA_CLARO}{i}. {pj_habilidad["nombre"]}{espacios_nom} | {pj_habilidad["nivel"]} | {atr_rel}{espacios_atr} | {pj_habilidad["xp"]}/{pj_habilidad["xp_requerida"]}{Color.FIN}")
+                else:
+                    print(f"{i}. {pj_habilidad["nombre"]}{espacios_nom} | {pj_habilidad["nivel"]} | {atr_rel}{espacios_atr} | {pj_habilidad["xp"]}/{pj_habilidad["xp_requerida"]}")
                 opciones_menu.append(i)
                 i += 1
 
@@ -470,7 +495,7 @@ class Menu:
     def _menu_equipo(personaje):
         """Abre el menú para ver y administrar el equipo."""
         while True:
-            print(f"\n-------------------------------- Equipo de {personaje.nombre} --------------------------------")
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Equipo de {personaje.nombre}{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}")
             Menu._mostrar_equipo(personaje)
 
             eleccion = input("\nPara las opciones 4 para arriba escriba la opción del menú, seguido de el número de ID. Ejemplo [7 2]\n1. Equipar arma\n2. Equipar armadura\n3. Equipar escudo\n4. Desequipar arma\n5. Desequipar armadura\n6. Desequipar escudo\n7. Cualidades armas\n8. Cualidades armaduras\n9. Cualidades escudos\n0. Atrás\n: ")
@@ -479,14 +504,14 @@ class Menu:
                 entrada = eleccion.strip().split()
 
                 if len(entrada) != 2:
-                    print("\nFormato inválido. Debes escribir una opción del menú o <Opción de menú> <ID de equipo>")
+                    print(f"\n{Color.AMARILLO}Formato inválido. Debes escribir una opción del menú o <Opción de menú> <ID de equipo>{Color.FIN}")
                 else:
                     try:
                         opc_menu = int(entrada[0])
                         id = int(entrada[1])
 
                         if opc_menu < 4 or opc_menu > 9:
-                            print("\nFormato inválido. Debes escribir una opción del menú o <Opción de menú> <ID de equipo>")
+                            print(f"\n{Color.AMARILLO}Formato inválido. Debes escribir una opción del menú o <Opción de menú> <ID de equipo>{Color.FIN}")
                         elif opc_menu == 4:
                             Menu._desequipar_equipo(personaje, "Armas", id)
                         elif opc_menu == 5:
@@ -500,7 +525,7 @@ class Menu:
                         elif opc_menu == 9:
                             Menu._menu_cambiar_cualidad_escudo(personaje, id)
                     except ValueError:
-                        print("\nPor favor, ingresa solo números válidos.")
+                        print(f"\n{Color.AMARILLO}Por favor, ingresa solo números válidos.{Color.FIN}")
             else:
                 try:
                     eleccion = int(eleccion)
@@ -508,7 +533,7 @@ class Menu:
                     if eleccion == 0:
                         break
                     elif eleccion < 0 or eleccion > 3:
-                        print("Para seleccionar una opción del menú ingrese un número entre el 1 y el 3.")
+                        print(f"{Color.AMARILLO}Para seleccionar una opción del menú ingrese un número entre el 1 y el 3.{Color.FIN}")
                         return None
                     elif eleccion == 1:
                         Menu._menu_equipar_armas(personaje)
@@ -517,7 +542,7 @@ class Menu:
                     elif eleccion == 3:
                         Menu._menu_equipar_escudos(personaje)
                 except ValueError:
-                    print("\nDebes ingresar un número válido.")
+                    print(f"\n{Color.AMARILLO}Debes ingresar un número válido.{Color.FIN}")
 
 
     @staticmethod
@@ -560,7 +585,7 @@ class Menu:
                 for arma in armas:
                     if eleccion == arma.id:
                         personaje.equipar_arma(arma)
-                        print("Arma equipada")
+                        print(f"{Color.VERDE}Arma equipada{Color.FIN}")
                         return
 
     @staticmethod
@@ -595,7 +620,7 @@ class Menu:
             else:
                 for armadura in armaduras:
                     if eleccion == armadura.id:
-                        print("Armadura equipada")
+                        print(f"{Color.VERDE}Armadura equipada{Color.FIN}")
                         personaje.equipar_armadura(armadura)
                         return
 
@@ -631,7 +656,7 @@ class Menu:
             else:
                 for escudo in escudos:
                     if eleccion == escudo.id:
-                        print("Escudo equipado")
+                        print(f"{Color.VERDE}Escudo equipado{Color.FIN}")
                         personaje.equipar_escudo(escudo)
                         return
 
@@ -658,7 +683,7 @@ class Menu:
                 if item["id_pj_escudo"] == id_seleccionado:
                     personaje.desequipar_escudo(id_seleccionado)
                     return
-        print(f"No tienes ningun equipo con el ID {id_seleccionado}")
+        print(f"{Color.AMARILLO}No tienes ningun equipo con el ID {id_seleccionado}{Color.FIN}")
 
     @staticmethod
     def _menu_cambiar_cualidad_arma(personaje, id_seleccionado):
@@ -759,7 +784,7 @@ class Menu:
             elif opc_menu == 1 or opc_menu == 2:
                 metodo = getattr(personaje, nombre_metodo, None) # Llama al método pasado por argumento
                 if not metodo:
-                    print(f"Error: el método '{nombre_metodo}' no existe en el objeto personaje.")
+                    print(f"{Color.ROJO}{Color.NEGRITA}Error:{Color.FIN}{Color.GRIS} el método '{nombre_metodo}' no existe en el objeto personaje. Contactar con el desarrollador.{Color.FIN}")
                     return
 
                 metodo(id, opc_menu, columna, valor)
@@ -776,9 +801,9 @@ class Menu:
                     personaje.cambiar_calidad_objeto(id_seleccionado, tipo_equipo, nueva_calidad)
                     return
                 else:
-                    print("\n\033[31mEl equipo solo puede tener calidad entre 0 y 5.\033[0m")
+                    print(f"\n{Color.AMARILLO}El equipo solo puede tener calidad entre 0 y 5.{Color.FIN}")
             except ValueError:
-                print("\n\033[31mIngrese un número válido entre 0 y 5.\033[0m")
+                print(f"\n{Color.AMARILLO}Ingrese un número válido entre 0 y 5.{Color.FIN}")
 
     @staticmethod
     def _mostrar_equipo(personaje):
@@ -856,7 +881,7 @@ class Menu:
     def _menu_combate(personaje):
         """Abre menú para administrar todos los atributos de combate así como las cualidades."""
         while True:
-            print(f"\n-------------------------------- {personaje.nombre} en combate --------------------------------\n")
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}{personaje.nombre} en combate{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}\n")
             Menu._mostrar_atributos_combate(personaje)
 
             eleccion = input("\n1. Gastar un punto aguante\n2. Recibir daño\n3. Concentrarse\n4. Recuperar aguante\n5. Recuperar vida\n6. Gastar concentración\n7. Gastar un punto energía\n8. Curar herida grave\n9. Ronda nueva\n0. Atrás\n: ")
@@ -865,14 +890,14 @@ class Menu:
             if len(eleccion) > 1:
                 entrada = eleccion.strip().split()
                 if len(entrada) != 2:
-                    print("\nFormato inválido. Debes escribir una opción del menú o <Opción de menú> <ID de equipo>")
+                    print(f"\n{Color.AMARILLO}Formato inválido. Debes escribir una opción del menú o <Opción de menú> <ID de equipo>{Color.FIN}")
                 else:
                     try:
                         opc_menu = int(entrada[0])
                         valor = int(entrada[1])
 
                         if opc_menu < 2 or opc_menu > 6:
-                            print("\nPara las opciones 2 a 6 del menú, debes ingresar <Opción de menú> <Valor a sumar o restar>. Ejemplo [3 5]")
+                            print(f"\n{Color.AMARILLO}Para las opciones 2 a 6 del menú, debes ingresar <Opción de menú> <Valor a sumar o restar>. Ejemplo [3 5]{Color.FIN}")
                         elif opc_menu == 2:
                             personaje.recibir_dano(valor)
                         elif opc_menu == 3:
@@ -884,7 +909,7 @@ class Menu:
                         elif opc_menu == 6:
                             personaje.perder_concentracion(valor)
                     except ValueError:
-                        print("\nPor favor, ingresa solo números válidos.")
+                        print(f"\n{Color.AMARILLO}Por favor, ingresa solo números válidos.{Color.FIN}")
             else:
                 try:
                     eleccion = int(eleccion)
@@ -892,7 +917,7 @@ class Menu:
                     if eleccion == 0:
                         break
                     elif eleccion not in (1, 7, 8, 9):
-                        print("\nPara las opciones 2 a 6 del menú, debes ingresar <Opción de menú> <Valor a sumar o restar>. Ejemplo [3 5]")
+                        print(f"\n{Color.AMARILLO}Para las opciones 2 a 6 del menú, debes ingresar <Opción de menú> <Valor a sumar o restar>. Ejemplo [3 5]{Color.FIN}")
                     elif eleccion == 1:
                         personaje.gastar_aguante()
                     elif eleccion == 7:
@@ -902,41 +927,53 @@ class Menu:
                     elif eleccion == 9:
                         personaje.ronda_nueva()
                 except ValueError:
-                    print("\nPor favor, ingresa solo números válidos.")
+                    print(f"\n{Color.AMARILLO}Por favor, ingresa solo números válidos.{Color.FIN}")
 
     @staticmethod
     def _mostrar_atributos_combate(personaje):
         """Muestra todos los atributos de combate."""
         Menu._mostrar_equipo(personaje)
-        consola = Console()
-        tabla = Table(show_header=False, box=None, padding=(0, 1))
-        tabla.add_row(f"[underline]Fuerza                      {personaje.fuerza}[/]")
-        tabla.add_row(f"[underline]Agilidad                    {personaje.agilidad}[/]")
-        tabla.add_row(f"[underline]Resistencia                 {personaje.resistencia}[/]")
-        tabla.add_row(f"[underline]Voluntad                    {personaje.voluntad}[/]")
-        tabla.add_row(f"[underline]Inteligencia                {personaje.inteligencia}[/]")
-        tabla.add_row(f"[underline]Liderazgo                   {personaje.liderazgo}[/]")
-        tabla.add_row(f"[underline]Potencia                    {personaje.potencia}[/]")
-        tabla.add_row(f"[underline]Defensa                     {personaje.defensa}[/]")
-        tabla.add_row(f"[underline]Extensión                   {personaje.extension}[/]")
-        tabla.add_row(f"[underline]Aguante actual              {personaje.aguante_actual}[/]")
-        tabla.add_row(f"[underline]Aguante gastado por turno   {personaje.aguante_gastado_por_turno}[/]")
-        tabla.add_row(f"[underline]Vida actual                 {personaje.vida_actual}[/]")
-        tabla.add_row(f"[underline]Muerte                      {personaje.muerte}[/]")
-        tabla.add_row(f"[underline]Resistencia luz             {personaje.resistencia_luz}[/]")
-        tabla.add_row(f"[underline]Resistencia Oscuridad       {personaje.resistencia_oscuridad}[/]")
-        tabla.add_row(f"[underline]Resistencia elemental       {personaje.resistencia_elemental}[/]")
-        tabla.add_row(f"[underline]Escudo sobrenatural         {personaje.escudo_sobrenatural}[/]")
-        tabla.add_row(f"[underline]Concentración               {personaje.concentracion}[/]")
-        tabla.add_row(f"[underline]Energía                     {personaje.energia}[/]")
-        tabla.add_row(f"[underline]Aturdido                    {personaje.turnos_aturdido}[/]")
-        consola.print(tabla)
+        print("")
+        atributos = [
+            ("Fuerza", personaje.fuerza),
+            ("Agilidad", personaje.agilidad),
+            ("Resistencia", personaje.resistencia),
+            ("Voluntad", personaje.voluntad),
+            ("Inteligencia", personaje.inteligencia),
+            ("Liderazgo", personaje.liderazgo),
+            ("Potencia", personaje.potencia),
+            ("Defensa", personaje.defensa),
+            ("Extensión", personaje.extension)
+        ]
+        cualidades = [
+            ("Aguante actual", personaje.aguante_actual),
+            ("Aguante gastado por turno", personaje.aguante_actual),
+            ("Vida actual", personaje.aguante_actual),
+            ("Muerte", personaje.aguante_actual),
+            ("Concentración", personaje.aguante_actual),
+            ("Energía", personaje.aguante_actual),
+            ("Aturdido", personaje.aguante_actual),
+        ]
+
+        resistencias = [
+            ("Resistencia luz", personaje.resistencia_luz),
+            ("Resistencia Oscuridad", personaje.resistencia_oscuridad),
+            ("Resistencia elemental", personaje.resistencia_elemental),
+            ("Escudo sobrenatural", personaje.escudo_sobrenatural)
+        ]
+
+        col1 = Menu.formatear_seccion("==== Atributos ====", atributos, ancho=25, k_space=17)
+        col2 = Menu.formatear_seccion("======== Cualidades ========", cualidades, ancho=33, k_space=25)
+        col3 = Menu.formatear_seccion("======= Resistencias =======", resistencias, k_space=25)
+
+        for fila in zip_longest(col1, col2, col3, fillvalue=" " * 32):
+            print("  ".join(fila))
 
     @staticmethod
     def _menu_esferas(personaje):
         """Abre el menú para ver y administrar las esferas"""
         while True:
-            print(f"\n-------------------------------- Esferas de {personaje.nombre} --------------------------------")
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Esferas de {personaje.nombre}{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}")
             Menu._mostrar_esferas(personaje)
             eleccion = Menu._input_eleccion_menu("\n1. Agregar esfera\n2. Quitar esfera\n0. Atrás\n: ",
                                                             f"Debes ingresar un número del menú.", [0, 1, 2])
@@ -1026,7 +1063,7 @@ class Menu:
     def _agregar_esfera(personaje):
         """Acompaña al usuario para agregar una esfera al personaje."""
         while True:
-            print(f"\n-------------------------------- Agregar esfera a {personaje.nombre} --------------------------------")
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Agregar esfera a {personaje.nombre}{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}")
             Menu._mostrar_esferas()
             opciones = [0] + list(range(40, 65 + 1))
             eleccion = Menu._input_eleccion_menu(f"\nElija la esfera que quieres agregar a {personaje.nombre}\n: ",
@@ -1042,8 +1079,8 @@ class Menu:
     def _quitar_esfera(personaje):
         """Acompaña al usuario para quitar una esfera al personaje."""
         while True:
-            print(f"\n-------------------------------- Quitar esfera a {personaje.nombre} --------------------------------")
-            print("\nIMPORTANTE: Esta opción está solo por si agregaste una esfera por error al personaje. Según las reglas del juego, una vez agregas una esfera a un personaje, esta te acompaña para siempre.")
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Quitar esfera a {personaje.nombre}{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}")
+            print(f"\n{Color.NARANJA}{Color.NEGRITA}IMPORTANTE:{Color.FIN} {Color.GRIS}Esta opción está solo por si agregaste una esfera por error al personaje. Según las reglas del juego, una vez agregas una esfera a un personaje, esta te acompaña para siempre.{Color.FIN}")
 
             habilidades = Personaje.select_personaje_habilidad(personaje.id)
             esferas = Personaje.select_personaje_esfera(personaje.id)
@@ -1072,7 +1109,7 @@ class Menu:
     def _menu_motivacion(personaje):
         """Abre el menú para agregar o quitar motivación al personaje."""
         while True:
-            print(f"\n-------------------------------- Motivación para {personaje.nombre} --------------------------------")
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Motivación para {personaje.nombre}{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}")
             print(f"Motivación actual: {personaje.motivacion}")
 
             (opc_menu, motivacion) = Menu._input_eleccion_menu_comando("\nIngrese la opción de menú seguido de la motivación que quiere agregar o quitar. Ejemplo: [1 10]\n1. Agregar motivación\n2. Quitar motivación\n0. Atrás\n: ",
@@ -1092,7 +1129,7 @@ class Menu:
     def _menu_energia(personaje):
         """Abre el menú para agregar o quitar energía al personaje."""
         while True:
-            print(f"\n-------------------------------- Energía para {personaje.nombre} --------------------------------")
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Energía para {personaje.nombre}{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}")
             print(f"Energía actual: {personaje.energia}")
 
             (opc_menu, energia) = Menu._input_eleccion_menu_comando("\nIngrese la opción de menú seguido de la energía que quiere agregar o quitar. Ejemplo: [1 2]\n1. Agregar energía\n2. Quitar energía\n0. Atrás\n: ",
@@ -1170,7 +1207,7 @@ class Menu:
             elif opc_menu == 1 or opc_menu == 2:
                 metodo = getattr(personaje, nombre_metodo, None) # Llama al método pasado por argumento
                 if not metodo:
-                    print(f"Error: el método '{nombre_metodo}' no existe en el objeto personaje.")
+                    print(f"{Color.ROJO}{Color.NEGRITA}Error:{Color.FIN} {Color.GRIS}el método '{nombre_metodo}' no existe en el objeto personaje. Contactar con el desarrollador.{Color.FIN}")
                     return
 
                 metodo(opc_menu, valor)
@@ -1185,9 +1222,9 @@ class Menu:
                 if eleccion in lista_opciones:
                     return eleccion
                 else:
-                    print(texto_error)
+                    print(f"{Color.AMARILLO}{texto_error}{Color.FIN}")
             except ValueError:
-                print(texto_error)
+                print(f"{Color.AMARILLO}{texto_error}{Color.FIN}")
 
     @staticmethod
     def _input_eleccion_menu_comando(texto, texto_error, lista_opciones_menu):
@@ -1200,7 +1237,7 @@ class Menu:
                     return (0, 0)
 
                 if len(eleccion) != 2:
-                    print("\nFormato inválido. Debes escribir: <número 1> <número 2>")
+                    print(f"\n{Color.AMARILLO}Formato inválido. Debes escribir: <número 1> <número 2>{Color.FIN}")
                 else:
                     try:
                         opc_menu = int(eleccion[0])
@@ -1209,9 +1246,9 @@ class Menu:
                         if opc_menu in lista_opciones_menu:
                             return (opc_menu, comando)
                     except ValueError:
-                        print("\nPor favor, ingresa solo números válidos.")
+                        print(f"\n{Color.AMARILLO}Por favor, ingresa solo números válidos.{Color.FIN}")
             except ValueError:
-                print(texto_error)
+                print(f"{Color.AMARILLO}{texto_error}{Color.FIN}")
 
     @staticmethod
     def _num_dif_palabras(p1, p2):
