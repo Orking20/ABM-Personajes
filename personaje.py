@@ -480,49 +480,34 @@ class Personaje:
 
     def equipar_arma(self, arma):
         """Equipa el arma pasada por argumento al personaje."""
-        self.armas.append(arma)
         arma.iniciativa = arma.alcance + self.agilidad + self.inteligencia
         arma.asignar_calidad(1)
         self._insert_personaje_arma(arma.id, arma.iniciativa, arma.calidad)
 
     def equipar_armadura(self, armadura):
         """Equipa la armadura pasada por argumento al personaje."""
-        self.armaduras.append(armadura)
         armadura.asignar_calidad(1)
         self._insert_personaje_armadura(armadura.id, armadura.calidad)
 
     def equipar_escudo(self, escudo):
         """Equipa el escudo pasado por argumento al personaje."""
-        self.escudos.append(escudo)
         escudo.asignar_calidad(1)
         self._insert_personaje_escudo(escudo.id, escudo.calidad)
 
-    def desequipar_arma(self, arma):
+    def desequipar_arma(self, id_arma):
         """Desequipa el arma pasada por argumento al personaje."""
-        armas = Personaje.select_personaje_arma(self.id)
-        for arma_pj in armas:
-            if arma.id == arma_pj["id_pj_arma"]:
-                Personaje._delete_personaje_arma(arma.id)
-                print("Arma desequipada")
-                break
+        Personaje._delete_personaje_arma(id_arma)
+        print("Arma desequipada")
 
-    def desequipar_armadura(self, armadura):
+    def desequipar_armadura(self, id_armadura):
         """Desequipa la armadura pasada por argumento al personaje."""
-        armaduras = Personaje.select_personaje_armadura(self.id)
-        for armadura_pj in armaduras:
-            if armadura.id == armadura_pj["id_pj_armadura"]:
-                Personaje._delete_personaje_armadura(armadura.id)
-                print("Armadura desequipada")
-                break
+        Personaje._delete_personaje_armadura(id_armadura)
+        print("Armadura desequipada")
 
-    def desequipar_escudo(self, escudo):
+    def desequipar_escudo(self, id_escudo):
         """Desequipa el escudo pasado por argumento al personaje."""
-        escudos = Personaje.select_personaje_escudo(self.id)
-        for escudo_pj in escudos:
-            if escudo.id == escudo_pj["id_pj_escudo"]:
-                Personaje._delete_personaje_escudo(escudo.id)
-                print("Escudo desequipado")
-                break
+        Personaje._delete_personaje_escudo(id_escudo)
+        print("Escudo desequipado")
 
     def cambiar_calidad_objeto(self, id_equipo, tipo_equipo, nueva_calidad):
         """Cambia la calidad de cualquier equipo: arma, armadura o escudo."""

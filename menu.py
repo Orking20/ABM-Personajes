@@ -528,7 +528,6 @@ class Menu:
             print("\nNombre | Impacto | Daño | Alcance | Tipo de daño | Tipo de arma | Estructura | Peso")
 
             opciones_menu = [0]
-            i = 1
             for arma in armas:
                 cant_espacios_nom = 0
                 espacios_nom = ""
@@ -548,8 +547,7 @@ class Menu:
                     cant_espacios_tip_arma += 11 - len(arma.tipo_arma)
                     espacios_tip_arma = " " * cant_espacios_tip_arma
                 print(f"{arma.id}. {arma.nombre}{espacios_nom} | {arma.impacto} | {arma.dano} | {arma.alcance} | {arma.tipo_dano}{espacios_tip_dano} | {arma.tipo_arma}{espacios_tip_arma} | {arma.estructura} | {arma.peso}")
-                opciones_menu.append(i)
-                i += 1
+                opciones_menu.append(arma.id)
             print("0. Atrás")
 
             eleccion = Menu._input_eleccion_menu("\nIngrese el número de arma que quieres agregar al personaje: ",
@@ -573,7 +571,6 @@ class Menu:
             print("\nNombre | Contundente | Cortante | Perforante | Cobertura | Evasión | Penalizador | Estructura | Peso")
 
             opciones_menu = [0]
-            i = 1
             for armadura in armaduras:
                 cant_espacios_nom = 0
                 espacios_nom = ""
@@ -586,8 +583,7 @@ class Menu:
                 if armadura.penalizador == 0:
                     espacios_pen = " "
                 print(f"{armadura.id}. {armadura.nombre}{espacios_nom} | {armadura.contundente} | {armadura.cortante} | {armadura.perforante} | {armadura.cobertura} | {armadura.evasion} | {armadura.penalizador}{espacios_pen} | {armadura.estructura} | {armadura.peso}")
-                opciones_menu.append(i)
-                i += 1
+                opciones_menu.append(armadura.id)
             print("0. Atrás")
 
             eleccion = Menu._input_eleccion_menu("\nIngrese el número de armadura que quieres agregar al personaje: ",
@@ -611,7 +607,6 @@ class Menu:
             print("\nNombre | Contundente | Cortante | Perforante | Cobertura | Evasión | Penalizador | Estructura | Peso")
 
             opciones_menu = [0]
-            i = 1
             for escudo in escudos:
                 cant_espacios_nom = 0
                 espacios_nom = ""
@@ -624,8 +619,7 @@ class Menu:
                 if escudo.penalizador == 0:
                     espacios_pen = " "
                 print(f"{escudo.id}. {escudo.nombre}{espacios_nom} | {escudo.contundente} | {escudo.cortante} | {escudo.perforante} | {escudo.cobertura} | {escudo.evasion} | {escudo.penalizador}{espacios_pen} | {escudo.estructura} | {escudo.peso}")
-                opciones_menu.append(i)
-                i += 1
+                opciones_menu.append(escudo.id)
             print("0. Atrás")
 
             eleccion = Menu._input_eleccion_menu("\nIngrese el número de escudo que quieres agregar al personaje: ",
@@ -645,22 +639,24 @@ class Menu:
     def _desequipar_equipo(personaje, tipo_equipo, id_seleccionado):
         """Se encarga de desequipar cualquier tipo de equipo: armas, armaduras y escudos."""
         if tipo_equipo == "Armas":
-            equipo = Arma.db_a_armas(personaje.sten)
+            equipo = Personaje.select_personaje_arma(personaje.id)
         elif tipo_equipo == "Armaduras":
-            equipo = Armadura.db_a_armaduras(personaje.sten)
+            equipo = Personaje.select_personaje_armadura(personaje.id)
         elif tipo_equipo == "Escudos":
-            equipo = Escudo.db_a_escudos(personaje.sten)
+            equipo = Personaje.select_personaje_escudo(personaje.id)
         
         for item in equipo:
-            if item.id == id_seleccionado:
-                if tipo_equipo == "Armas":
-                    personaje.desequipar_arma(item)
+            if tipo_equipo == "Armas":
+                if item["id_pj_arma"] == id_seleccionado:
+                    personaje.desequipar_arma(id_seleccionado)
                     return
-                elif tipo_equipo == "Armaduras":
-                    personaje.desequipar_armadura(item)
+            elif tipo_equipo == "Armaduras":
+                if item["id_pj_armadura"] == id_seleccionado:
+                    personaje.desequipar_armadura(id_seleccionado)
                     return
-                elif tipo_equipo == "Escudos":
-                    personaje.desequipar_escudo(item)
+            elif tipo_equipo == "Escudos":
+                if item["id_pj_escudo"] == id_seleccionado:
+                    personaje.desequipar_escudo(id_seleccionado)
                     return
         print(f"No tienes ningun equipo con el ID {id_seleccionado}")
 
