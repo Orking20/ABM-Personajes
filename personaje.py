@@ -5,14 +5,12 @@ from esfera import Esfera
 import base_datos
 from math import floor
 import re
-import json
 import sqlite3 as sql
 
 class Personaje:
     """Plantilla que representa cualquier personaje en Espada Negra."""
     def __init__(self):
         """Se inicializan los atributos del personaje."""
-        self.id = Personaje._get_id() + 1
         self.jugador = None
         self.nombre = None
         self.sten = None
@@ -54,11 +52,6 @@ class Personaje:
         self.mod_res_elemental = 0
         self.mod_escudo_sobrenatural = 0
         self.mod_carga_total = 0
-        self.habilidades = [] # Borrar JSON
-        self.armas = [] # Borrar JSON
-        self.armaduras = [] # Borrar JSON
-        self.escudos = [] # Borrar JSON
-        self.esferas = [] # Borrar JSON
         self.motivacion = 0
         self.energia = 0
 
@@ -155,69 +148,6 @@ class Personaje:
         else:
             print(f"Eres {Personaje.convertir_rango_a_str(self.rango)}! Has alcanzado el máximo rango.")
 
-    def asignar_habilidades(self):
-        """Asigna las habilidades básicas a un personaje."""
-        lista_habilidades = [
-            ("Escalada", ("F", "A", "R"), "Dinámica"),
-            ("Escapismo", ("A"), "Dinámica"),
-            ("Nadar / Bucear", ("A", "R"), "Dinámica"),
-            ("Rastreo / Caza", ("I"), "Dinámica"),
-            ("Robo", ("A", "I"), "Dinámica"),
-            ("Sigilo", ("A", "I"), "Dinámica"),
-            ("Abrir cerraduras", ("A", "I"), "Mecánica"),
-            ("Hípica", ("A", "L"), "Mecánica"),
-            ("Medicina", ("I"), "Mecánica"),
-            ("Navegación", ("I", "L"), "Mecánica"),
-            ("Orientación", ("I"), "Mecánica"),
-            ("Pesca", ("A", "I"), "Mecánica"),
-            ("Supervivencia", ("I"), "Mecánica"),
-            ("Agricultura", ("R", "I"), "Productivas"),
-            ("Ganadería", ("R", "I"), "Productivas"),
-            ("Herbolaria / Recolección", ("R", "I"), "Productivas"),
-            ("Minería", ("R", "I"), "Productivas"),
-            ("Disfraces", ("A", "L"), "Sociales"),
-            ("Docencia", ("L", "I"), "Sociales"),
-            ("Engañar", ("L"), "Sociales"),
-            ("Interpretar", ("A", "L"), "Sociales"),
-            ("Seducir", ("L"), "Sociales"),
-            ("Artes", ("I"), "Creativas"),
-            ("Carpintería", ("A", "I"), "Creativas"),
-            ("Cartografía", ("I"), "Creativas"),
-            ("Cocina", ("I"), "Creativas"),
-            ("Entrenar animales", ("L", "I"), "Creativas"),
-            ("Falsificar", ("A", "I"), "Creativas"),
-            ("Forja", ("R", "I"), "Creativas"),
-            ("Peletería", ("A", "I"), "Creativas"),
-            ("Química", ("I"), "Creativas"),
-            ("Sastrería", ("A", "I"), "Creativas"),
-            ("Ciencias teóricas", ("I"), "Conocimientos"),
-            ("Criptografía", ("I"), "Conocimientos"),
-            ("Detección", ("I"), "Conocimientos"),
-            ("Finanzas", ("I"), "Conocimientos"),
-            ("Historia", ("I"), "Conocimientos"),
-            ("Ingeniería", ("I"), "Conocimientos"),
-            ("Leyes", ("I"), "Conocimientos"),
-            ("Concentración", ("D"), "Sobrenaturales"),
-            ("Ritos", ("E"), "Sobrenaturales"),
-            ("Combate a dos manos", ("F"), "Combate"),
-            ("Combate con armas arrojadizas", ("F", "A"), "Combate"),
-            ("Combate con armas de proyectiles", ("F", "A"), "Combate"),
-            ("Combate con dos armas", ("A"), "Combate"),
-            ("Combate con escudo", ("R"), "Combate"),
-            ("Combate con un arma", ("A"), "Combate"),
-            ("Manejo de alabarda", ("A", "R"), "Combate"),
-            ("Manejo de espada", ("F", "A", "R"), "Combate"),
-            ("Manejo de hacha", ("F", "R"), "Combate"),
-            ("Manejo de lanza", ("A"), "Combate"),
-            ("Manejo de mangual", ("R"), "Combate"),
-            ("Manejo de maza", ("F"), "Combate"),
-            ("Manejo de pico", ("F", "A"), "Combate"),
-            ("Táctica", ("L"), "Combate")
-        ]
-
-        for nombre, atributos, tipo in lista_habilidades:
-            self.habilidades.append(Habilidad(nombre, atributos, tipo))
-
     def _resetear_habilidad(self, id_hab):
         """Quita una habilidad al personaje."""
         habilidades = Personaje.select_personaje_habilidad(self.id)
@@ -227,24 +157,6 @@ class Personaje:
                 self._update_personaje_habilidad("xp", 0, id_hab)
                 self._update_personaje_habilidad("xp_requerida", 5, id_hab)
                 break
-
-    @staticmethod
-    def _validar_tipo_habilidad(tipo):
-        """Valida el tipo de la habilidad."""
-        if tipo in ("Dinámica", "Mecánica", "Productivas", "Sociales", "Creativas", "Conocimientos", "Sobrenaturales", "Combate"):
-            return True
-        else:
-            return False
-
-    @staticmethod
-    def _validar_atributos_habilidad(atributos):
-        """Valida los atributos de la habilidad."""
-        for atr in atributos:
-            if atr in ("F", "A", "R", "V", "I", "L", "P", "D", "E"):
-                continue
-            else:
-                return False
-        return True
 
     def _actualizar_cualidades(self):
         """Actualiza las cualidades de un personaje, como la vida, aguante, resistencia, etc."""
@@ -346,33 +258,6 @@ class Personaje:
             self.defensa = valor
         elif atributo_str == "extensión":
             self.extension = valor
-
-    def mostrar_atributos(self):
-        """Muestra todos los atributos con sus respectivos valores."""
-        print(f"\nFuerza: {self.fuerza}")
-        print(f"Agilidad: {self.agilidad}")
-        print(f"Resistencia: {self.resistencia}")
-        print(f"Voluntad: {self.voluntad}")
-        print(f"Inteligencia: {self.inteligencia}")
-        print(f"Liderazgo: {self.liderazgo}")
-        print(f"Potencia: {self.potencia}")
-        print(f"Defensa: {self.defensa}")
-        print(f"Extension: {self.extension}")
-    
-    def mostrar_cualidades(self):
-        """Muestra todas las cualidades de un personaje con sus respectivos valores."""
-        print(f"\nEsferas: {self.cant_esferas}")
-        print(f"Vida: {self.vida}")
-        print(f"Muerte: {self.muerte}")
-        print(f"Aguante: {self.aguante}")
-        print(f"Recuperación: {self.recuperacion}")
-        print(f"Iniciativa: {self.iniciativa}")
-        print(f"Carga total: {self.carga_total}")
-        print(f"Carga en manos: {self.carga_en_manos}")
-        print(f"Resistencia a la luz: {self.resistencia_luz}")
-        print(f"Resistencia a la oscuridad: {self.resistencia_oscuridad}")
-        print(f"Resistencia elemental: {self.resistencia_elemental}")
-        print(f"Escudo sobrenatural: {self.escudo_sobrenatural}")
 
     def _calcular_xp_req(self, habilidad, id_pj=0):
         """Calcula la experiencia que se necesita para subir de nivel una habilidad."""
@@ -599,24 +484,18 @@ class Personaje:
         arma.iniciativa = arma.alcance + self.agilidad + self.inteligencia
         arma.asignar_calidad(1)
         self._insert_personaje_arma(arma.id, arma.iniciativa, arma.calidad)
-        arma.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armas) # Borrar JSON
-        self._guardar_equipamento("Armas", self.armas) # Borrar JSON
 
     def equipar_armadura(self, armadura):
         """Equipa la armadura pasada por argumento al personaje."""
         self.armaduras.append(armadura)
         armadura.asignar_calidad(1)
         self._insert_personaje_armadura(armadura.id, armadura.calidad)
-        armadura.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armaduras) # Borrar JSON
-        self._guardar_equipamento("Armaduras", self.armaduras) # Borrar JSON
 
     def equipar_escudo(self, escudo):
         """Equipa el escudo pasado por argumento al personaje."""
         self.escudos.append(escudo)
         escudo.asignar_calidad(1)
         self._insert_personaje_escudo(escudo.id, escudo.calidad)
-        escudo.id = Personaje._get_ultimo_id_equipo_de_personaje(self.escudos) # Borrar JSON
-        self._guardar_equipamento("Escudos", self.escudos) # Borrar JSON
 
     def desequipar_arma(self, arma):
         """Desequipa el arma pasada por argumento al personaje."""
@@ -1134,29 +1013,6 @@ class Personaje:
             return "Héroe"
 
     @staticmethod
-    def leer_datos_personajes(): # Borrar JSON
-        """Lee los datos de los personajes guardados en el archivo JSON."""
-        path = Path("personajes.json")
-        try:
-            if not path.exists():
-                print("El archivo personajes.json no existe. Crea tu primer personaje para crearlo automáticamente.")
-                return []
-            
-            if path.stat().st_size == 0:
-                # El archivo existe pero está vacío
-                return []
-
-            # datos = path.read_text()
-            with path.open("r", encoding="utf-8") as datos:
-                return json.load(datos) # Personajes en formato lista (no son objetos)
-        except json.JSONDecodeError:
-            print("El archivo personajes.json está corrupto o malformado.")
-            return []
-        except Exception as e:
-            print(f"Error inesperado al leer el archivo: {e}")
-            return []
-
-    @staticmethod
     def select_personajes():
         """Lee y devuelve los datos de los personajes guardados en la base de datos."""
         try:
@@ -1329,40 +1185,6 @@ class Personaje:
         finally:
             conexion.close()
 
-    def guardar_personajes(self, personajes, pj_nuevo=True):
-        """Guarda los personajes en un archivo JSON."""
-        if pj_nuevo:
-            personajes.append({"ID": self.id, "Jugador": self.jugador, "Nombre": self.nombre, "STEN": self.sten, "Rango": self.rango,
-                        "Fuerza": self.fuerza, "Agilidad": self.agilidad, "Resistencia": self.resistencia,
-                        "Voluntad": self.voluntad, "Inteligencia": self.inteligencia, "Liderazgo": self.liderazgo,
-                        "Potencia": self.potencia, "Defensa": self.defensa, "Extensión": self.extension,
-                        "Cantidad Esferas": self.cant_esferas, "Vida": self.vida, "Vida actual": self.vida_actual,
-                        "Dano recibido": self.dano_recibido, "Herida grave": self.herida_grave, "Muerte": self.muerte,
-                        "Aguante": self.aguante, "Aguante actual": self.aguante_actual,
-                        "Aguante gastado por turno": self.aguante_gastado_por_turno, "Recuperación": self.recuperacion,
-                        "Iniciativa": self.iniciativa, "Carga total": self.carga_total, "Carga en manos": self.carga_en_manos,
-                        "Resistencia a la luz": self.resistencia_luz, "Resistencia a la oscuridad": self.resistencia_oscuridad,
-                        "Resistencia elemental": self.resistencia_elemental, "Escudo sobrenatural": self.escudo_sobrenatural,
-                        "Concentración": self.concentracion, "Turnos aturdido": self.turnos_aturdido,
-                        "Modificador vida": self.mod_vida, "Modificador aguante": self.mod_aguante,
-                        "Modificador recuperación": self.mod_recuperacion, "Modificador iniciativa": self.mod_iniciativa,
-                        "Modificador luz": self.mod_res_luz, "Modificador oscuridad": self.mod_res_oscuridad,
-                        "Modificador elemental": self.mod_res_elemental,
-                        "Modificador escudo sobrenatural": self.mod_escudo_sobrenatural, "Motivación": self.motivacion,
-                        "Energía": self.energia,
-                        "Habilidades": [habilidad.convertir_a_diccionario() for habilidad in self.habilidades],
-                        "Armas": [arma.convertir_a_diccionario() for arma in self.armas],
-                        "Armaduras": [armadura.convertir_a_diccionario() for armadura in self.armaduras],
-                        "Escudos": [escudo.convertir_a_diccionario() for escudo in self.escudos],
-                        "Esferas": [esfera.convertir_a_diccionario() for esfera in self.esferas]})
-
-        path = Path("personajes.json")
-        datos = json.dumps(personajes, indent=4) # Guarda los datos en formato JSON. El indent es para darle formato
-        try:
-            path.write_text(datos)
-        except Exception as e:
-            print(f"Error al guardar el archivo: {e}")
-
     def insert_personaje(self):
         """Inserta un personaje nuevo en la tabla."""
         habilidades = base_datos.select_habilidades()
@@ -1371,10 +1193,18 @@ class Personaje:
             cursor = conexion.cursor()
 
             cursor.execute(f"""
-                        INSERT INTO personajes
+                        INSERT INTO personajes (jugador, nombre, sten, rango, fuerza, agilidad, resistencia,
+                        voluntad, inteligencia, liderazgo, potencia, defensa, extension, cantidad_esferas,
+                        vida, vida_actual, dano_recibido, herida_grave, muerte, aguante, aguante_actual,
+                        aguante_gastado_por_turno, recuperacion, iniciativa, carga_total, carga_en_manos,
+                        resistencia_a_la_luz, resistencia_a_la_oscuridad, resistencia_elemental,
+                        escudo_sobrenatural, concentracion, turnos_aturdido, modificador_vida,
+                        modificador_aguante, modificador_recuperacion, modificador_iniciativa,
+                        modificador_luz, modificador_oscuridad, modificador_elemental,
+                        modificador_escudo_sobrenatural, modificador_carga_total, motivacion, energia)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                           ?, ?, ?)""", (self.id, self.jugador, self.nombre, self.sten, self.rango,
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                        (self.jugador, self.nombre, self.sten, self.rango,
                         self.fuerza, self.agilidad, self.resistencia, self.voluntad,
                         self.inteligencia, self.liderazgo, self.potencia, self.defensa,
                         self.extension, self.cant_esferas, self.vida, self.vida_actual,
@@ -1385,11 +1215,12 @@ class Personaje:
                         self.resistencia_elemental, self.escudo_sobrenatural, self.concentracion,
                         self.turnos_aturdido, self.mod_vida, self.mod_aguante,
                         self.mod_recuperacion, self.mod_iniciativa, self.mod_res_luz,
-                        self.mod_res_oscuridad, self.mod_res_elemental,
-                        self.mod_escudo_sobrenatural, self.mod_carga_total, self.motivacion, self.energia))
+                        self.mod_res_oscuridad, self.mod_res_elemental, self.mod_escudo_sobrenatural,
+                        self.mod_carga_total, self.motivacion, self.energia))
+            id_pj = cursor.lastrowid # Obtiene el id autogenerado
 
             for hab in habilidades:
-                cursor.execute(f"""INSERT INTO personaje_habilidad VALUES (?, ?, ?, ?, ?)""", (self.id, hab [0], 0, 0, 5))
+                cursor.execute(f"""INSERT INTO personaje_habilidad VALUES (?, ?, ?, ?, ?)""", (id_pj, hab [0], 0, 0, 5))
 
             conexion.commit()
         except sql.OperationalError as e:
@@ -1670,164 +1501,9 @@ class Personaje:
         finally:
             conexion.close()
 
-    def _actualizar_valor(self, id_pj, clave, valor): # Borrar JSON
-        """Actualiza un solo atributo del JSON de personajes."""
-        personajes = Personaje.leer_datos_personajes()
-        for pj in personajes:
-            if pj["ID"] == id_pj:
-                pj[clave] = valor
-                self.guardar_personajes(personajes, False)
-                break
-
-    def _actualizar_valor_habilidad(self, id_pj, habilidad, clave, valor): # Borrar JSON
-        """Actualiza un solo atributo de una habilidad del JSON de personajes."""
-        personajes = Personaje.leer_datos_personajes()
-        for pj in personajes:
-            if pj["ID"] == id_pj:
-                for habilidad_json in pj["Habilidades"]:
-                    #print(f"HabilidadJSON: {habilidad_json["Nombre"]} | Habilidad: {habilidad.nombre}")
-                    if habilidad_json["Nombre"] == habilidad.nombre:
-                        habilidad_json[clave] = valor
-                        self.guardar_personajes(personajes, False)
-                        break
-
-    def _actualizar_valor_equipo(self, id_pj, equipo, tipo_equipo, clave, valor): # Borrar JSON
-        """Actualiza un solo atributo de un arma del JSON de personajes."""
-        personajes = Personaje.leer_datos_personajes()
-        for pj in personajes:
-            if pj["ID"] == id_pj:
-                for equipo_json in pj[tipo_equipo]:
-                    if equipo_json["ID"] == equipo.id:
-                        equipo_json[clave] = valor
-                        self.guardar_personajes(personajes, False)
-                        break
-
-    def _actualizar_esfera(self, esfera, clave, valor): # Borrar JSON
-        """Actualiza un solo atributo de una esfera del JSON de personajes."""
-        personajes = Personaje.leer_datos_personajes()
-        for pj in personajes:
-            if pj["ID"] == self.id:
-                for esfera_json in pj["Esferas"]:
-                    if esfera_json["ID"] == esfera.id:
-                        esfera_json[clave] = valor
-                        self.guardar_personajes(personajes, False)
-                        return
-        print("Error al actualizar esfera.")
-
-    def _guardar_equipamento(self, clave_equipo, lista_equipo): # Borrar JSON
-        """Guarda el equipo del personaje, ya sean armas, armaduras o escudos, dependiendo lo que se pase por parámetros."""
-        personajes = Personaje.leer_datos_personajes()
-        for pj in personajes:
-            if pj["ID"] == self.id:
-                #pj[clave_equipo] = [e.convertir_a_diccionario() for e in lista_equipo]
-                nuevo_equipo = []
-
-                for equipo in lista_equipo:
-                    ultimo_id = self._get_ultimo_id_equipo_de_personaje(nuevo_equipo)
-                    equipo_dict = equipo.convertir_a_diccionario()
-                    equipo_dict["ID"] = ultimo_id + 1
-                    if "Iniciativa" in equipo_dict:
-                        equipo_dict["Iniciativa"] = equipo.alcance + self.agilidad + self.inteligencia
-                    nuevo_equipo.append(equipo_dict)
-
-                pj[clave_equipo] = nuevo_equipo
-
-                path = Path("personajes.json")
-                datos = json.dumps(personajes, indent=4) # Guarda los datos en formato JSON. El indent es para darle formato
-                try:
-                    path.write_text(datos)
-                except Exception as e:
-                    print(f"Error al guardar el archivo: {e}")
-
-    def _guardar_esfera(self): # Borrar JSON
-        """Guarda una esfera en el personaje."""
-        personajes = Personaje.leer_datos_personajes()
-        for pj in personajes:
-            if pj["ID"] == self.id:
-                nueva_esfera = []
-
-                for esfera in self.esferas:
-                    ultimo_id = self._get_ultimo_id_equipo_de_personaje(nueva_esfera)
-                    esfera_dict = esfera.convertir_a_diccionario()
-                    esfera_dict["ID"] = ultimo_id + 1
-                    esfera_dict["Nivel"] = 0
-                    esfera_dict["Afinidad"] = 0
-                    nueva_esfera.append(esfera_dict)
-
-                pj["Esferas"] = nueva_esfera
-
-                path = Path("personajes.json")
-                datos = json.dumps(personajes, indent=4) # Guarda los datos en formato JSON. El indent es para darle formato
-                try:
-                    path.write_text(datos)
-                except Exception as e:
-                    print(f"Error al guardar el archivo: {e}")
-
-    def _guardar_habilidad(self): # Borrar JSON
-        """Guarda una habilidad en el personaje."""
-        personajes = Personaje.leer_datos_personajes()
-        for pj in personajes:
-            if pj["ID"] == self.id:
-                nueva_habilidad = []
-
-                for hab in self.habilidades:
-                    hab_dict = hab.convertir_a_diccionario()
-                    nueva_habilidad.append(hab_dict)
-
-                pj["Habilidades"] = nueva_habilidad
-
-                path = Path("personajes.json")
-                datos = json.dumps(personajes, indent=4) # Guarda los datos en formato JSON. El indent es para darle formato
-                try:
-                    path.write_text(datos)
-                except Exception as e:
-                    print(f"Error al guardar el archivo: {e}")
-
-    @staticmethod
-    def _get_id():
-        """Devuelve el último ID de los personajes guardados, o cero si no hay personajes guardados."""
-        personajes = Personaje.leer_datos_personajes()
-
-        if personajes:
-            ultimo_personaje = personajes[-1]
-            return ultimo_personaje["ID"]
-        else:
-            return 0
-    
-    @staticmethod
-    def json_a_personaje():
-        """Lee el JSON de personajes y devuelve una lista con esos personajes pasados a objetos Personaje."""
-        personajes_json = Personaje.leer_datos_personajes()
-        personajes = []
-
-        for personaje_json in personajes_json:
-            personaje = Personaje()
-            personaje._set_atributos(personaje_json["ID"], personaje_json["Jugador"], personaje_json["Nombre"], personaje_json["STEN"]
-                                     , personaje_json["Rango"], personaje_json["Fuerza"], personaje_json["Agilidad"]
-                                     , personaje_json["Resistencia"], personaje_json["Voluntad"], personaje_json["Inteligencia"]
-                                     , personaje_json["Liderazgo"], personaje_json["Potencia"], personaje_json["Defensa"]
-                                     , personaje_json["Extensión"], personaje_json["Cantidad Esferas"], personaje_json["Vida"]
-                                     , personaje_json["Vida actual"], personaje_json["Dano recibido"], personaje_json["Herida grave"]
-                                     , personaje_json["Muerte"], personaje_json["Aguante"] , personaje_json["Aguante actual"]
-                                     , personaje_json["Aguante gastado por turno"], personaje_json["Recuperación"]
-                                     , personaje_json["Iniciativa"], personaje_json["Carga total"], personaje_json["Carga en manos"]
-                                     , personaje_json["Resistencia a la luz"], personaje_json["Resistencia a la oscuridad"]
-                                     , personaje_json["Resistencia elemental"], personaje_json["Escudo sobrenatural"]
-                                     , personaje_json["Concentración"], personaje_json["Turnos aturdido"]
-                                     , personaje_json["Modificador vida"], personaje_json["Modificador aguante"]
-                                     , personaje_json["Modificador recuperación"], personaje_json["Modificador iniciativa"]
-                                     , personaje_json["Modificador luz"], personaje_json["Modificador oscuridad"]
-                                     , personaje_json["Modificador elemental"], personaje_json["Modificador escudo sobrenatural"]
-                                     , personaje_json["Habilidades"], personaje_json["Motivación"], personaje_json["Energía"]
-                                     , personaje_json["Armas"], personaje_json["Armaduras"], personaje_json["Escudos"],
-                                     personaje_json["Esferas"])
-            personajes.append(personaje)
-
-        return personajes
-
     @staticmethod
     def db_a_personaje():
-        """Lee el JSON de personajes y devuelve una lista con esos personajes pasados a objetos Personaje."""
+        """Lee la tabla de personajes y devuelve una lista con esos personajes pasados a objetos Personaje."""
         personajes_db = Personaje.select_personajes()
         personajes = []
 
@@ -1901,59 +1577,5 @@ class Personaje:
         self.mod_res_elemental = mod_ele
         self.mod_escudo_sobrenatural = mod_esc_sob
         self.mod_carga_total = mod_carga_total
-        #for hab_json in habilidades_json:
-        #    habilidad = Habilidad(hab_json["Nombre"], hab_json["Atributos relacionados"], hab_json["Tipo"])
-        #    habilidad.set_atributos(hab_json["Nivel"], hab_json["XP"], hab_json["XP requerida"])
-        #    self.habilidades.append(habilidad)
         self.motivacion = mot
         self.energia = ene
-        #for arma_json in armas_json:
-        #    arma = Arma(arma_json["Nombre"], arma_json["Estructura"], arma_json["Peso"], arma_json["Impacto"], arma_json["Dano"],
-        #                arma_json["Alcance"], arma_json["Tipo de dano"], arma_json["Tipo de arma"])
-        #    arma.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armas) + 1
-        #    arma.calidad = arma_json["Calidad"]
-        #    arma.iniciativa = arma.alcance + self.agilidad + self.inteligencia
-        #    self.armas.append(arma)
-        #for armadura_json in armaduras_json:
-        #    armadura = Armadura(armadura_json["Nombre"], armadura_json["Estructura"], armadura_json["Peso"],
-        #                        armadura_json["Contundente"], armadura_json["Cortante"], armadura_json["Perforante"],
-        #                        armadura_json["Cobertura"], armadura_json["Evasión"], armadura_json["Penalizador"])
-        #    armadura.id = Personaje._get_ultimo_id_equipo_de_personaje(self.armaduras) + 1
-        #    armadura.calidad = armadura_json["Calidad"]
-        #    self.armaduras.append(armadura)
-        #for escudo_json in escudos_json:
-        #    escudo = Escudo(escudo_json["Nombre"], escudo_json["Estructura"], escudo_json["Peso"],
-        #                        escudo_json["Contundente"], escudo_json["Cortante"], escudo_json["Perforante"],
-        #                        escudo_json["Cobertura"], escudo_json["Evasión"], escudo_json["Penalizador"])
-        #    escudo.id = Personaje._get_ultimo_id_equipo_de_personaje(self.escudos) + 1
-        #    escudo.calidad = escudo_json["Calidad"]
-        #    self.escudos.append(escudo)
-        #for esfera_json in esferas_json:
-        #    esfera = Esfera(esfera_json["Nombre"], esfera_json["Poderes"], esfera_json["Pasiva"])
-        #    esfera.id = Personaje._get_ultimo_id_esfera_de_personaje(self.esferas) + 1
-        #    esfera.nivel = esfera_json["Nivel"]
-        #    esfera.afinidad = min(esfera.nivel, self.energia)
-        #    self.esferas.append(esfera)
-
-    @staticmethod
-    def _get_ultimo_id_equipo_de_personaje(lista_equipo):
-        """Devuelve el último ID de equipo guardado en el personaje (ya sea de arma, armadura o escudo),
-        o cero si no hay equipo guardado en el personaje."""
-        if lista_equipo:
-            id = 0
-            for item in lista_equipo:
-                id += 1
-            return id
-        else:
-            return 0
-
-    @staticmethod
-    def _get_ultimo_id_esfera_de_personaje(lista_esferas):
-        """Devuelve el último ID de esfera guardado en el personaje, o cero si no hay esferas guardadas en el personaje."""
-        if lista_esferas:
-            id = 0
-            for esfera in lista_esferas:
-                id += 1
-            return id
-        else:
-            return 0
