@@ -3,6 +3,7 @@ from equipo import Equipo, Arma, Armadura, Escudo
 from colores import Color
 import base_datos
 from itertools import zip_longest
+import sys
 
 class Menu:
     """Clase que sirve para que el usuario pueda controlar e interaccionar con sus personajes mediante un menú."""
@@ -14,7 +15,7 @@ class Menu:
                                              "\nDebes ingresar un número entre 0 y 2 del menú.", [0, 1, 2, 3, 4])
 
         if eleccion == 0:
-            exit()
+            sys.exit()
         elif eleccion == 1:
             Menu._menu_crear_personaje()
         elif eleccion == 2:
