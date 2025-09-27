@@ -10,8 +10,8 @@ class Menu:
     def menu_principal(self):
         """Muestra el menú principal para crear, administrar personajes, etc."""
         print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Espada Negra{Color.FIN} {Color.MARRON}--------------------------------{Color.FIN}")
-        eleccion = Menu._input_eleccion_menu("\n1. Crear personaje\n2. Ver personajes\n4. Borrar personaje\n0. Salir\n: ",
-                                             "\nDebes ingresar un número entre 0 y 2 del menú.", [0, 1, 2, 4])
+        eleccion = Menu._input_eleccion_menu("\n1. Crear personaje\n2. Ver personajes\n3. Modificar personaje\n4. Borrar personaje\n0. Salir\n: ",
+                                             "\nDebes ingresar un número entre 0 y 2 del menú.", [0, 1, 2, 3, 4])
 
         if eleccion == 0:
             exit()
@@ -19,6 +19,8 @@ class Menu:
             Menu._menu_crear_personaje()
         elif eleccion == 2:
             Menu._menu_lista_personajes()
+        elif eleccion == 3:
+            Menu._menu_nombre_personajes()
         elif eleccion == 4:
             Menu._menu_eliminar_personajes()
 
@@ -1211,6 +1213,60 @@ class Menu:
                     return
 
                 metodo(opc_menu, valor)
+                break
+
+    @staticmethod
+    def _menu_nombre_personajes():
+        """Menú que muestra los personajes para modificar los nombres de estos o de sus jugadores."""
+        while True:
+            personajes = Personaje.db_a_personaje() # Obtenemos los personajes como objetos
+
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Modificar Personajes{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}\n")
+
+            opciones_pjs = ""
+            opciones_menu = [0]
+            i = 0
+
+            if personajes:
+                for personaje in personajes:
+                    i += 1
+                    opciones_pjs += f"{i}. {personaje.nombre}\n"
+                    opciones_menu.append(i)
+            else:
+                print(f"{Color.AMARILLO}Todavía no tienes personajes creados.{Color.FIN}\n")
+                break
+
+            opciones_pjs += "0. Atrás\n: "
+
+            eleccion = Menu._input_eleccion_menu(opciones_pjs, f"\nDebes ingresar una opción del menú. Para salir 0.", opciones_menu)
+
+            if eleccion == 0:
+                break
+            else:
+                i = 1
+                for personaje in personajes:
+                    if i == eleccion:
+                        Menu._menu_modificar_personaje(personaje)
+                        break
+                    i += 1
+
+    @staticmethod
+    def _menu_modificar_personaje(personaje):
+        """Menú con las opciones para modificar características generales del personaje."""
+        while True:
+
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Modificar {personaje.nombre}{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}\n")
+
+            eleccion = Menu._input_eleccion_menu(f"1. Nombre\n2. Nombre jugador\n0. Atrás\n: ",
+                                                f"\nDebes ingresar una opción del menú. Para salir 0.", [0, 1, 2])
+
+            if eleccion == 0:
+                break
+            elif eleccion == 1:
+                personaje.modificar_nombre()
+                break
+            elif eleccion == 2:
+                personaje.modificar_jugador()
                 break
 
     @staticmethod

@@ -214,6 +214,30 @@ class Personaje:
         self.vida_actual = self.vida
         self.aguante_actual = self.aguante
 
+    def modificar_nombre(self):
+        """Modifica el nombre de un personaje."""
+        while True:
+            print(f"\nEstá a punto de cambiar el nombre de {self.nombre}. Ingrese 0 para salir.")
+            nuevo_nombre = input("Nuevo nombre: ")
+
+            if nuevo_nombre == "0":
+                break
+            else:
+                self._update_personaje("nombre", nuevo_nombre)
+                break
+
+    def modificar_jugador(self):
+        """Modifica el nombre del jugador."""
+        while True:
+            print(f"\nEstá a punto de cambiar el nombre del jugador {self.jugador} del personaje {self.nombre}. Ingrese 0 para salir.")
+            nuevo_nombre = input("Nuevo nombre de jugador: ")
+
+            if nuevo_nombre == "0":
+                break
+            else:
+                self._update_personaje("jugador", nuevo_nombre)
+                break
+
     def _get_atributo_by_str(self, atributo_str):
         """Obtiene el valor del atributo pasado en string."""
         if atributo_str == "fuerza":
@@ -1215,10 +1239,11 @@ class Personaje:
 
     def _update_personaje(self, columna, valor):
         """Actualiza un campo del personaje según el valor pasado."""
-        columnas_validas = ("rango", "fuerza", "agilidad", "resistencia", "voluntad", "inteligencia",
-                            "liderazgo", "potencia", "defensa", "extension", "cantidad_esferas",
-                            "vida", "vida_actual", "dano_recibido", "herida_grave", "muerte",
-                            "aguante", "aguante_actual", "aguante_gastado_por_turno", "recuperacion",
+        columnas_validas = ("nombre", "jugador", "rango", "fuerza", "agilidad", "resistencia",
+                            "voluntad", "inteligencia", "liderazgo", "potencia", "defensa",
+                            "extension", "cantidad_esferas", "vida", "vida_actual",
+                            "dano_recibido", "herida_grave", "muerte", "aguante",
+                            "aguante_actual", "aguante_gastado_por_turno", "recuperacion",
                             "iniciativa", "carga_total", "carga_en_manos", "resistencia_a_la_luz",
                             "resistencia_a_la_oscuridad", "resistencia_elemental",
                             "escudo_sobrenatural", "concentracion", "modificador_vida",
