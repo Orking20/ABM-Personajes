@@ -1,6 +1,9 @@
 # Archivos compilados de Python
 __pycache__/
 *.py[cod]
+build*/
+dist/
 
 # Archivos de base de datos
 *.db
+*.spec
