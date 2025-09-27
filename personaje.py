@@ -1418,6 +1418,43 @@ class Personaje:
         finally:
             conexion.close()
 
+    def eliminar_personaje(self):
+        """Elimina el personaje seleccionado y todas sus referencias."""
+        armas = Personaje.select_personaje_arma(self.id)
+        armaduras = Personaje.select_personaje_armadura(self.id)
+        escudos = Personaje.select_personaje_escudo(self.id)
+        habilidades = Personaje.select_personaje_habilidad(self.id)
+        esferas = Personaje.select_personaje_esfera(self.id)
+
+        for arma in armas:
+            Personaje._delete_personaje_arma(arma["id_pj_arma"])
+        for armadura in armaduras:
+            Personaje._delete_personaje_armadura(armadura["id_pj_armadura"])
+        for escudo in escudos:
+            Personaje._delete_personaje_escudo(escudo["id_pj_escudo"])
+        for hab in habilidades:
+            Personaje._delete_personaje_habilidad(self.id, hab["id_habilidad"])
+        for esfera in esferas:
+            self._delete_personaje_esfera(esfera["id_esfera"])
+        Personaje._delete_personaje(self.id)
+
+    @staticmethod
+    def _delete_personaje(id_pj):
+        """Elimina el personaje seleccionado."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            cursor = conexion.cursor()
+
+            cursor.execute("DELETE FROM personajes WHERE id = ?",
+                           (id_pj,))
+
+            conexion.commit()
+        except sql.OperationalError as e:
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personajes' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
+        finally:
+            conexion.close()
+
     @staticmethod
     def _delete_personaje_arma(id_arma):
         """Elimina el arma seleccionada de las armas del personaje."""
@@ -1465,6 +1502,23 @@ class Personaje:
             conexion.commit()
         except sql.OperationalError as e:
             print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_escudo' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
+            print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def _delete_personaje_habilidad(id_personaje, id_habilidad):
+        """Elimina la habilidad seleccionada del personaje."""
+        try:
+            conexion = sql.connect(f"espada_negra.db")
+            cursor = conexion.cursor()
+
+            cursor.execute("DELETE FROM personaje_habilidad WHERE id_personaje = ? AND id_habilidad = ?",
+                           (id_personaje, id_habilidad))
+
+            conexion.commit()
+        except sql.OperationalError as e:
+            print(f"{Color.ROJO}{Color.NEGRITA}Posible error:{Color.FIN}{Color.GRIS} La tabla 'personaje_habilidad' no existe, o no se puede abrir por falta de persmisos.{Color.FIN}")
             print(f"{Color.ROJO}{Color.NEGRITA}Error detallado: {Color.FIN}{Color.GRIS}{e}{Color.FIN}")
         finally:
             conexion.close()

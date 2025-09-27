@@ -10,8 +10,8 @@ class Menu:
     def menu_principal(self):
         """Muestra el menú principal para crear, administrar personajes, etc."""
         print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Espada Negra{Color.FIN} {Color.MARRON}--------------------------------{Color.FIN}")
-        eleccion = Menu._input_eleccion_menu("\n1. Crear personaje\n2. Ver personajes\n0. Salir\n: ",
-                                             "\nDebes ingresar un número entre 0 y 2 del menú.", [0, 1, 2])
+        eleccion = Menu._input_eleccion_menu("\n1. Crear personaje\n2. Ver personajes\n4. Borrar personaje\n0. Salir\n: ",
+                                             "\nDebes ingresar un número entre 0 y 2 del menú.", [0, 1, 2, 4])
 
         if eleccion == 0:
             exit()
@@ -19,8 +19,8 @@ class Menu:
             Menu._menu_crear_personaje()
         elif eleccion == 2:
             Menu._menu_lista_personajes()
-        #elif eleccion == 3:
-        #    Menu._menu_administrar_equipo()
+        elif eleccion == 4:
+            Menu._menu_eliminar_personajes()
 
     @staticmethod
     def _menu_crear_personaje():
@@ -267,9 +267,9 @@ class Menu:
         while True:
             personajes = Personaje.db_a_personaje() # Obtenemos los personajes como objetos
 
-            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Personajes{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}")
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Personajes{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}\n")
 
-            opciones_pjs = "\n"
+            opciones_pjs = ""
             opciones_menu = [0]
             i = 0
 
@@ -280,6 +280,7 @@ class Menu:
                     opciones_menu.append(i)
             else:
                 print(f"{Color.AMARILLO}Todavía no tienes personajes creados.{Color.FIN}\n")
+                break
 
             opciones_pjs += "0. Atrás\n: "
 
@@ -288,12 +289,11 @@ class Menu:
             if eleccion == 0:
                 break
             else:
-                if personajes:
-                    i = 1
-                    for personaje in personajes:
-                        if i == eleccion:
-                            Menu._menu_personaje(personaje)
-                        i += 1
+                i = 1
+                for personaje in personajes:
+                    if i == eleccion:
+                        Menu._menu_personaje(personaje)
+                    i += 1
 
     @staticmethod
     def _menu_personaje(personaje):
@@ -1148,7 +1148,7 @@ class Menu:
     def _menu_ascender(personaje):
         """Abre el menú para ascender un personaje."""
         while True:
-            eleccion = Menu._input_eleccion_menu(f"\n¿ESTÁS SEGURO de que quieres ascender a {personaje.nombre}? Esta decisión no se puede deshacer.\n9. Estoy seguro\n0. No\n: ",
+            eleccion = Menu._input_eleccion_menu(f"\n{Color.NARANJA}{Color.NEGRITA}¿ESTÁS SEGURO de que quieres ascender a {personaje.nombre}? Esta decisión no se puede deshacer.{Color.FIN}\n9. Sí\n0. No\n: ",
                                                 "\nDebes ingresar una opción de las que se muestran en el menú.",
                                                 [0, 9])
 
@@ -1211,6 +1211,53 @@ class Menu:
                     return
 
                 metodo(opc_menu, valor)
+                break
+
+    @staticmethod
+    def _menu_eliminar_personajes():
+        """Menú que muestra los personajes disponibles para borrar."""
+        while True:
+            personajes = Personaje.db_a_personaje() # Obtenemos los personajes como objetos
+
+            print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Borrar Personajes{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}\n")
+
+            opciones_pjs = ""
+            opciones_menu = [0]
+            i = 0
+
+            if personajes:
+                for personaje in personajes:
+                    i += 1
+                    opciones_pjs += f"{i}. {personaje.nombre}\n"
+                    opciones_menu.append(i)
+            else:
+                print(f"{Color.AMARILLO}Todavía no tienes personajes creados.{Color.FIN}\n")
+                break
+
+            opciones_pjs += "0. Atrás\n: "
+
+            eleccion = Menu._input_eleccion_menu(opciones_pjs, f"\nDebes ingresar una opción del menú. Para salir 0.", opciones_menu)
+
+            if eleccion == 0:
+                break
+            else:
+                i = 1
+                for personaje in personajes:
+                    if i == eleccion:
+                        Menu._menu_borrar_personaje(personaje)
+                    i += 1
+
+    @staticmethod
+    def _menu_borrar_personaje(personaje):
+        """Menú para borrar un personaje y sus referencias de la base de datos."""
+        while True:
+            eleccion = Menu._input_eleccion_menu(f"{Color.NARANJA}{Color.NEGRITA}¿Estás seguro de que quieres eliminar a {personaje.nombre} de tus personajes? Esta decición no se puede deshacer.{Color.FIN}\n9. Sí\n0. Atrás\n: ",
+                                                f"\nDebes ingresar una opción del menú. Para salir 0.", [0, 9])
+
+            if eleccion == 0:
+                break
+            elif eleccion == 9:
+                personaje.eliminar_personaje()
                 break
 
     @staticmethod
