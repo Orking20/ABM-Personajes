@@ -29,9 +29,11 @@ class Menu:
     def _menu_crear_personaje():
         """Abre el menú para crear un personaje."""
         personaje = Personaje()
+        print("\n---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----")
         if not Menu._asignar_sten(personaje):
             return
 
+        print("\n---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----")
         if not Menu._asignar_jugador(personaje):
             return
 
@@ -65,7 +67,7 @@ class Menu:
         """El usuario asigna el nombre del jugador."""
         while True:
             print("\nIngrese 'q' para salir.")
-            nombre = input("Nombre de jugador: ")
+            nombre = input(f"Nombre de {Color.NARANJA_CLARO}jugador{Color.FIN}: ")
 
             if nombre.lower() == "q":
                 return False
@@ -81,7 +83,7 @@ class Menu:
         """El usuario asigna el nombre del personaje."""
         while True:
             print("\nIngrese 'q' para salir.")
-            nombre = input("Nombre de personaje: ")
+            nombre = input(f"Nombre de {Color.NARANJA_CLARO}personaje{Color.FIN}: ")
 
             if nombre.lower() == "q":
                 return False
@@ -95,12 +97,15 @@ class Menu:
     @staticmethod
     def _asignar_atributos(personaje):
         """Acompaña al usuario para asignar los atributos del personaje."""
+        print("\n---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----")
         (primario, secundario, terciario) = Menu._asignar_rango(personaje)
         if (primario, secundario, terciario) == (0, 0, 0):
             return False
+        print("\n---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----")
         (primario, secundario, terciario) = Menu._asignar_enfoque(personaje, primario, secundario, terciario)
         if (primario, secundario, terciario) == (0, 0, 0):
             return False
+        print("\n---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----")
         bloque_atributos = Menu._elegir_bloque_atributos(primario, secundario, terciario)
 
         if bloque_atributos:
@@ -114,6 +119,7 @@ class Menu:
                 elif bloque_atributos[grupo] == 3:
                     puntos = terciario
 
+                print("\n---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----")
                 Menu._distribuir_atributos(personaje, grupo, puntos)
             
             return True
@@ -124,7 +130,7 @@ class Menu:
     def _asignar_rango(personaje):
         """Abre el menú para acompañar al usuario a elegir su rango."""
         while True:
-            rango = Menu._input_eleccion_menu("\nElija su rango.\n1. Vulgar\n2. Capacitado\n3. Luchador\n4. Héroe\n0. Salir\nIngrese el número para elegir su rango: ",
+            rango = Menu._input_eleccion_menu(f"\nElija su {Color.NARANJA_CLARO}rango{Color.FIN}.\n1. Vulgar\n2. Capacitado\n3. Luchador\n4. Héroe\n0. Salir\nIngrese el número para elegir su rango: ",
                                             "Para elegir un rango debes ingresar un número entre el 1 y el 4.", [0, 1, 2, 3, 4])
             if rango == 0:
                 return (0, 0, 0)
@@ -135,7 +141,7 @@ class Menu:
     def _asignar_enfoque(personaje, primario, secundario, terciario):
         """Abre el menú para acompañar al usuario a elegir su enfoque."""
         while True:
-            enfoque = Menu._input_eleccion_menu(f"\nElija su enfoque.\n1. Equilibrado [{primario}, {secundario}, {terciario}]\n2. Focalizado [{primario}, {secundario + 1}, {terciario - 1}]\n3. Muy focalizado [{primario + 1}, {secundario}, {terciario - 2}]\n4. Centrado [{primario + 1}, {secundario - 1}, {terciario - 1}]\n0. Salir\nIngrese el número para elegir su enfoque: ",
+            enfoque = Menu._input_eleccion_menu(f"\nElija su {Color.NARANJA_CLARO}enfoque{Color.FIN}.\n1. Equilibrado [{primario}, {secundario}, {terciario}]\n2. Focalizado [{primario}, {secundario + 1}, {terciario - 1}]\n3. Muy focalizado [{primario + 1}, {secundario}, {terciario - 2}]\n4. Centrado [{primario + 1}, {secundario - 1}, {terciario - 1}]\n0. Salir\nIngrese el número para elegir su enfoque: ",
                                                 "Para elegir un enfoque debes ingresar un número entre el 1 y el 4.", [0, 1, 2, 3, 4])
 
             if enfoque == 0:
@@ -147,8 +153,8 @@ class Menu:
     def _elegir_bloque_atributos(primario, secundario, terciario):
         """Abre el menú para acompañar al usuario a elegir que valor va a cada bloque de atributos."""
         while True:
-            print(f"\nSegún tu rango y tu enfoque estos son los valores que tienes para asignar: {primario} {secundario} {terciario}")
-            bloque = Menu._input_eleccion_menu(f"Asigna el valor más alto ({primario}) a un bloque de atributos.\n1. Físico\n2. Mental\n3. Sobrenatural\n0. Salir\nElija un bloque de atirbutos: ",
+            print(f"\nSegún tu rango y tu enfoque estos son los valores que tienes para asignar: {Color.NARANJA_CLARO}{primario} {secundario} {terciario}{Color.FIN}")
+            bloque = Menu._input_eleccion_menu(f"Asigna el valor más alto {Color.NARANJA_CLARO}({primario}){Color.FIN} a un bloque de atributos.\n1. Físico\n2. Mental\n3. Sobrenatural\n0. Salir\nElija un bloque de atirbutos: ",
                                                "Para asignar un valor a un bloque de atributos debe ingresar un número entre el 1 y el 3.",
                                                [0, 1, 2, 3])
             bloques_atributos = {}
@@ -161,9 +167,9 @@ class Menu:
                 mental = None
                 sobrenatural = None
                 bloques_atributos["fisico"] = 1
-                print(f"\nTe quedan dos valores para asignar: {secundario} {terciario}.\nEl valor que no asignes, se asignará automáticamente al bloque que quede.")
+                print(f"\nTe quedan dos valores para asignar: {Color.NARANJA_CLARO}{secundario} {terciario}{Color.FIN}.\nEl valor que no asignes, se asignará automáticamente al bloque que quede.")
                 while True:
-                    bloque = Menu._input_eleccion_menu(f"Asigna el valor más alto ({secundario}) a un bloque de atributos.\n1. Mental\n2. Sobrenatural\n0. Atrás\nElija un bloque de atirbutos: ",
+                    bloque = Menu._input_eleccion_menu(f"Asigna el valor más alto {Color.NARANJA_CLARO}({secundario}){Color.FIN} a un bloque de atributos.\n1. Mental\n2. Sobrenatural\n0. Atrás\nElija un bloque de atirbutos: ",
                                                        "Ingrese una de las opciones del menú.", [0, 1, 2])
                     if bloque == 0:
                         break
@@ -174,9 +180,9 @@ class Menu:
                 mental = primario
                 sobrenatural = None
                 bloques_atributos["mental"] = 1
-                print(f"\nTe quedan dos valores para asignar: {secundario} {terciario}.\nEl valor que no asignes, se asignará automáticamente al bloque que quede.")
+                print(f"\nTe quedan dos valores para asignar: {Color.NARANJA_CLARO}{secundario} {terciario}{Color.FIN}.\nEl valor que no asignes, se asignará automáticamente al bloque que quede.")
                 while True:
-                    bloque = Menu._input_eleccion_menu(f"Asigna el valor más alto ({secundario}) a un bloque de atributos.\n1. Físico\n2. Sobrenatural\n0. Atrás\nElija un bloque de atirbutos: ",
+                    bloque = Menu._input_eleccion_menu(f"Asigna el valor más alto {Color.NARANJA_CLARO}({secundario}){Color.FIN} a un bloque de atributos.\n1. Físico\n2. Sobrenatural\n0. Atrás\nElija un bloque de atirbutos: ",
                                                        "Ingrese una de las opciones del menú.", [0, 1, 2])
                     if bloque == 0:
                         break
@@ -187,9 +193,9 @@ class Menu:
                 mental = None
                 sobrenatural = primario
                 bloques_atributos["sobrenatural"] = 1
-                print(f"\nTe quedan dos valores para asignar: {secundario} {terciario}.\nEl valor que no asignes, se asignará automáticamente al bloque que quede.")
+                print(f"\nTe quedan dos valores para asignar: {Color.NARANJA_CLARO}{secundario} {terciario}{Color.FIN}.\nEl valor que no asignes, se asignará automáticamente al bloque que quede.")
                 while True:
-                    bloque = Menu._input_eleccion_menu(f"Asigna el valor más alto ({secundario}) a un bloque de atributos.\n1. Físico\n2. Mental\n0. Atrás\nElija un bloque de atirbutos: ",
+                    bloque = Menu._input_eleccion_menu(f"Asigna el valor más alto {Color.NARANJA_CLARO}({secundario}){Color.FIN} a un bloque de atributos.\n1. Físico\n2. Mental\n0. Atrás\nElija un bloque de atirbutos: ",
                                                        "Ingrese una de las opciones del menú.", [0, 1, 2])
                     if bloque == 0:
                         break
@@ -254,7 +260,7 @@ class Menu:
                 print(f"\nSu atributo {atributo} queda en {eleccion}")
             else:
                 while True:
-                    eleccion = Menu._input_eleccion_menu(f"\nDistribuyamos los puntos en cada atributo.\nEmpecemos con el bloque {bloque}. Tienes {puntos} puntos para distribuir.\n¿Cuántos puntos van a ir a la {atributo} [0-{valor_maximo}]?: ",
+                    eleccion = Menu._input_eleccion_menu(f"\nDistribuyamos los puntos en cada atributo.\nEmpecemos con el bloque {bloque}. Tienes {Color.NARANJA_CLARO}{puntos}{Color.FIN} puntos para distribuir.\n¿Cuántos puntos van a ir a la {Color.NARANJA_CLARO}{atributo}{Color.FIN} [0-{valor_maximo}]?: ",
                                                          f"No puedes tener menos de 0 puntos ni más de {valor_maximo} puntos en {atributo}.",
                                                          lista_opciones_validas)
                     if eleccion >= 0 and eleccion <= valor_maximo:
