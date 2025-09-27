@@ -1,9 +1,11 @@
 import sqlite3 as sql
+from path import ruta_absoluta
 
 @staticmethod
 def select_habilidades():
     """Devuelve todas las habilidades básicas."""
-    conexion = sql.connect(f"espada_negra.db")
+    path = ruta_absoluta("espada_negra.db")
+    conexion = sql.connect(path)
     cursor = conexion.cursor()
 
     cursor.execute("SELECT * FROM habilidades")
@@ -16,7 +18,8 @@ def select_habilidades():
 def select_esferas():
     """Lee y devuelve las esferas guardadas en la base de datos."""
     try:
-        conexion = sql.connect(f"espada_negra.db")
+        path = ruta_absoluta("espada_negra.db")
+        conexion = sql.connect(path)
         conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
         cursor = conexion.cursor()
 

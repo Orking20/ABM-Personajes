@@ -1,5 +1,6 @@
 from colores import Color
 import base_datos
+from path import ruta_absoluta
 from math import floor
 import re
 import sqlite3 as sql
@@ -1024,7 +1025,8 @@ class Personaje:
     def select_personajes():
         """Lee y devuelve los datos de los personajes guardados en la base de datos."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
             cursor = conexion.cursor()
 
@@ -1040,7 +1042,8 @@ class Personaje:
     def select_personaje(self):
         """Lee y devuelve los datos de los personajes guardados en la base de datos."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
             cursor = conexion.cursor()
 
@@ -1057,7 +1060,8 @@ class Personaje:
     def select_personaje_habilidad(id_personaje):
         """Lee y devuelve las habilidades de un personaje guardados en la base de datos."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
             cursor = conexion.cursor()
 
@@ -1080,7 +1084,8 @@ class Personaje:
     def select_habilidad_atributo(id_habilidad):
         """Lee y devuelve los atributos de habilidades guardados en la base de datos."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
             cursor = conexion.cursor()
 
@@ -1097,7 +1102,8 @@ class Personaje:
     def select_personaje_arma(id_personaje):
         """Lee y devuelve las armas de un personaje guardados en la base de datos."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
             cursor = conexion.cursor()
 
@@ -1122,7 +1128,8 @@ class Personaje:
     def select_personaje_armadura(id_personaje):
         """Lee y devuelve las armaduras de un personaje guardados en la base de datos."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
             cursor = conexion.cursor()
 
@@ -1146,7 +1153,8 @@ class Personaje:
     def select_personaje_escudo(id_personaje):
         """Lee y devuelve los escudos de un personaje guardados en la base de datos."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
             cursor = conexion.cursor()
 
@@ -1170,7 +1178,8 @@ class Personaje:
     def select_personaje_esfera(id_personaje):
         """Lee y devuelve los esferas de un personaje guardados en la base de datos."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
             cursor = conexion.cursor()
 
@@ -1197,7 +1206,8 @@ class Personaje:
         """Inserta un personaje nuevo en la tabla."""
         habilidades = base_datos.select_habilidades()
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             cursor = conexion.cursor()
 
             cursor.execute(f"""
@@ -1257,7 +1267,8 @@ class Personaje:
             return
 
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             cursor = conexion.cursor()
 
             cursor.execute(f"UPDATE personajes SET {columna} = ? WHERE id = ?", (valor, self.id))
@@ -1294,7 +1305,8 @@ class Personaje:
             return
 
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             cursor = conexion.cursor()
 
             cursor.execute(f"UPDATE {tabla} SET {columna} = ? WHERE id = ?",
@@ -1317,7 +1329,8 @@ class Personaje:
             return
 
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             cursor = conexion.cursor()
 
             cursor.execute(f"UPDATE personaje_esfera SET {columna} = ? WHERE id_personaje = ? AND id_esfera = ?",
@@ -1340,7 +1353,8 @@ class Personaje:
             return
 
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             cursor = conexion.cursor()
 
             cursor.execute(f"UPDATE personaje_habilidad SET {columna} = ? WHERE id_personaje = ? AND id_habilidad = ?",
@@ -1357,7 +1371,8 @@ class Personaje:
     def _insert_personaje_arma(self, id_arma, iniciativa, calidad):
         """Inserta un arma a un personaje en la tabla personaje_arma."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row
             cursor = conexion.cursor()
 
@@ -1380,7 +1395,8 @@ class Personaje:
     def _insert_personaje_armadura(self, id_armadura, calidad):
         """Inserta un armadura a un personaje en la tabla personaje_armadura."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row
             cursor = conexion.cursor()
 
@@ -1405,7 +1421,8 @@ class Personaje:
     def _insert_personaje_escudo(self, id_escudo, calidad):
         """Inserta un escudo a un personaje en la tabla personaje_escudo."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row
             cursor = conexion.cursor()
 
@@ -1430,7 +1447,8 @@ class Personaje:
     def _insert_personaje_esfera(self, id_esfera, nivel, afinidad):
         """Inserta un esfera a un personaje en la tabla personaje_esfera."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             cursor = conexion.cursor()
 
             cursor.execute(f"""INSERT INTO personaje_esfera VALUES (?, ?, ?, ?)""",
@@ -1467,7 +1485,8 @@ class Personaje:
     def _delete_personaje(id_pj):
         """Elimina el personaje seleccionado."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             cursor = conexion.cursor()
 
             cursor.execute("DELETE FROM personajes WHERE id = ?",
@@ -1484,7 +1503,8 @@ class Personaje:
     def _delete_personaje_arma(id_arma):
         """Elimina el arma seleccionada de las armas del personaje."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             cursor = conexion.cursor()
 
             cursor.execute("DELETE FROM personaje_arma WHERE id = ?",
@@ -1501,7 +1521,8 @@ class Personaje:
     def _delete_personaje_armadura(id_armadura):
         """Elimina el armadura seleccionada de las armaduras del personaje."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             cursor = conexion.cursor()
 
             cursor.execute("DELETE FROM personaje_armadura WHERE id = ?",
@@ -1518,7 +1539,8 @@ class Personaje:
     def _delete_personaje_escudo(id_escudo):
         """Elimina el escudo seleccionado de los escudos del personaje."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             cursor = conexion.cursor()
 
             cursor.execute("DELETE FROM personaje_escudo WHERE id = ?",
@@ -1535,7 +1557,8 @@ class Personaje:
     def _delete_personaje_habilidad(id_personaje, id_habilidad):
         """Elimina la habilidad seleccionada del personaje."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             cursor = conexion.cursor()
 
             cursor.execute("DELETE FROM personaje_habilidad WHERE id_personaje = ? AND id_habilidad = ?",
@@ -1551,7 +1574,8 @@ class Personaje:
     def _delete_personaje_esfera(self, id_esfera):
         """Elimina la esfera seleccionada del personaje."""
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             cursor = conexion.cursor()
 
             cursor.execute("DELETE FROM personaje_esfera WHERE id_personaje = ? AND id_esfera = ?",

@@ -1,5 +1,4 @@
-from pathlib import Path
-import json
+from path import ruta_absoluta
 import sqlite3 as sql
 
 class Equipo:
@@ -53,7 +52,8 @@ class Arma(Equipo):
             version = "STEN2"
 
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
             cursor = conexion.cursor()
 
@@ -163,7 +163,8 @@ class Armadura(Equipo):
             version = "STEN2"
 
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
             cursor = conexion.cursor()
 
@@ -274,7 +275,8 @@ class Escudo(Equipo):
             version = "STEN2"
 
         try:
-            conexion = sql.connect(f"espada_negra.db")
+            path = ruta_absoluta("espada_negra.db")
+            conexion = sql.connect(path)
             conexion.row_factory = sql.Row # Devuelve diccionario en vez de tupla
             cursor = conexion.cursor()
 
