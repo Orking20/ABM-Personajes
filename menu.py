@@ -257,7 +257,7 @@ class Menu:
 
             if atributo == "resistencia" or atributo == "liderazgo" or atributo == "extensión":
                 eleccion = valor_maximo
-                print(f"\nSu atributo {atributo} queda en {eleccion}")
+                print(f"\nSu atributo {Color.NARANJA_CLARO}{atributo}{Color.FIN} queda en {Color.NARANJA_CLARO}{eleccion}{Color.FIN}")
             else:
                 while True:
                     eleccion = Menu._input_eleccion_menu(f"\nDistribuyamos los puntos en cada atributo.\nEmpecemos con el bloque {bloque}. Tienes {Color.NARANJA_CLARO}{puntos}{Color.FIN} puntos para distribuir.\n¿Cuántos puntos van a ir a la {Color.NARANJA_CLARO}{atributo}{Color.FIN} [0-{valor_maximo}]?: ",
