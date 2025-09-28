@@ -257,7 +257,7 @@ class Menu:
 
             if atributo == "resistencia" or atributo == "liderazgo" or atributo == "extensión":
                 eleccion = valor_maximo
-                print(f"\nSu atributo {atributo} queda en {eleccion}")
+                print(f"\nSu atributo {Color.NARANJA_CLARO}{atributo}{Color.FIN} queda en {Color.NARANJA_CLARO}{eleccion}{Color.FIN}")
             else:
                 while True:
                     eleccion = Menu._input_eleccion_menu(f"\nDistribuyamos los puntos en cada atributo.\nEmpecemos con el bloque {bloque}. Tienes {Color.NARANJA_CLARO}{puntos}{Color.FIN} puntos para distribuir.\n¿Cuántos puntos van a ir a la {Color.NARANJA_CLARO}{atributo}{Color.FIN} [0-{valor_maximo}]?: ",
@@ -1119,8 +1119,6 @@ class Menu:
         """Abre el menú para agregar o quitar motivación al personaje."""
         while True:
             print(f"\n{Color.MARRON}-------------------------------- {Color.FONDO_MARRON}{Color.NEGRITA}{Color.NEGRO}Motivación para {personaje.nombre}{Color.FIN}{Color.MARRON} --------------------------------{Color.FIN}")
-            print(f"Motivación actual: {personaje.motivacion}")
-
             (opc_menu, motivacion) = Menu._input_eleccion_menu_comando("\nIngrese la opción de menú seguido de la motivación que quiere agregar o quitar. Ejemplo: [1 10]\n1. Agregar motivación\n2. Quitar motivación\n0. Atrás\n: ",
                                                          "Para seleccionar una opción del menú ingrese un número entre el 1 y el 2.",
                                                          [0, 1, 2])
