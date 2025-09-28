@@ -956,12 +956,12 @@ class Menu:
         ]
         cualidades = [
             ("Aguante actual", personaje.aguante_actual),
-            ("Aguante gastado por turno", personaje.aguante_actual),
-            ("Vida actual", personaje.aguante_actual),
-            ("Muerte", personaje.aguante_actual),
-            ("Concentración", personaje.aguante_actual),
-            ("Energía", personaje.aguante_actual),
-            ("Aturdido", personaje.aguante_actual),
+            ("Aguante gastado por turno", personaje.aguante_gastado_por_turno),
+            ("Vida actual", personaje.vida_actual),
+            ("Muerte", personaje.muerte),
+            ("Concentración", personaje.concentracion),
+            ("Energía", personaje.energia),
+            ("Aturdido", personaje.turnos_aturdido),
         ]
 
         resistencias = [
